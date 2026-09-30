@@ -115,3 +115,14 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .token-detail dd{margin:0;font:14px/1.5 var(--sans)}
 .original-hint{margin:18px 0;color:var(--muted);font:13px/1.55 var(--sans)}
 @media(max-width:650px){.original-heading{align-items:flex-start;flex-direction:column}.token-detail dl div{grid-template-columns:1fr;gap:4px}.original-line{margin-inline:-4px;padding:13px}}
+
+
+/* Bible-wide connections */
+.connections-panel>h2{font:400 30px/1.12 var(--serif);margin:8px 0 10px}
+.connections-panel>p:not(.kicker):not(.source-note){color:var(--muted);font:14px/1.6 var(--sans)}
+.connection-list{display:grid;gap:8px;margin:22px 0}
+.connection-list button{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:var(--paper-2);color:var(--ink);text-align:left;cursor:pointer}
+.connection-list button:hover{background:var(--paper)}
+.connection-list strong{font:600 14px/1.35 var(--sans)}
+.connection-list span{flex:0 0 auto;color:var(--muted);font:10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em}
+@media(max-width:650px){.connection-list button{align-items:flex-start;flex-direction:column;gap:5px}}
