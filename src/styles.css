@@ -126,3 +126,18 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .connection-list strong{font:600 14px/1.35 var(--sans)}
 .connection-list span{flex:0 0 auto;color:var(--muted);font:10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em}
 @media(max-width:650px){.connection-list button{align-items:flex-start;flex-direction:column;gap:5px}}
+
+
+/* Sourced biblical places */
+.places-panel>h2{font:400 30px/1.12 var(--serif);margin:8px 0 10px}
+.places-panel>p:not(.kicker):not(.source-note){color:var(--muted);font:14px/1.6 var(--sans)}
+.place-list{display:grid;gap:10px;margin:22px 0}
+.place-list article{padding:16px;border:1px solid var(--line);border-radius:15px;background:var(--paper-2)}
+.place-list article>header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.place-list article>header strong{font:600 16px/1.35 var(--sans)}
+.place-list article>header span{color:var(--muted);font:10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em}
+.place-candidates{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.place-candidates>small{display:block;margin-bottom:6px;color:var(--muted);font:600 9px var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.place-candidates>div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font:12px/1.4 var(--sans)}
+.place-candidates>div span:last-child{color:var(--muted)}
+@media(max-width:650px){.place-list article>header,.place-candidates>div{align-items:flex-start;flex-direction:column;gap:4px}}
