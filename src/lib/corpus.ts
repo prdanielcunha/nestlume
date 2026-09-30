@@ -8,6 +8,7 @@ export type CorpusBook = {
   ubsCode: string;
   chapters: number;
   verseCount: number;
+  gitBlobSha1?: string;
 };
 
 export type CorpusCatalog = {
@@ -100,6 +101,16 @@ export async function loadChapter(file: string, chapter: number): Promise<Corpus
   const result = verses.filter(v => v.chapter === chapter);
   if (!result.length) throw new Error('Capítulo não encontrado nesta edição.');
   return result;
+}
+
+export async function getBookByCode(code: string): Promise<CorpusBook | null> {
+  const catalog = await loadCatalog();
+  return catalog.books.find(book => book.ubsCode.toLowerCase() === code.toLowerCase()) ?? null;
+}
+
+export async function getBookByFile(file: string): Promise<CorpusBook | null> {
+  const catalog = await loadCatalog();
+  return catalog.books.find(book => book.file === file) ?? null;
 }
 
 export async function resolveBook(query: string): Promise<CorpusBook | null> {
