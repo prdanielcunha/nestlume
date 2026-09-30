@@ -157,14 +157,14 @@ export async function identifyPastedText(text: string, limit = 5): Promise<Searc
   return exact.map(row => ({ bookCode: row.b, bookName: row.n, file: row.f, chapter: row.c, verse: row.v, text: row.t }));
 }
 
-export async function requestOfflineBook(file: string, expectedGitBlobSha1?: string): Promise<void> {
+export async function requestOfflineBook(file: string, expectedGitBlobSha1: string | undefined, bookCode: string, chapters: number): Promise<{ originalLanguageOk: boolean; originalLanguageChapters: number; warning?: string }> {
   if (!('serviceWorker' in navigator)) throw new Error('Modo offline não é suportado neste navegador.');
   const registration = await navigator.serviceWorker.ready;
   const worker = registration.active;
   if (!worker) throw new Error('Service worker ainda não está ativo.');
   const url = `${ROOT}/tr/${file}`;
 
-  await new Promise<void>((resolve, reject) => {
+  return await new Promise<{ originalLanguageOk: boolean; originalLanguageChapters: number; warning?: string }>((resolve, reject) => {
     const timeout = window.setTimeout(() => {
       navigator.serviceWorker.removeEventListener('message', onMessage);
       reject(new Error('Tempo limite ao preparar o livro para uso offline.'));
@@ -175,11 +175,15 @@ export async function requestOfflineBook(file: string, expectedGitBlobSha1?: str
       if (data.type !== 'CACHE_BIBLE_BOOK_RESULT' || data.url !== url) return;
       window.clearTimeout(timeout);
       navigator.serviceWorker.removeEventListener('message', onMessage);
-      if (data.ok) resolve();
+      if (data.ok) resolve({
+        originalLanguageOk: Boolean(data.originalLanguageOk),
+        originalLanguageChapters: Number(data.originalLanguageChapters || 0),
+        warning: data.warning || undefined,
+      });
       else reject(new Error(data.error || 'Falha ao verificar pacote offline.'));
     }
 
     navigator.serviceWorker.addEventListener('message', onMessage);
-    worker.postMessage({ type: 'CACHE_BIBLE_BOOK', url, expectedGitBlobSha1 });
+    worker.postMessage({ type: 'CACHE_BIBLE_BOOK', url, expectedGitBlobSha1, bookCode, chapters });
   });
 }
