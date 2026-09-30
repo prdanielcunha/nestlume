@@ -21,6 +21,7 @@ import { OriginalLanguagePanel } from './features/reader/OriginalLanguagePanel';
 import { ConnectionsPanel } from './features/reader/ConnectionsPanel';
 import { PlacesPanel } from './features/reader/PlacesPanel';
 import { PeoplePanel } from './features/reader/PeoplePanel';
+import { ContextPanel } from './features/reader/ContextPanel';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -38,7 +39,7 @@ import {
 
 type T = Record<keyof typeof messages.pt, string>;
 type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'states';
-type Panel = 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | 'places' | 'people' | null;
+type Panel = 'explore' | 'context' | 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | 'places' | 'people' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
 type PastedStudyDraft = { text: string; version: string; reference: string };
@@ -445,10 +446,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
           <div className="reader-controls" aria-label="Controles de leitura">
             <button onClick={() => setFontScale(Math.max(.9, fontScale - .1))} aria-label="Diminuir texto">A−</button>
             <button onClick={() => setFontScale(Math.min(1.3, fontScale + .1))} aria-label="Aumentar texto">A+</button>
-            <button onClick={() => setPanel('original')}>{t.originalLanguage}</button>
-            <button onClick={() => setPanel('thread')}>{t.thread}</button>
-            <button onClick={() => setPanel('places')}>{t.places}</button>
-            <button onClick={() => setPanel('people')}>{t.people}</button>
+            <button onClick={() => setPanel('explore')}>{t.explore}</button>
             <button onClick={() => void bookmark()}>{saved ? t.saved : t.save}</button>
           </div>
         </div>
@@ -543,10 +541,10 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
       </article>
 
       <aside className={'context-panel ' + (panel ? 'open' : '')} aria-hidden={!panel}>
-        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} onOpenReader={onOpenReader} />}
+        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} onSelectPanel={setPanel} onOpenReader={onOpenReader} />}
       </aside>
       {panel && <button className="panel-backdrop" onClick={() => setPanel(null)} aria-label={t.close} />}
-      {isJohnOne && <button className="floating-explore" onClick={() => setPanel(panel ? null : 'logos1')}>Explorar <span>Palavra</span></button>}
+      <button className="floating-explore" onClick={() => setPanel(panel ? null : 'explore')}>{t.explore}<span>{referenceLabel}</span></button>
     </div>
   );
 }
@@ -565,14 +563,28 @@ function renderVerse(text: string, verse: number, interactive: boolean, setPanel
   return text;
 }
 
-function PanelContent({ panel, book, target, t, onClose, onOpenReader }: {
-  panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; t: T; onClose: () => void; onOpenReader: (target: ReaderTarget) => void;
+function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenReader }: {
+  panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; t: T; onClose: () => void; onSelectPanel: (panel: Panel) => void; onOpenReader: (target: ReaderTarget) => void;
 }) {
   const onCloseAndOpen = (next: ReaderTarget) => {
     onClose();
     onOpenReader(next);
   };
   const content = useMemo(() => ({
+    explore: <div className="explore-menu">
+      <p className="kicker">{t.explore.toUpperCase()}</p>
+      <h2>{book.nameShort} {target.chapter}</h2>
+      <p>{t.explorePassageIntro}</p>
+      <div className="explore-actions">
+        <button onClick={() => onSelectPanel('context')}><strong>{t.context}</strong><span>{t.contextActionBody}</span></button>
+        <button onClick={() => onSelectPanel('original')}><strong>{t.originalLanguage}</strong><span>{t.originalActionBody}</span></button>
+        <button onClick={() => onSelectPanel('people')}><strong>{t.people}</strong><span>{t.peopleActionBody}</span></button>
+        <button onClick={() => onSelectPanel('places')}><strong>{t.places}</strong><span>{t.placesActionBody}</span></button>
+        <button onClick={() => onSelectPanel('thread')}><strong>{t.thread}</strong><span>{t.connectionsActionBody}</span></button>
+        <button onClick={() => onSelectPanel('source')}><strong>{t.source}</strong><span>{t.sourceActionBody}</span></button>
+      </div>
+    </div>,
+    context: <ContextPanel t={t} book={book} target={target} />,
     logos1: <LexicalPanel bundle={john1Greek} verse={1} />,
     logos14: <LexicalPanel bundle={john14Greek} verse={14} />,
     john: <><p className="kicker">PESSOA · JOÃO 1:6</p><h2>João Batista</h2><p>O próprio trecho o apresenta como homem enviado por Deus e testemunha da Luz — e imediatamente nega que ele próprio fosse a Luz.</p><div className="certainty"><span>Identidade</span><strong>João Batista</strong><small>Não confundir automaticamente com João filho de Zebedeu ou com a questão da autoria do evangelho.</small></div></>,
