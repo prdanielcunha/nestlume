@@ -115,7 +115,7 @@ for(const chunk of chunks){
   const strong=strongFromStrongCell(cols[2]);
   const original=originalFromStrongCell(cols[2]);
   const translatedName=String(cols[3]||'').trim();
-  const referenceCell=String(cols[5]||'');
+  const referenceCell=String(cols[4]||'');
   const exactRefs=referenceCell.split(';').map(parseExactRef).filter(Boolean);
   if(exactRefs.length){
    person.forms.push({significance,strong,original,translatedName});
