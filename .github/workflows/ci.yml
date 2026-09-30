@@ -19,6 +19,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm test
+      - name: Audit dependency licenses
+        run: npm run licenses:check
       - run: npm run build
       - name: Check AI Worker syntax
         run: node --check workers/ai/index.js
