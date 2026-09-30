@@ -13,7 +13,7 @@
     "corpus:check": "node scripts/build-corpus.mjs --check",
     "corpus:build": "node scripts/build-corpus.mjs",
     "test": "npm run corpus:check && tsx --test tests/*.test.ts && node --test workers/ai/*.test.mjs",
-    "build": "npm run corpus:build && npm run original:build && npm run connections:build && vite build",
+    "build": "npm run corpus:build && npm run original:build && npm run connections:build && npm run places:build && vite build",
     "check": "npm run lint && npm run test && npm run licenses:check && npm run build",
     "ai:battery": "node scripts/run-ai-battery.mjs",
     "licenses:check": "node scripts/check-dependency-licenses.mjs",
@@ -21,7 +21,8 @@
     "original:check": "node scripts/build-original-languages.mjs --check",
     "e2e": "playwright test",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
-    "connections:build": "node scripts/build-connections.mjs"
+    "connections:build": "node scripts/build-connections.mjs",
+    "places:build": "node scripts/build-places.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "5.0.4",
