@@ -30,7 +30,7 @@ test('versification mismatch is surfaced instead of silently shifting the verse'
 
 test('AI remains fail-closed without an approved live endpoint', async ({ page }) => {
   await page.goto('/perguntar?ref=Jo%C3%A3o%201%3A1-5');
-  await page.getByLabel('Pergunta').fill('O que esta passagem afirma sobre a Palavra?');
+  await page.getByRole('textbox', { name: /^Pergunta/ }).fill('O que esta passagem afirma sobre a Palavra?');
   await page.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Estudar com IA' }).click();
   await expect(page.getByText(/provedor de produção ainda não foi conectado/i)).toBeVisible();
