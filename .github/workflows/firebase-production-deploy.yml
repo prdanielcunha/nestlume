@@ -1,10 +1,8 @@
 name: NestLume Firebase Production Deploy
 
 on:
-  workflow_run:
-    workflows: ["NestLume CI"]
+  push:
     branches: [production]
-    types: [completed]
 
 permissions:
   contents: read
@@ -14,18 +12,72 @@ concurrency:
   group: nestlume-firebase-production
   cancel-in-progress: false
 
+env:
+  PROJECT_ID: millionsnest
+  SITE_ID: nestlume-555464791734
+  CUSTOM_DOMAIN: nestlume.millionsnest.com
+
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact production SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Cache pinned STEPBible snapshot
+        uses: actions/cache@v4
+        with:
+          path: .cache/stepbible
+          key: stepbible-v2-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
+
+      - name: Cache pinned OpenBible mirror
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible
+          key: openbible-crossrefs-${{ runner.os }}-301fed486c8842c60dc95e930ec4d4c7bee0e101
+
+      - name: Cache pinned OpenBible geography
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible-geo
+          key: openbible-geo-${{ runner.os }}-b127b4446c6f4ba36ec62dde290c752afeb51bf3
+
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run licenses:check
+      - run: npm run build
+      - run: npx playwright test --list
+      - run: npx playwright install --with-deps chromium
+      - name: Browser smoke — desktop and mobile
+        run: npm run e2e
+      - name: Validate AI release sources
+        run: |
+          node --check workers/ai/index.js
+          node --check scripts/ai-battery-cases.mjs
+          node --check scripts/run-ai-battery.mjs
+      - name: Reject secret-like committed files
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env($|\.)|.*service[-_]?account.*\.json$|.*private[-_]?key.*)' | grep -v '\.env\.example$'; then
+            echo 'Potential secret-bearing file committed.' >&2
+            exit 1
+          fi
+
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PROJECT_ID: millionsnest
-      SITE_ID: nestlume-555464791734
-      CUSTOM_DOMAIN: nestlume.millionsnest.com
-      RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+      RELEASE_SHA: ${{ github.sha }}
     steps:
-      - name: Checkout exact CI-approved production SHA
+      - name: Checkout exact verified production SHA
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: ${{ env.RELEASE_SHA }}
