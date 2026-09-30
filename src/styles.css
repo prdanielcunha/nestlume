@@ -75,3 +75,7 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .claim-evidence ul{list-style:none;margin:8px 0 0;padding:0}
 .claim-evidence li{color:var(--muted);font:12px/1.5 var(--sans);padding:4px 0}
 .claim-evidence li strong{color:var(--ink);font-weight:600}
+
+
+.turnstile-gate{margin-top:18px;min-height:34px;display:flex;align-items:center}
+.turnstile-gate>span{color:var(--muted);font:11px/1.4 var(--sans)}
