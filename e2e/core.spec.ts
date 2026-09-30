@@ -2,8 +2,8 @@ import { expect, test, Page } from '@playwright/test';
 
 async function openExploreLayer(page: Page, layer: string) {
   await page.getByRole('button', { name: /^Explorar/ }).first().click();
-  await page.getByRole('button', { name: new RegExp('^' + layer + '
-
+  await page.getByRole('button', { name: new RegExp('^' + layer + '$') }).click();
+}
 test('public reading works without login and any passage can enter grounded study', async ({ page }) => {
   await page.goto('/ler/gen/1?v=1');
   await expect(page.getByRole('heading', { name: /Gênesis 1:1/i })).toBeVisible();
