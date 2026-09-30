@@ -10,3 +10,5 @@ artifacts/
 
 .cache/
 public/original/step/
+artifacts/playwright-report/
+test-results/
