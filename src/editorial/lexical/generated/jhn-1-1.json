@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "id": "step-jhn-1-1",
+  "generatedOn": "2026-09-30",
+  "transformVersion": "step-jhn-1-1-v1",
+  "license": "CC BY 4.0",
+  "attribution": "STEP Bible — https://www.STEPBible.org/",
+  "provenance": {
+    "repository": "STEPBible/STEPBible-Data",
+    "commit": "b99716b0cddb648ddb95cc786a197180f2f97d48",
+    "tagnt": {
+      "blobSha": "705c1bc1cf752e013efcef99b8d9a3b7853bf843",
+      "path": "Translators Amalgamated OT+NT/TAGNT Mat-Jhn - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt"
+    },
+    "tbesg": {
+      "blobSha": "efe271a1dbb73fa01f8fa6e0f164c6687757a9ae",
+      "path": "Lexicons/TBESG - Translators Brief lexicon of Extended Strongs for Greek - STEPBible.org CC BY.txt"
+    }
+  },
+  "passage": {
+    "book": "Jhn",
+    "chapter": 1,
+    "verse": 1
+  },
+  "alignmentNote": "TAGNT attests every included João 1:1 token in TR among its edition set. NestLume does not infer a universal word-for-word alignment to Portuguese; mappings to BLIVRE display words are curated explicitly.",
+  "tokens": [
+    {
+      "refInstance": "Jhn.1.1#01",
+      "type": "NKO",
+      "surface": "Ἐν",
+      "surfaceTransliteration": "En",
+      "translationEn": "In [the]",
+      "translationEs": "En",
+      "eStrong": "G1722",
+      "grammar": "PREP",
+      "lemma": "ἐν",
+      "lemmaGloss": "in/on/among",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#02",
+      "type": "NKO",
+      "surface": "ἀρχῇ",
+      "surfaceTransliteration": "archēa",
+      "translationEn": "beginning",
+      "translationEs": "principio",
+      "eStrong": "G0746",
+      "grammar": "N-DSF",
+      "lemma": "ἀρχή",
+      "lemmaGloss": "beginning",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#03",
+      "type": "NKO",
+      "surface": "ἦν",
+      "surfaceTransliteration": "ēn",
+      "translationEn": "was",
+      "translationEs": "estaba siendo",
+      "eStrong": "G1510",
+      "grammar": "V-IAI-3S",
+      "lemma": "εἰμί",
+      "lemmaGloss": "to be",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#04",
+      "type": "NKO",
+      "surface": "ὁ",
+      "surfaceTransliteration": "ho",
+      "translationEn": "the",
+      "translationEs": "la",
+      "eStrong": "G3588",
+      "grammar": "T-NSM",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#05",
+      "type": "NKO",
+      "surface": "λόγος,",
+      "surfaceTransliteration": "logos",
+      "translationEn": "Word,",
+      "translationEs": "Palabra",
+      "eStrong": "G3056",
+      "grammar": "N-NSM",
+      "lemma": "λόγος",
+      "lemmaGloss": "word",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#06",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "and",
+      "translationEs": "y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#07",
+      "type": "NKO",
+      "surface": "ὁ",
+      "surfaceTransliteration": "ho",
+      "translationEn": "the",
+      "translationEs": "la",
+      "eStrong": "G3588",
+      "grammar": "T-NSM",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#08",
+      "type": "NKO",
+      "surface": "λόγος",
+      "surfaceTransliteration": "logos",
+      "translationEn": "Word",
+      "translationEs": "Palabra",
+      "eStrong": "G3056",
+      "grammar": "N-NSM",
+      "lemma": "λόγος",
+      "lemmaGloss": "word",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#09",
+      "type": "NKO",
+      "surface": "ἦν",
+      "surfaceTransliteration": "ēn",
+      "translationEn": "was",
+      "translationEs": "estaba siendo",
+      "eStrong": "G1510",
+      "grammar": "V-IAI-3S",
+      "lemma": "εἰμί",
+      "lemmaGloss": "to be",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#10",
+      "type": "NKO",
+      "surface": "πρὸς",
+      "surfaceTransliteration": "pros",
+      "translationEn": "with",
+      "translationEs": "hacia",
+      "eStrong": "G4314",
+      "grammar": "PREP",
+      "lemma": "πρός",
+      "lemmaGloss": "to/with",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#11",
+      "type": "NKO",
+      "surface": "τὸν",
+      "surfaceTransliteration": "ton",
+      "translationEn": "<the>",
+      "translationEs": "el",
+      "eStrong": "G3588",
+      "grammar": "T-ASM",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#12",
+      "type": "NKO",
+      "surface": "θεόν,",
+      "surfaceTransliteration": "theon",
+      "translationEn": "God,",
+      "translationEs": "Dios",
+      "eStrong": "G2316",
+      "grammar": "N-ASM-T",
+      "lemma": "θεός",
+      "lemmaGloss": "God",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#13",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "and",
+      "translationEs": "y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#14",
+      "type": "NKO",
+      "surface": "θεὸς",
+      "surfaceTransliteration": "theos",
+      "translationEn": "God",
+      "translationEs": "dios",
+      "eStrong": "G2316",
+      "grammar": "N-NSM-T",
+      "lemma": "θεός",
+      "lemmaGloss": "God",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#15",
+      "type": "NKO",
+      "surface": "ἦν",
+      "surfaceTransliteration": "ēn",
+      "translationEn": "was",
+      "translationEs": "estaba siendo",
+      "eStrong": "G1510",
+      "grammar": "V-IAI-3S",
+      "lemma": "εἰμί",
+      "lemmaGloss": "to be",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#16",
+      "type": "NKO",
+      "surface": "ὁ",
+      "surfaceTransliteration": "ho",
+      "translationEn": "the",
+      "translationEs": "la",
+      "eStrong": "G3588",
+      "grammar": "T-NSM",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.1#17",
+      "type": "NKO",
+      "surface": "λόγος.",
+      "surfaceTransliteration": "logos",
+      "translationEn": "Word.",
+      "translationEs": "Palabra",
+      "eStrong": "G3056",
+      "grammar": "N-NSM",
+      "lemma": "λόγος",
+      "lemmaGloss": "word",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    }
+  ],
+  "lexicon": {
+    "G0746": {
+      "eStrong": "G0746",
+      "greek": "ἀρχή",
+      "transliteration": "archē",
+      "morph": "G:N-F",
+      "gloss": "beginning"
+    },
+    "G1510": {
+      "eStrong": "G1510",
+      "greek": "εἰμί",
+      "transliteration": "eimi",
+      "morph": "G:V",
+      "gloss": "to be"
+    },
+    "G1722": {
+      "eStrong": "G1722",
+      "greek": "ἐν",
+      "transliteration": "en",
+      "morph": "G:PREP",
+      "gloss": "in/on/among"
+    },
+    "G2316": {
+      "eStrong": "G2316",
+      "greek": "θεός",
+      "transliteration": "theos",
+      "morph": "G:N-M/F",
+      "gloss": "God"
+    },
+    "G2532": {
+      "eStrong": "G2532",
+      "greek": "καί",
+      "transliteration": "kai",
+      "morph": "G:CONJ",
+      "gloss": "and"
+    },
+    "G3056": {
+      "eStrong": "G3056",
+      "greek": "λόγος",
+      "transliteration": "logos",
+      "morph": "G:N-M",
+      "gloss": "word"
+    },
+    "G3588": {
+      "eStrong": "G3588",
+      "greek": "ὁ",
+      "transliteration": "ho",
+      "morph": "G:T",
+      "gloss": "the/this/who"
+    },
+    "G4314": {
+      "eStrong": "G4314",
+      "greek": "πρός",
+      "transliteration": "pros",
+      "morph": "G:PREP",
+      "gloss": "to/with"
+    }
+  },
+  "curatedMappings": [
+    {
+      "bibleEditionId": "blivre-2018.2.0-tr",
+      "displayedWord": "Palavra",
+      "verse": 1,
+      "eStrong": "G3056",
+      "sourceInstances": [
+        "Jhn.1.1#05",
+        "Jhn.1.1#08",
+        "Jhn.1.1#17"
+      ],
+      "mappingType": "curated-contextual",
+      "certainty": "high"
+    }
+  ]
+}
