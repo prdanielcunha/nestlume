@@ -1,6 +1,6 @@
 # F1 — AI feasibility gate
 
-Status: **BLOQUEADO PARA PRODUÇÃO / PESQUISA TÉCNICA CONCLUÍDA NESTE LOTE**  
+Status: **EM ANDAMENTO / CANDIDATO CLOUDFLARE APROVADO DOCUMENTALMENTE, TESTE REAL PENDENTE**  
 Evidence date: 2026-09-30
 
 NestLume treats AI as a real product capability, not a label for static studies. No live-generation UI is enabled until this gate passes.
@@ -14,12 +14,18 @@ A provider must simultaneously satisfy: R$0 operation without auto-billing/overa
 | Google Gemini API free/unpaid | Current Additional Terms require API users to be 18+ and prohibit API clients directed to or likely accessed by under-18s; unpaid-service content can be used to improve products and may receive human review. | **Blocked** for the intended audience/private paste flow. |
 | GitHub Models inference | GitHub documentation states the Models feature/inference surface was retired on 2026-07-30. | **Unavailable**. |
 | Hugging Face Inference Providers free account | Current free credits are a very small monthly amount and further use requires purchased credits. | **Not viable** as the product’s always-available zero-cost core. |
-| Cloudflare Workers AI + Qwen3-30B-A3B-FP8 | Free Workers AI allocation is documented; Free plan cannot incur AI overage and operations fail at the limit. Cloudflare states Workers AI customer content is not used to train models/services without explicit consent. Qwen3-30B-A3B model source is Apache-2.0 and Cloudflare describes multilingual support. | **Technically promising, not approved yet**. |
+| Cloudflare Workers AI + Gemma 4 26B A4B | Workers Free currently includes 10,000 Neurons/day; excess operations fail instead of generating paid overage on the Free plan. Cloudflare states Workers AI Customer Content is not used to train AI models or improve Cloudflare/third-party services without explicit consent. Gemma 4 is Apache-2.0 and Cloudflare currently lists this model as available on Workers Free. | **Approved as the F1 implementation candidate; not yet production-tested**. |
 
-## Why Cloudflare is not marked approved yet
-1. Cloudflare’s privacy policy says its own Websites and Services are not intended to attract people under 18, while separately describing customer End Users and assigning customers responsibility for compliance. That is not clear enough, from the evidence available here, to declare a teen-facing AI flow approved without a provider/legal clarification of this exact API use.
-2. A real 20-case Portuguese generation battery could not be executed from this environment. The Cloudflare model page exposes an unauthenticated browser playground, but no browser-automation connector or Workers API credential is available in this session. Static web retrieval is not a substitute for running the model.
-3. No production Cloudflare account/token/Worker binding is available, and secrets must never be placed in client code.
+## Cloudflare documentary gate
+The current Workers AI service documents do not contain the Google-style prohibition against using the inference API inside an application likely to be accessed by under-18s. Cloudflare's Self-Serve terms place responsibility for Customer Content, necessary permissions and End User compliance on the customer. Cloudflare's general privacy policy separately says Cloudflare's own Websites and Services are not designed to attract under-18s; it also distinguishes customer websites/apps and their End Users. This is therefore not treated as permission to ignore Brazilian child/teen rules: NestLume must implement applicable ECA Digital/LGPD age, notice and data-minimization controls.
+
+Cloudflare passes the current documentary architecture/cost/privacy gate for an F1 candidate because:
+1. Workers Free provides 10,000 Neurons/day and the documented Free-plan behavior fails closed after the free allocation rather than billing overage.
+2. Workers AI Customer Content is not used to train models or improve Cloudflare/third-party services without explicit consent.
+3. Gemma 4 26B A4B remains listed as available on Workers Free and its upstream license is Apache-2.0.
+4. The NestLume adapter uses a server-side AI binding and configures no KV/R2/D1/Durable Object prompt storage.
+
+It is **not yet TESTADO for production** because a real Cloudflare account/binding is not available to this session and the 20-case Portuguese battery has not run against the actual model. Static documentation cannot substitute for inference evidence.
 
 ## Required quality battery (20 cases)
 1. João 1:1–5 contextual explanation from supplied evidence.
@@ -84,3 +90,15 @@ The adapter must remain server-side and fail closed. No Cloudflare token or prov
 3. Run the documented 20-case Portuguese biblical-quality battery.
 4. Measure latency, quota consumption and 429/quota-exhaustion behavior.
 5. Implement the provider adapter, explicit AI disclosure/consent state, rate limiting and evidence validator only after steps 1–4 pass.
+
+
+## Future paid migration
+### OpenAI API
+A future OpenAI API provider is structurally compatible with the NestLume adapter. OpenAI's current API guidance explicitly addresses applications serving people under 18 and requires additional safeguards, age-appropriate disclosures/content protections, applicable age assurance, and child/privacy-law compliance. Processing personal data from children under 13 or the applicable digital-consent age requires Zero Data Retention first. This makes OpenAI API a plausible future paid route, subject to revalidation of terms, retention, pricing and safeguards at migration time.
+
+A ChatGPT Plus/Pro subscription is not an API backend or API credit and must never be automated as the NestLume inference service.
+
+### Google Gemini / Vertex AI
+Paying for Google Cloud does **not** currently remove the age restriction relevant to NestLume. Current Google Cloud Generative AI service terms prohibit customers and End Users from using a Generative AI Service as part of an application likely to be accessed by people under 18. Therefore paid Gemini/Vertex AI remains blocked for the intended general-audience NestLume unless Google's terms change or the product audience is legitimately re-scoped with compliant age assurance.
+
+Because the NestLume frontend speaks to a provider-neutral server-side contract, switching providers later does not require rebuilding the reading/study UX.
