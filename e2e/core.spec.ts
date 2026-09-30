@@ -155,3 +155,25 @@ test('sourced biblical people are available without upstream AI descriptions', a
   await expect(page.locator('.person-list article').first()).toBeVisible();
   await expect(page.getByText(/descrições geradas por IA/i)).toBeVisible();
 });
+
+
+test('representative whole-Bible reader matrix stays studyable across genres', async ({ page }) => {
+  const passages = [
+    { path: '/ler/gen/1?v=1', heading: /Gênesis 1:1/i },
+    { path: '/ler/1sa/17?v=45', heading: /1 Samuel 17:45/i },
+    { path: '/ler/psa/23?v=1', heading: /Salmos 23:1/i },
+    { path: '/ler/pro/1?v=7', heading: /Provérbios 1:7/i },
+    { path: '/ler/isa/53?v=4', heading: /Isaías 53:4/i },
+    { path: '/ler/mat/5?v=3', heading: /Mateus 5:3/i },
+    { path: '/ler/act/2?v=1', heading: /Atos 2:1/i },
+    { path: '/ler/rom/8?v=1', heading: /Romanos 8:1/i },
+    { path: '/ler/heb/11?v=1', heading: /Hebreus 11:1/i },
+    { path: '/ler/rev/21?v=1', heading: /Apocalipse 21:1/i },
+  ];
+
+  for (const passage of passages) {
+    await page.goto(passage.path);
+    await expect(page.getByRole('heading', { name: passage.heading })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Perguntar sobre esta passagem/i })).toBeVisible();
+  }
+});
