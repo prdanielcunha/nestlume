@@ -1,5 +1,6 @@
 const SHELL_CACHE = 'nestlume-shell-v2';
 const BIBLE_CACHE = 'nestlume-bible-v1';
+const ORIGINAL_CACHE = 'nestlume-original-v1';
 const CORE = ['/', '/manifest.webmanifest', '/offline.html', '/corpus/blivre/2018.2.0/catalog.json'];
 
 self.addEventListener('install', event => {
@@ -9,7 +10,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => ![SHELL_CACHE, BIBLE_CACHE].includes(key)).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => ![SHELL_CACHE, BIBLE_CACHE, ORIGINAL_CACHE].includes(key)).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
@@ -30,6 +31,45 @@ async function gitBlobSha1(bytes) {
   return hex(await crypto.subtle.digest('SHA-1', joined));
 }
 
+async function sha256(bytes) {
+  return hex(await crypto.subtle.digest('SHA-256', bytes));
+}
+
+async function cacheOriginalBook(bookCode, chapters) {
+  if (!bookCode || !Number.isInteger(chapters) || chapters < 1) {
+    return { ok: false, error: 'original-package-metadata-missing' };
+  }
+
+  const manifestResponse = await fetch('/original/step/manifest.json', { cache: 'no-store', credentials: 'same-origin' });
+  if (!manifestResponse.ok) return { ok: false, error: `original-manifest-http-${manifestResponse.status}` };
+  const manifest = await manifestResponse.json();
+  const cache = await caches.open(ORIGINAL_CACHE);
+  const added = [];
+
+  try {
+    for (let chapter = 1; chapter <= chapters; chapter += 1) {
+      const relative = `${bookCode}/${chapter}.json`;
+      const expected = manifest.packages?.[relative];
+      if (!expected?.sha256) throw new Error(`missing-integrity:${relative}`);
+
+      const url = `/original/step/chapters/${relative}`;
+      const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+      if (!response.ok) throw new Error(`http-${response.status}:${relative}`);
+
+      const bytes = await response.clone().arrayBuffer();
+      if (bytes.byteLength !== expected.bytes) throw new Error(`size-mismatch:${relative}`);
+      if (await sha256(bytes) !== expected.sha256) throw new Error(`integrity-mismatch:${relative}`);
+
+      await cache.put(url, response);
+      added.push(url);
+    }
+    return { ok: true, chapters: added.length };
+  } catch (error) {
+    await Promise.all(added.map(url => cache.delete(url)));
+    return { ok: false, error: String(error) };
+  }
+}
+
 self.addEventListener('message', event => {
   const data = event.data || {};
   if (data.type === 'CACHE_BIBLE_BOOK') {
@@ -44,7 +84,15 @@ self.addEventListener('message', event => {
         }
         const cache = await caches.open(BIBLE_CACHE);
         await cache.put(data.url, response);
-        event.source?.postMessage({ type: 'CACHE_BIBLE_BOOK_RESULT', url: data.url, ok: true });
+        const originals = await cacheOriginalBook(data.bookCode, data.chapters);
+        event.source?.postMessage({
+          type: 'CACHE_BIBLE_BOOK_RESULT',
+          url: data.url,
+          ok: true,
+          originalLanguageOk: originals.ok,
+          originalLanguageChapters: originals.chapters || 0,
+          warning: originals.ok ? null : originals.error,
+        });
       } catch (error) {
         event.source?.postMessage({ type: 'CACHE_BIBLE_BOOK_RESULT', url: data.url, ok: false, error: String(error) });
       }
@@ -58,6 +106,16 @@ self.addEventListener('message', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  if (new URL(event.request.url).pathname.startsWith('/original/step/chapters/')) {
+    event.respondWith(
+      caches.open(ORIGINAL_CACHE)
+        .then(cache => cache.match(event.request))
+        .then(hit => hit || fetch(event.request))
+        .catch(() => caches.match('/offline.html'))
+    );
+    return;
+  }
 
   if (isBibleBook(event.request.url)) {
     event.respondWith(
