@@ -16,6 +16,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Cache pinned STEPBible snapshot
+        uses: actions/cache@v4
+        with:
+          path: .cache/stepbible
+          key: stepbible-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm test
