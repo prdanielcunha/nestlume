@@ -1,0 +1,17 @@
+{
+  "name": "NestLume",
+  "short_name": "NestLume",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f0e4",
+  "theme_color": "#f6f0e4",
+  "description": "Bíblia, contexto e descobertas com fontes rastreáveis.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
