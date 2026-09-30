@@ -138,7 +138,7 @@ self.addEventListener('fetch', event => {
   if (new URL(event.request.url).pathname.startsWith('/original/step/chapters/')) {
     event.respondWith(
       caches.open(ORIGINAL_CACHE)
-        .then(cache => cache.match(event.request))
+        .then(cache => cache.match(event.request, { ignoreVary: true }))
         .then(hit => hit || fetch(event.request))
         .catch(() => caches.match('/offline.html'))
     );
@@ -148,7 +148,7 @@ self.addEventListener('fetch', event => {
   if (isBibleBook(event.request.url)) {
     event.respondWith(
       caches.open(BIBLE_CACHE)
-        .then(cache => cache.match(event.request))
+        .then(cache => cache.match(event.request, { ignoreVary: true }))
         .then(hit => hit || fetch(event.request))
         .catch(() => caches.match('/offline.html'))
     );
@@ -163,13 +163,13 @@ self.addEventListener('fetch', event => {
           caches.open(SHELL_CACHE).then(cache => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match(event.request).then(hit => hit || caches.match('/') || caches.match('/offline.html')))
+        .catch(() => caches.match(event.request, { ignoreVary: true }).then(hit => hit || caches.match('/', { ignoreVary: true }).then(root => root || caches.match('/offline.html', { ignoreVary: true }))))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(hit => hit || fetch(event.request).then(response => {
+    caches.match(event.request, { ignoreVary: true }).then(hit => hit || fetch(event.request).then(response => {
       const url = new URL(event.request.url);
       if (url.origin === self.location.origin && !url.pathname.endsWith('/search-index.json')) {
         const copy = response.clone();
@@ -177,7 +177,7 @@ self.addEventListener('fetch', event => {
       }
       return response;
     }).catch(async () => {
-      if (event.request.destination === 'document') return (await caches.match('/')) || (await caches.match('/offline.html'));
+      if (event.request.destination === 'document') return (await caches.match('/', { ignoreVary: true })) || (await caches.match('/offline.html', { ignoreVary: true }));
       throw new Error('offline-resource-unavailable');
     }))
   );
