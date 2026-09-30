@@ -12,6 +12,7 @@ import {
   searchBible,
 } from './lib/corpus';
 import { parseReferenceSyntax } from './lib/reference';
+import { AskPage } from './features/ai/AskPage';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -28,7 +29,7 @@ import {
 } from './lib/notebook';
 
 type T = Record<keyof typeof messages.pt, string>;
-type Page = 'today' | 'explore' | 'read' | 'paste' | 'notebook' | 'states';
+type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'states';
 type Panel = 'logos' | 'john' | 'thread' | 'source' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
@@ -61,6 +62,7 @@ function routeFromLocation(): Page {
   if (path.startsWith('/explorar')) return 'explore';
   if (path.startsWith('/ler')) return 'read';
   if (path.startsWith('/colar')) return 'paste';
+  if (path.startsWith('/perguntar')) return 'ask';
   if (path.startsWith('/caderno')) return 'notebook';
   if (path.startsWith('/estados')) return 'states';
   return 'today';
@@ -120,7 +122,7 @@ export default function App() {
   }, []);
 
   const navigate = (next: Exclude<Page, 'read'>) => {
-    const path = { today: '/', explore: '/explorar', paste: '/colar', notebook: '/caderno', states: '/estados' }[next];
+    const path = { today: '/', explore: '/explorar', paste: '/colar', ask: '/perguntar', notebook: '/caderno', states: '/estados' }[next];
     window.history.pushState({}, '', path);
     setPage(next);
     setPanel(null);
@@ -155,6 +157,7 @@ export default function App() {
           />
         )}
         {page === 'paste' && <Paste t={t} onOpenReader={openReader} />}
+        {page === 'ask' && <AskPage t={t} locale={locale} onOpenReader={openReader} onNotebook={() => navigate('notebook')} />}
         {page === 'notebook' && <Notebook t={t} onOpenReader={openReader} />}
         {page === 'states' && <States t={t} onNavigate={navigate} />}
       </main>
@@ -309,9 +312,9 @@ function Explore({ t, onNavigate, onOpenReader }: {
         <button onClick={() => onNavigate('paste')}>
           <span><strong>{t.paste}</strong><small>{t.pastePrivacy}</small></span><span>{t.localOnly}</span>
         </button>
-        <div className="entry-disabled">
-          <span><strong>Perguntar livremente</strong><small>{t.noAiBody}</small></span><span>Bloqueado</span>
-        </div>
+        <button onClick={() => onNavigate('ask')}>
+          <span><strong>{t.askNestLume}</strong><small>{t.askNestLumeBody}</small></span><span>{t.prepare}</span>
+        </button>
       </div>
     </div>
   );
@@ -698,7 +701,7 @@ function BottomNav({ page, t, navigate }: { page: Page; t: T; navigate: (page: E
   return (
     <nav className="bottom-nav" aria-label="Navegação principal">
       <button className={page === 'today' ? 'active' : ''} onClick={() => navigate('today')}>{t.today}</button>
-      <button className={page === 'explore' || page === 'paste' ? 'active' : ''} onClick={() => navigate('explore')}>{t.explore}</button>
+      <button className={page === 'explore' || page === 'paste' || page === 'ask' ? 'active' : ''} onClick={() => navigate('explore')}>{t.explore}</button>
       <button className={page === 'notebook' ? 'active' : ''} onClick={() => navigate('notebook')}>{t.notebook}</button>
     </nav>
   );
