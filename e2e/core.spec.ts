@@ -1,8 +1,14 @@
 import { expect, test, Page } from '@playwright/test';
 
 async function openExploreLayer(page: Page, layer: string) {
+  const escapeRegex = (value: string) => value.replace(/[.*+?^$()|[\\]{}]/g, '\\async function openExploreLayer(page: Page, layer: string) {
   await page.locator('.floating-explore').click();
   await page.locator('.explore-menu').getByRole('button', { name: layer, exact: true }).click();
+}');
+  await page.locator('.floating-explore').click();
+  const panel = page.locator('.context-panel.open');
+  await expect(panel).toBeVisible();
+  await panel.getByRole('button', { name: new RegExp('^' + escapeRegex(layer) + '\\b', 'i') }).click();
 }
 
 test('public reading works without login and any passage can enter grounded study', async ({ page }) => {
