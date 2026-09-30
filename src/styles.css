@@ -92,3 +92,26 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 
 .reader-study-actions{display:flex;justify-content:flex-start;margin:26px 0}
 .unavailable-study .primary{margin-top:18px}
+
+
+/* Bible-wide original-language explorer */
+.original-state{padding:20px 0;color:var(--muted)}
+.original-state h2{font:400 28px/1.15 var(--serif);color:var(--ink);margin:8px 0 10px}
+.original-heading{display:flex;align-items:end;justify-content:space-between;gap:14px}
+.original-heading h2{margin:4px 0 0;font:400 34px/1.05 var(--serif)}
+.original-heading label{display:flex;align-items:center;gap:8px;color:var(--muted);font:600 10px var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.original-heading select{border:1px solid var(--line);background:var(--paper-2);color:var(--ink);border-radius:10px;padding:7px 9px;font:12px var(--sans)}
+.original-line{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--paper-2)}
+.original-line[dir="rtl"]{justify-content:flex-start}
+.original-line button{display:flex;flex-direction:column;gap:2px;min-width:54px;padding:8px 9px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--ink);cursor:pointer}
+.original-line button:hover,.original-line button.selected{border-color:var(--line);background:var(--paper)}
+.original-line button strong{font:600 20px/1.2 var(--serif)}
+.original-line button small{font:10px/1.2 var(--sans);color:var(--muted);direction:ltr}
+.token-detail{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
+.token-detail h3{font:400 34px/1.05 var(--serif);margin:8px 0 18px}
+.token-detail dl{margin:0}
+.token-detail dl div{display:grid;grid-template-columns:145px 1fr;gap:14px;padding:10px 0;border-top:1px solid var(--line)}
+.token-detail dt{font:600 10px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.token-detail dd{margin:0;font:14px/1.5 var(--sans)}
+.original-hint{margin:18px 0;color:var(--muted);font:13px/1.55 var(--sans)}
+@media(max-width:650px){.original-heading{align-items:flex-start;flex-direction:column}.token-detail dl div{grid-template-columns:1fr;gap:4px}.original-line{margin-inline:-4px;padding:13px}}
