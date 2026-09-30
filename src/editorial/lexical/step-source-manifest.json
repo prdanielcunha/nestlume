@@ -1,0 +1,74 @@
+{
+  "source": "STEPBible/STEPBible-Data",
+  "sourceUrl": "https://github.com/STEPBible/STEPBible-Data",
+  "commit": "b99716b0cddb648ddb95cc786a197180f2f97d48",
+  "observedAt": "2026-09-30",
+  "license": "CC BY 4.0",
+  "attribution": "STEP Bible — https://www.STEPBible.org/",
+  "datasets": [
+    {
+      "id": "TBESG",
+      "language": "grc",
+      "purpose": "brief-lexicon",
+      "path": "Lexicons/TBESG - Translators Brief lexicon of Extended Strongs for Greek - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "efe271a1dbb73fa01f8fa6e0f164c6687757a9ae",
+      "sizeBytes": 4736912
+    },
+    {
+      "id": "TBESH",
+      "language": "hbo-arc",
+      "purpose": "brief-lexicon",
+      "path": "Lexicons/TBESH - Translators Brief lexicon of Extended Strongs for Hebrew - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "a64990a674d13245ae1e9ed426bc69197c2fbad5",
+      "sizeBytes": 3288045
+    },
+    {
+      "id": "TAGNT-MAT-JHN",
+      "language": "grc",
+      "purpose": "tagged-nt",
+      "path": "Translators Amalgamated OT+NT/TAGNT Mat-Jhn - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt",
+      "gitBlobSha1": "705c1bc1cf752e013efcef99b8d9a3b7853bf843",
+      "sizeBytes": 14189032
+    },
+    {
+      "id": "TAGNT-ACT-REV",
+      "language": "grc",
+      "purpose": "tagged-nt",
+      "path": "Translators Amalgamated OT+NT/TAGNT Act-Rev - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt",
+      "gitBlobSha1": "4bbea2c14681b01eb889d5a2d1dc0856858a32de",
+      "sizeBytes": 15939932
+    },
+    {
+      "id": "TAHOT-GEN-DEU",
+      "language": "hbo-arc",
+      "purpose": "tagged-ot",
+      "path": "Translators Amalgamated OT+NT/TAHOT Gen-Deu - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "eb051292f8cee648c4f3eaf1b48cd0f1f30dc1d5",
+      "sizeBytes": 18190455
+    },
+    {
+      "id": "TAHOT-JOS-EST",
+      "language": "hbo-arc",
+      "purpose": "tagged-ot",
+      "path": "Translators Amalgamated OT+NT/TAHOT Jos-Est - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "e3824344f6dea1a3f51932d1b0a53537c3c2023e",
+      "sizeBytes": 24500317
+    },
+    {
+      "id": "TAHOT-JOB-SNG",
+      "language": "hbo-arc",
+      "purpose": "tagged-ot",
+      "path": "Translators Amalgamated OT+NT/TAHOT Job-Sng - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "3d7af689417b54ebc468700b2bd86a8ba5377530",
+      "sizeBytes": 9540133
+    },
+    {
+      "id": "TAHOT-ISA-MAL",
+      "language": "hbo-arc",
+      "purpose": "tagged-ot",
+      "path": "Translators Amalgamated OT+NT/TAHOT Isa-Mal - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
+      "gitBlobSha1": "1cfe6718a1dae0d5d45a57a942d3f7f716ac6342",
+      "sizeBytes": 17977518
+    }
+  ]
+}
