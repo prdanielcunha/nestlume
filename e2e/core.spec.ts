@@ -177,3 +177,26 @@ test('representative whole-Bible reader matrix stays studyable across genres', a
     await expect(page.getByRole('button', { name: /Perguntar sobre esta passagem/i })).toBeVisible();
   }
 });
+
+
+test('pasted text reaches AI flow only through explicit private consent and never leaks into URL', async ({ page }) => {
+  const privateText = 'Trecho privado para estudo; não deve aparecer na URL.';
+  await page.goto('/colar');
+  await page.getByLabel('Texto').fill(privateText);
+  await page.getByLabel(/Versão informada por você/i).fill('NVI');
+  await page.getByLabel(/Referência \(opcional\)/i).fill('João 1:1');
+
+  await page.getByRole('button', { name: /Estudar este texto com IA/i }).click();
+  await expect(page).toHaveURL(/\/perguntar\?mode=texto$/);
+  expect(page.url()).not.toContain(encodeURIComponent(privateText));
+  await expect(page.getByText(privateText)).toBeVisible();
+  await expect(page.getByText(/Versão declarada: NVI/i)).toBeVisible();
+
+  const checks = page.getByRole('checkbox');
+  await expect(checks).toHaveCount(2);
+  await checks.nth(0).check();
+  await checks.nth(1).check();
+
+  await page.getByRole('button', { name: 'Estudar com IA' }).click();
+  await expect(page.getByText(/provedor de produção ainda não foi conectado/i)).toBeVisible();
+});
