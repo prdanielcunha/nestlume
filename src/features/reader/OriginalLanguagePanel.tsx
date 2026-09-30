@@ -35,8 +35,7 @@ export function OriginalLanguagePanel({
         if (!alive) return;
         setData(value);
         const requested = initialVerse ?? value.verses[0]?.v ?? 1;
-        const exists = value.verses.some(row => row.v === requested);
-        setVerse(exists ? requested : (value.verses[0]?.v ?? 1));
+        setVerse(requested);
         setState('ready');
       })
       .catch(() => {
@@ -55,12 +54,23 @@ export function OriginalLanguagePanel({
     return <div className="original-state" role="status">{t.loadingOriginal}</div>;
   }
 
-  if (state === 'error' || !data || !row) {
+  if (state === 'error' || !data) {
     return (
       <div className="original-state" role="status">
         <p className="kicker">{t.originalLanguage.toUpperCase()}</p>
         <h2>{t.originalUnavailable}</h2>
         <p>{t.originalUnavailableBody}</p>
+      </div>
+    );
+  }
+
+  if (!row) {
+    return (
+      <div className="original-state" role="status">
+        <p className="kicker">{t.originalLanguage.toUpperCase()}</p>
+        <h2>{bookCode} {chapter}:{verse}</h2>
+        <p>{t.originalReferenceMismatch}</p>
+        <p className="source-note">STEP Bible · snapshot <code>{data.sourceCommit.slice(0, 10)}…</code> · CC BY 4.0.</p>
       </div>
     );
   }
