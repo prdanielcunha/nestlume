@@ -146,3 +146,12 @@ test('sourced biblical places are available without invented certainty', async (
   await expect(page.locator('.place-list article').first()).toBeVisible();
   await expect(page.getByText(/Score da fonte/i).first()).toBeVisible();
 });
+
+
+test('sourced biblical people are available without upstream AI descriptions', async ({ page }) => {
+  await page.goto('/ler/jhn/1?v=6');
+  await page.getByRole('button', { name: 'Pessoas' }).click();
+  await expect(page.getByRole('link', { name: /STEP Bible/i })).toBeVisible();
+  await expect(page.locator('.person-list article').first()).toBeVisible();
+  await expect(page.getByText(/descrições geradas por IA/i)).toBeVisible();
+});
