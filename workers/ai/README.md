@@ -16,3 +16,13 @@ This Worker is intentionally separate from Firebase Hosting so the public Bible-
 
 ## Candidate model
 `@cf/google/gemma-4-26b-a4b-it` is the F1 candidate because it is currently available on Workers Free and Gemma 4 is published under Apache-2.0. Revalidate model availability, license and Cloudflare terms immediately before deployment.
+
+
+## Turnstile gate
+Production configuration sets `REQUIRE_TURNSTILE=true`. The PWA receives only the public sitekey. The Worker secret must be added to the target Worker secret store as `TURNSTILE_SECRET`; never commit it or place it in a Vite variable.
+
+The Worker calls Cloudflare Siteverify **before** `env.AI.run()`, validates the configured action and production hostname, and rejects missing/invalid/replayed tokens without spending AI inference quota.
+
+For automated F1 staging only, Cloudflare publishes dedicated Turnstile test credentials. Use their test secret in the staging Worker and provide the dummy token through `NESTLUME_TURNSTILE_TOKEN` to `npm run ai:battery`. Never deploy test credentials to production.
+
+A real production widget for `nestlume.millionsnest.com` must be created in the authorized Cloudflare account before F1 can become TESTADO.
