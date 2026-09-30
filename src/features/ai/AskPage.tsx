@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
 import { Locale, messages } from '../../i18n/messages';
 import { loadChapter, resolveBook } from '../../lib/corpus';
 import { parseReferenceSyntax } from '../../lib/reference';
@@ -7,9 +7,11 @@ import {
   AiConsent,
   AiEvidence,
   configuredAiEndpoint,
+  configuredTurnstileSiteKey,
   prepareAiRequest,
   requestAiStudy,
 } from '../../lib/ai';
+import { TurnstileGate } from './TurnstileGate';
 
 type T = Record<keyof typeof messages.pt, string>;
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
@@ -27,7 +29,11 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
   const [status, setStatus] = useState('');
   const [answer, setAnswer] = useState('');
   const [sending, setSending] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const endpoint = configuredAiEndpoint();
+  const turnstileSiteKey = configuredTurnstileSiteKey();
+  const handleTurnstileError = useCallback(() => setStatus(t.aiAntiAbuseError), [t.aiAntiAbuseError]);
 
   async function buildEvidence(): Promise<{ evidence: AiEvidence[]; target: ReaderTarget }> {
     const syntax = parseReferenceSyntax(reference);
@@ -91,14 +97,23 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
         setStatus(t.aiPreparedNotConnected);
         return;
       }
+      if (!turnstileSiteKey) {
+        setStatus(t.aiAntiAbuseMissing);
+        return;
+      }
+      if (!turnstileToken) {
+        setStatus(t.aiAntiAbuseRequired);
+        return;
+      }
 
-      const response = await requestAiStudy(prepared.request, endpoint);
+      const response = await requestAiStudy(prepared.request, endpoint, turnstileToken);
       setAnswer(response.answer);
       setStatus(response.limitations?.length ? response.limitations.join(' · ') : '');
     } catch (cause) {
       setStatus(cause instanceof Error ? cause.message : t.error);
     } finally {
       setSending(false);
+      if (turnstileToken) setTurnstileReset(value => value + 1);
     }
   }
 
@@ -149,6 +164,16 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
             <input type="checkbox" checked={accepted} onChange={event => setAccepted(event.target.checked)} />
             <span>{t.aiConsent}</span>
           </label>
+
+          {turnstileSiteKey && (
+            <TurnstileGate
+              siteKey={turnstileSiteKey}
+              locale={locale}
+              resetCounter={turnstileReset}
+              onToken={setTurnstileToken}
+              onError={handleTurnstileError}
+            />
+          )}
         </section>
 
         <div className="ask-actions">
