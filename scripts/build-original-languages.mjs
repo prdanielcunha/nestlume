@@ -269,6 +269,7 @@ function writeChapterPackages(allChapters, validCodes, metadata) {
   let verseCount = 0;
   let tokenCount = 0;
   const books = new Set();
+  const packages = {};
 
   for (const [key, verses] of [...allChapters.entries()].sort()) {
     const [book, chapterText] = key.split('.');
@@ -292,6 +293,13 @@ function writeChapterPackages(allChapters, validCodes, metadata) {
       })),
     };
 
+    const serialized = JSON.stringify(payload);
+    const packageKey = `${book}/${chapter}.json`;
+    packages[packageKey] = {
+      sha256: crypto.createHash('sha256').update(serialized).digest('hex'),
+      bytes: Buffer.byteLength(serialized),
+    };
+
     chapterCount += 1;
     verseCount += payload.verses.length;
     tokenCount += payload.verses.reduce((sum, row) => sum + row.tokens.length, 0);
@@ -299,14 +307,14 @@ function writeChapterPackages(allChapters, validCodes, metadata) {
     if (!ONLY_CHECK) {
       const dir = path.join(ROOT, 'chapters', book);
       fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, `${chapter}.json`), JSON.stringify(payload));
+      fs.writeFileSync(path.join(dir, `${chapter}.json`), serialized);
     }
   }
 
   if (books.size !== 66) throw new Error(`Expected original-language data for 66 books, found ${books.size}`);
   if (chapterCount < 1180) throw new Error(`Unexpectedly low chapter coverage: ${chapterCount}`);
 
-  return { books: books.size, chapters: chapterCount, verses: verseCount, tokens: tokenCount };
+  return { books: books.size, chapters: chapterCount, verses: verseCount, tokens: tokenCount, packages };
 }
 
 async function main() {
