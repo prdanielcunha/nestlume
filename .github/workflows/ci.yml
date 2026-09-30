@@ -27,6 +27,10 @@ jobs:
       - name: Audit dependency licenses
         run: npm run licenses:check
       - run: npm run build
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser smoke — desktop and mobile
+        run: npm run e2e
       - name: Check AI Worker syntax
         run: node --check workers/ai/index.js
       - name: Check AI battery syntax
@@ -40,3 +44,19 @@ jobs:
             echo 'Potential secret-bearing file committed.' >&2
             exit 1
           fi
+
+  upload-browser-failures:
+    if: failure()
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nestlume-playwright-failures
+          path: |
+            artifacts/playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7
