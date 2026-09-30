@@ -19,7 +19,8 @@
     "licenses:check": "node scripts/check-dependency-licenses.mjs",
     "original:build": "node scripts/build-original-languages.mjs",
     "original:check": "node scripts/build-original-languages.mjs --check",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "preview": "vite preview --host 127.0.0.1 --port 4173"
   },
   "dependencies": {
     "@vitejs/plugin-react": "5.0.4",
