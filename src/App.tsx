@@ -13,6 +13,7 @@ import {
 } from './lib/corpus';
 import { parseReferenceSyntax } from './lib/reference';
 import { AskPage } from './features/ai/AskPage';
+import { john1PrologueStudy } from './editorial/studies/john-1-1-18';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -33,29 +34,6 @@ type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'state
 type Panel = 'logos' | 'john' | 'thread' | 'source' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
-
-const studySections = {
-  central: {
-    eyebrow: 'DESCOBERTA CENTRAL',
-    title: 'João começa antes de Belém',
-    body: 'O prólogo não apresenta Jesus apenas como alguém que entrou na história. João recua ao “princípio” e descreve a Palavra já junto de Deus — e, ao mesmo tempo, como Deus. A cena de Belém só pode ser entendida depois dessa afirmação maior: aquele que se fez carne não começou a existir quando nasceu.',
-  },
-  context: {
-    eyebrow: 'CONTEXTO',
-    title: '“No princípio” acende uma memória',
-    body: 'A abertura ecoa deliberadamente Gênesis. Isso não transforma cada palavra em código secreto; cria um horizonte literário. João apresenta a chegada de Jesus dentro da linguagem de criação, vida e luz. A conexão é textual e visível antes de ser uma aplicação teológica.',
-  },
-  interpretation: {
-    eyebrow: 'INTERPRETAÇÃO',
-    title: 'A Palavra não é João Batista',
-    body: 'O texto interrompe o prólogo para apresentar “um homem enviado por Deus, cujo nome era João”. Em seguida, esclarece: ele não era a Luz. A distinção impede fundir o testemunho com aquele de quem ele testemunha.',
-  },
-  application: {
-    eyebrow: 'APLICAÇÃO',
-    title: 'Conhecer Deus ganha um rosto',
-    body: 'O movimento final do trecho é revelação: o Filho torna o Pai conhecido. A aplicação nasce do argumento do texto — a fé cristã não busca um Deus abstrato atrás de Jesus; olha para Jesus para compreender quem Deus se revelou ser.',
-  },
-};
 
 function routeFromLocation(): Page {
   const path = window.location.pathname;
@@ -455,9 +433,9 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
             <div className="study-divider"><span>{t.study}</span></div>
             <section className="study-prose">
               <p className="kicker">RASCUNHO EDITORIAL · JOÃO 1:1–18</p>
-              <h2>O Deus que veio morar entre nós</h2>
-              <p className="lead">João não começa com uma manjedoura. Ele abre uma porta muito mais antiga: “No princípio”. Antes de acompanhar Jesus pelas estradas da Galileia, o evangelho quer que saibamos quem está caminhando por elas.</p>
-              {Object.values(studySections).map(section => (
+              <h2>{john1PrologueStudy.title}</h2>
+              <p className="lead">{john1PrologueStudy.lead}</p>
+              {john1PrologueStudy.sections.map(section => (
                 <div className="study-section" key={section.title}><p className="micro-label">{section.eyebrow}</p><h3>{section.title}</h3><p>{section.body}</p></div>
               ))}
               <button className="thread-card" onClick={() => setPanel('thread')}>
