@@ -88,3 +88,7 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .ai-claims article>p{margin:10px 0!important;font:16px/1.6 var(--serif)!important}
 .ai-claims article>small{display:block;color:var(--muted);font:600 10px var(--sans);text-transform:uppercase;letter-spacing:.08em}
 .ai-claims ul,.ai-limitations ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font:12px/1.55 var(--sans)}
+
+
+.reader-study-actions{display:flex;justify-content:flex-start;margin:26px 0}
+.unavailable-study .primary{margin-top:18px}
