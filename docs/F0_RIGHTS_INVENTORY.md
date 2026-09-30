@@ -39,20 +39,29 @@ NAA, NVI, NVT and other protected editions are not bundled. Availability in an A
 
 Pasted text may carry a user-supplied version label. It remains private/local by default and is not used to reconstruct a shared protected corpus.
 
-## Original-language and lexical data
-Candidate source: **STEPBible Data**, whose repository currently states CC BY 4.0 and requires attribution to STEP Bible. The relevant datasets include TAGNT/TAHOT, TBESG/TBESH and TIPNR. They are not yet bundled in NestLume. Until the exact subset, commit/hash and transformations are pinned, the interface must not claim exhaustive word alignment or authoritative lexical coverage.
+## Original-language, lexical and person data
+**STEPBible Data** is now integrated through deterministic derived packages, pinned to commit `b99716b0cddb648ddb95cc786a197180f2f97d48`. The repository states CC BY 4.0 and requires STEP Bible attribution.
+
+- TAGNT/TAHOT provide tagged original-language occurrence data.
+- TBESG/TBESH provide brief lexical data.
+- Exact source hashes/sizes and transformations are recorded in `F0_STEPBIBLE_INVENTORY.md` and `src/editorial/lexical/step-source-manifest.json`.
+- TIPNR person identity/reference/relationship data is pinned to Git blob `6fd63c7a5fe651a412f6bfd7dd22398e07d95001` (7,967,205 bytes).
+- TIPNR AI-generated descriptive prose fields are intentionally discarded before the generated person packages are written.
+- Original-language UI remains occurrence-specific and exposes alignment/versification limitations rather than claiming unsupported precision.
 
 ## Typography
 The current implementation uses operating-system font stacks only. No font files or font CDN are bundled.
 
-## Images/maps
-No external image or map dataset is bundled in the current implementation.
+## Connections and geography
+OpenBible-derived connection and geography datasets are integrated as reproducible derived packages with pinned source commits and Git blob hashes. They are used only for cross-reference exploration and biblical-place proposals; source relevance/scores remain visible and are not converted into theological certainty.
+
+No external image files or rendered map tiles are bundled.
 
 ## Software
-Runtime dependencies are pinned in `package.json`/`package-lock.json`. CI runs install, TypeScript checking, tests, corpus integrity and production build. A separate dependency-license report is still a release gate before production.
+Runtime dependencies are pinned in `package.json`/`package-lock.json`. CI runs TypeScript checks, tests, corpus/data integrity, dependency-license allowlist enforcement, production build and desktop/mobile browser smoke tests.
 
 ## Editorial reviewers
 No human editorial reviewer is invented. The João 1 study is explicitly labeled **rascunho editorial** in-product. Assigning and recording a real reviewer remains necessary before F5 can satisfy its review criterion.
 
 ## F0 exit status
-The Scripture-rights/integrity portion is implemented and automatically verified. F0 remains **EM ANDAMENTO** because future lexical/media datasets still need exact import inventories and a real editorial reviewer must be assigned before reviewed studies can be published.
+The current software/data distribution inventory is implemented and automatically verified for the Bible corpus, STEPBible original-language/person datasets, OpenBible connections/geography and dependency licenses. F0 remains **EM ANDAMENTO** only for future datasets/media not yet introduced and because no real human editorial reviewer has been assigned; no study is falsely marked reviewed.
