@@ -16,3 +16,4 @@ test-results/
 public/connections/openbible/
 .cache/openbible-geo/
 public/entities/places/
+public/entities/people/
