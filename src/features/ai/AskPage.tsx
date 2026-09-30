@@ -17,16 +17,27 @@ import { TurnstileGate } from './TurnstileGate';
 type T = Record<keyof typeof messages.pt, string>;
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
 
-export function AskPage({ t, locale, onOpenReader, onNotebook }: {
+export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText, initialVersion, initialReference, onConsumePastedDraft }: {
   t: T;
   locale: Locale;
   onOpenReader: (target: ReaderTarget) => void;
   onNotebook: () => void;
+  initialPastedText?: string;
+  initialVersion?: string;
+  initialReference?: string;
+  onConsumePastedDraft?: () => void;
 }) {
   const provider = 'cloudflare-workers-ai' as const;
-  const [question, setQuestion] = useState('');
-  const [reference, setReference] = useState(() => new URLSearchParams(window.location.search).get('ref') || 'João 1:1-5');
+  const [pastedText] = useState(() => initialPastedText?.trim() || '');
+  const [declaredVersion] = useState(() => initialVersion?.trim() || '');
+  const [question, setQuestion] = useState(() => pastedText ? t.pastedAiDefaultQuestion : '');
+  const [reference, setReference] = useState(() =>
+    initialReference?.trim() ||
+    new URLSearchParams(window.location.search).get('ref') ||
+    (pastedText ? '' : 'João 1:1-5')
+  );
   const [accepted, setAccepted] = useState(false);
+  const [allowPastedText, setAllowPastedText] = useState(false);
   const [status, setStatus] = useState('');
   const [result, setResult] = useState<AiStudyResponse | null>(null);
   const [lastEvidence, setLastEvidence] = useState<AiEvidence[]>([]);
@@ -37,33 +48,50 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
   const turnstileSiteKey = configuredTurnstileSiteKey();
   const handleTurnstileError = useCallback(() => setStatus(t.aiAntiAbuseError), [t.aiAntiAbuseError]);
 
-  async function buildEvidence(): Promise<{ evidence: AiEvidence[]; target: ReaderTarget }> {
-    const syntax = parseReferenceSyntax(reference);
-    if (!syntax) throw new Error(t.aiInvalidReference);
+  async function buildEvidence(): Promise<{ evidence: AiEvidence[]; target?: ReaderTarget }> {
+    const evidence: AiEvidence[] = [];
+    let target: ReaderTarget | undefined;
 
-    const book = await resolveBook(syntax.bookQuery);
-    if (!book || syntax.chapter > book.chapters) throw new Error(t.aiInvalidReference);
+    if (reference.trim()) {
+      const syntax = parseReferenceSyntax(reference);
+      if (!syntax) throw new Error(t.aiInvalidReference);
 
-    const chapter = await loadChapter(book.file, syntax.chapter);
-    const maxVerse = Math.max(...chapter.map(verse => verse.verse));
-    const start = syntax.startVerse ?? 1;
-    if (start > maxVerse) throw new Error(t.aiInvalidReference);
+      const book = await resolveBook(syntax.bookQuery);
+      if (!book || syntax.chapter > book.chapters) throw new Error(t.aiInvalidReference);
 
-    const end = syntax.endVerse ?? Math.min(start + 9, maxVerse);
-    if (end > maxVerse) throw new Error(t.aiInvalidReference);
+      const chapter = await loadChapter(book.file, syntax.chapter);
+      const maxVerse = Math.max(...chapter.map(verse => verse.verse));
+      const start = syntax.startVerse ?? 1;
+      if (start > maxVerse) throw new Error(t.aiInvalidReference);
 
-    const selected = chapter.filter(verse => verse.verse >= start && verse.verse <= end);
-    if (!selected.length) throw new Error(t.aiInvalidReference);
+      const end = syntax.endVerse ?? Math.min(start + 9, maxVerse);
+      if (end > maxVerse) throw new Error(t.aiInvalidReference);
 
-    return {
-      target: { code: book.ubsCode, chapter: syntax.chapter, startVerse: start, endVerse: end },
-      evidence: [{
+      const selected = chapter.filter(verse => verse.verse >= start && verse.verse <= end);
+      if (!selected.length) throw new Error(t.aiInvalidReference);
+
+      target = { code: book.ubsCode, chapter: syntax.chapter, startVerse: start, endVerse: end };
+      evidence.push({
         id: `blivre:${book.ubsCode}:${syntax.chapter}:${start}-${end}`,
         kind: 'scripture',
         sourceLabel: `Bíblia Livre 2018.2.0 · ${book.nameShort} ${syntax.chapter}:${start}–${end}`,
         text: selected.map(verse => `${verse.verse}. ${verse.text}`).join('\n'),
-      }],
-    };
+      });
+    }
+
+    if (pastedText) {
+      evidence.push({
+        id: 'user:pasted-text',
+        kind: 'editorial',
+        sourceLabel: declaredVersion
+          ? `Texto fornecido pelo usuário · versão declarada: ${declaredVersion}`
+          : 'Texto fornecido pelo usuário · versão não informada',
+        text: pastedText,
+      });
+    }
+
+    if (!evidence.length) throw new Error(t.aiInvalidReference);
+    return { evidence, target };
   }
 
   async function submit(event: FormEvent) {
@@ -80,15 +108,16 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
         disclosureVersion: AI_DISCLOSURE_VERSION,
         provider,
         acceptedAt: new Date().toISOString(),
-        allowPastedText: false,
+        allowPastedText: pastedText ? allowPastedText : false,
       } : null;
 
       const prepared = prepareAiRequest({
         provider,
-        feature: 'question',
+        feature: pastedText ? 'pasted-text' : 'question',
         locale,
         question,
-        reference,
+        reference: reference.trim() || undefined,
+        pastedText: pastedText || undefined,
         evidence,
       }, consent);
 
@@ -113,6 +142,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
       const response = await requestAiStudy(prepared.request, endpoint, turnstileToken);
       setResult(response);
       setStatus('');
+      if (pastedText) onConsumePastedDraft?.();
     } catch (cause) {
       setStatus(cause instanceof Error ? cause.message : t.error);
     } finally {
@@ -124,6 +154,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
   async function openReference() {
     try {
       const { target } = await buildEvidence();
+      if (!target) throw new Error(t.aiReferenceNotProvided);
       onOpenReader(target);
     } catch (cause) {
       setStatus(cause instanceof Error ? cause.message : t.error);
@@ -148,6 +179,14 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
           <small>{question.length} / 2000</small>
         </label>
 
+        {pastedText && (
+          <section className="pasted-ai-preview">
+            <p className="micro-label">{t.pastedTextPrivate.toUpperCase()}</p>
+            <strong>{declaredVersion ? `${t.declaredVersion}: ${declaredVersion}` : t.versionNotProvided}</strong>
+            <p>{pastedText.length > 420 ? `${pastedText.slice(0, 420)}…` : pastedText}</p>
+          </section>
+        )}
+
         <label className="field">
           <span>{t.referenceOptional}</span>
           <input value={reference} onChange={event => setReference(event.target.value)} placeholder="João 1:1–5" />
@@ -159,7 +198,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
           <p>{t.aiDisclosureBody}</p>
           <dl>
             <div><dt>{t.provider}</dt><dd>Cloudflare Workers AI · {t.aiCandidate}</dd></div>
-            <div><dt>{t.sentData}</dt><dd>{t.sentDataBody}</dd></div>
+            <div><dt>{t.sentData}</dt><dd>{pastedText ? t.sentDataPastedBody : t.sentDataBody}</dd></div>
             <div><dt>{t.storage}</dt><dd>{t.storageBody}</dd></div>
             <div><dt>{t.quota}</dt><dd>{t.quotaBody}</dd></div>
           </dl>
@@ -168,6 +207,13 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
             <input type="checkbox" checked={accepted} onChange={event => setAccepted(event.target.checked)} />
             <span>{t.aiConsent}</span>
           </label>
+
+          {pastedText && (
+            <label className="consent-check pasted-consent">
+              <input type="checkbox" checked={allowPastedText} onChange={event => setAllowPastedText(event.target.checked)} />
+              <span>{t.pastedTextConsent}</span>
+            </label>
+          )}
 
           {turnstileSiteKey && (
             <TurnstileGate
