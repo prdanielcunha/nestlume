@@ -20,6 +20,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - name: Check AI Worker syntax
+        run: node --check workers/ai/index.js
       - name: Reject secret-like committed files
         shell: bash
         run: |
