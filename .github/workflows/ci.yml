@@ -1,0 +1,29 @@
+name: NestLume CI
+on:
+  push:
+    branches: [main, production]
+  pull_request:
+    branches: [main, production]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Reject secret-like committed files
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env($|\.)|.*service[-_]?account.*\.json$|.*private[-_]?key.*)' | grep -v '\.env\.example$'; then
+            echo 'Potential secret-bearing file committed.' >&2
+            exit 1
+          fi
