@@ -137,3 +137,12 @@ test('Bible-wide sourced connections navigate to a related passage', async ({ pa
   await links.first().click();
   await expect(page).toHaveURL(/\/ler\//);
 });
+
+
+test('sourced biblical places are available without invented certainty', async ({ page }) => {
+  await page.goto('/ler/jhn/4?v=5');
+  await page.getByRole('button', { name: 'Lugares' }).click();
+  await expect(page.getByText(/OpenBible\.info/i)).toBeVisible();
+  await expect(page.locator('.place-list article').first()).toBeVisible();
+  await expect(page.getByText(/Score da fonte/i).first()).toBeVisible();
+});
