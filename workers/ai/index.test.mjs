@@ -66,3 +66,33 @@ test('valid request reaches inference only when anti-abuse is disabled for isola
   const data = await response.json();
   assert.match(data.answer, /Palavra/);
 });
+
+
+test('rejects generated claims that cite evidence ids not present in the request', async () => {
+  const response = await worker.fetch(request(), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'false',
+    MODEL: '@cf/google/gemma-4-26b-a4b-it',
+    AI: {
+      run: async () => ({
+        response: '{"answer":"Uma resposta.","claims":[{"text":"Afirmação","evidenceIds":["invented:source"],"certainty":"high"}],"limitations":[]}',
+      }),
+    },
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).error, 'model_output_invalid');
+});
+
+test('accepts fenced JSON but still validates evidence references', async () => {
+  const response = await worker.fetch(request(), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'false',
+    MODEL: '@cf/google/gemma-4-26b-a4b-it',
+    AI: {
+      run: async () => ({
+        response: '```json\\n{\"answer\":\"Resposta fundamentada.\",\"claims\":[{\"text\":\"A Palavra já era no princípio.\",\"evidenceIds\":[\"scripture:JHN.1.1\"],\"certainty\":\"high\"}],\"limitations\":[]}\\n```',
+      }),
+    },
+  });
+  assert.equal(response.status, 200);
+});
