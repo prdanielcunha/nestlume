@@ -41,6 +41,7 @@ type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'state
 type Panel = 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | 'places' | 'people' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
+type PastedStudyDraft = { text: string; version: string; reference: string };
 
 function routeFromLocation(): Page {
   const path = window.location.pathname;
@@ -80,6 +81,7 @@ export default function App() {
   const [locale, setLocale] = useState<Locale>(() => (localStorage.getItem('nestlume:locale') as Locale) || 'pt');
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('nestlume:theme') as Theme) || 'system');
   const [fontScale, setFontScale] = useState(() => Number(localStorage.getItem('nestlume:fontScale') || 1));
+  const [pastedStudyDraft, setPastedStudyDraft] = useState<PastedStudyDraft | null>(null);
   const t = messages[locale] as T;
 
   useEffect(() => {
@@ -110,6 +112,15 @@ export default function App() {
     const path = { today: '/', explore: '/explorar', paste: '/colar', ask: '/perguntar', notebook: '/caderno', states: '/estados' }[next];
     window.history.pushState({}, '', path);
     setPage(next);
+    setPanel(null);
+    setRouteVersion(version => version + 1);
+    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+
+  const askPastedText = (draft: PastedStudyDraft) => {
+    setPastedStudyDraft(draft);
+    window.history.pushState({}, '', '/perguntar?mode=texto');
+    setPage('ask');
     setPanel(null);
     setRouteVersion(version => version + 1);
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -150,8 +161,18 @@ export default function App() {
             onAskPassage={askPassage}
           />
         )}
-        {page === 'paste' && <Paste t={t} onOpenReader={openReader} />}
-        {page === 'ask' && <AskPage t={t} locale={locale} onOpenReader={openReader} onNotebook={() => navigate('notebook')} />}
+        {page === 'paste' && <Paste t={t} onOpenReader={openReader} onStudyWithAi={askPastedText} />}
+        {page === 'ask' && <AskPage
+          key={routeVersion}
+          t={t}
+          locale={locale}
+          onOpenReader={openReader}
+          onNotebook={() => navigate('notebook')}
+          initialPastedText={pastedStudyDraft?.text}
+          initialVersion={pastedStudyDraft?.version}
+          initialReference={pastedStudyDraft?.reference}
+          onConsumePastedDraft={() => setPastedStudyDraft(null)}
+        />}
         {page === 'notebook' && <Notebook t={t} onOpenReader={openReader} />}
         {page === 'states' && <States t={t} onNavigate={navigate} />}
       </main>
@@ -565,7 +586,7 @@ function PanelContent({ panel, book, target, t, onClose, onOpenReader }: {
   return <div className="panel-inner"><button className="panel-close" onClick={onClose}>Fechar</button>{content[panel]}</div>;
 }
 
-function Paste({ t, onOpenReader }: { t: T; onOpenReader: (target: ReaderTarget) => void }) {
+function Paste({ t, onOpenReader, onStudyWithAi }: { t: T; onOpenReader: (target: ReaderTarget) => void; onStudyWithAi: (draft: PastedStudyDraft) => void }) {
   const [text, setText] = useState('');
   const [version, setVersion] = useState('');
   const [reference, setReference] = useState('');
@@ -610,7 +631,10 @@ function Paste({ t, onOpenReader }: { t: T; onOpenReader: (target: ReaderTarget)
         <label className="field"><span>{t.referenceOptional}</span><input value={reference} onChange={event => setReference(event.target.value)} placeholder="Ex.: João 1:1–5" /></label>
       </div>
       <p className="privacy-inline">Versão declarada: <strong>{version.trim() || 'não informada'}</strong>. O NestLume não adivinha nem publica a versão colada.</p>
-      <button className="primary simple" disabled={!text.trim() || loading} onClick={() => void analyze()}>{loading ? t.loading : t.identifyLocal}</button>
+      <div className="paste-actions">
+        <button className="primary simple" disabled={!text.trim() || loading} onClick={() => void analyze()}>{loading ? t.loading : t.identifyLocal}</button>
+        <button className="secondary" disabled={!text.trim()} onClick={() => onStudyWithAi({ text, version, reference })}>{t.studyPastedWithAi}</button>
+      </div>
       {message && <div className="match-box muted" role="status"><p>{message}</p></div>}
       {matches.length > 0 && <div className="match-box">
         <p className="micro-label">{t.possibleMatch.toUpperCase()}</p>
