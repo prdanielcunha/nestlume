@@ -79,7 +79,10 @@ const catalog = {
   bookCount: books.length,
   chapterCount,
   verseCount,
-  books: books.map(({ verses, ...book }) => book),
+  books: books.map(({ verses, ...book }) => ({
+    ...book,
+    gitBlobSha1: expected.get(book.file)?.gitBlobSha1 ?? '',
+  })),
 };
 
 const searchIndex = books.flatMap(book => book.verses.map(v => ({
