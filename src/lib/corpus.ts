@@ -162,9 +162,24 @@ export async function requestOfflineBook(file: string, expectedGitBlobSha1?: str
   const registration = await navigator.serviceWorker.ready;
   const worker = registration.active;
   if (!worker) throw new Error('Service worker ainda não está ativo.');
-  worker.postMessage({
-    type: 'CACHE_BIBLE_BOOK',
-    url: `${ROOT}/tr/${file}`,
-    expectedGitBlobSha1,
+  const url = `${ROOT}/tr/${file}`;
+
+  await new Promise<void>((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      navigator.serviceWorker.removeEventListener('message', onMessage);
+      reject(new Error('Tempo limite ao preparar o livro para uso offline.'));
+    }, 20000);
+
+    function onMessage(event: MessageEvent) {
+      const data = event.data ?? {};
+      if (data.type !== 'CACHE_BIBLE_BOOK_RESULT' || data.url !== url) return;
+      window.clearTimeout(timeout);
+      navigator.serviceWorker.removeEventListener('message', onMessage);
+      if (data.ok) resolve();
+      else reject(new Error(data.error || 'Falha ao verificar pacote offline.'));
+    }
+
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    worker.postMessage({ type: 'CACHE_BIBLE_BOOK', url, expectedGitBlobSha1 });
   });
 }
