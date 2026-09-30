@@ -1,10 +1,37 @@
-const SHELL_CACHE = 'nestlume-shell-v2';
+const SHELL_CACHE = 'nestlume-shell-v3';
 const BIBLE_CACHE = 'nestlume-bible-v1';
 const ORIGINAL_CACHE = 'nestlume-original-v1';
-const CORE = ['/', '/manifest.webmanifest', '/offline.html', '/corpus/blivre/2018.2.0/catalog.json'];
+const CORE = ['/manifest.webmanifest', '/offline.html', '/corpus/blivre/2018.2.0/catalog.json'];
+
+async function cacheAppShell() {
+  const cache = await caches.open(SHELL_CACHE);
+  const indexResponse = await fetch('/', { cache: 'no-store', credentials: 'same-origin' });
+  if (!indexResponse.ok) throw new Error(`shell-index-http-${indexResponse.status}`);
+
+  const html = await indexResponse.clone().text();
+  await cache.put('/', indexResponse);
+
+  const assetUrls = new Set(CORE);
+  for (const match of html.matchAll(/(?:src|href)=["']([^"']+)["']/g)) {
+    try {
+      const url = new URL(match[1], self.location.origin);
+      if (url.origin === self.location.origin && (url.pathname.startsWith('/assets/') || CORE.includes(url.pathname))) {
+        assetUrls.add(url.pathname + url.search);
+      }
+    } catch {
+      // Ignore malformed/non-URL attributes.
+    }
+  }
+
+  await Promise.all([...assetUrls].map(async url => {
+    const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`shell-asset-http-${response.status}:${url}`);
+    await cache.put(url, response);
+  }));
+}
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+  event.waitUntil(cacheAppShell().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', event => {
@@ -75,6 +102,7 @@ self.addEventListener('message', event => {
   if (data.type === 'CACHE_BIBLE_BOOK') {
     event.waitUntil((async () => {
       try {
+        await cacheAppShell();
         const response = await fetch(data.url, { cache: 'no-store', credentials: 'same-origin' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const bytes = await response.clone().arrayBuffer();
@@ -148,6 +176,9 @@ self.addEventListener('fetch', event => {
         caches.open(SHELL_CACHE).then(cache => cache.put(event.request, copy));
       }
       return response;
+    }).catch(async () => {
+      if (event.request.destination === 'document') return (await caches.match('/')) || (await caches.match('/offline.html'));
+      throw new Error('offline-resource-unavailable');
     }))
   );
 });
