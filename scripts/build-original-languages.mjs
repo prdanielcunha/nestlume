@@ -233,15 +233,34 @@ function parseHebrew(raw, lexicon) {
   return { chapters, rows, kept };
 }
 
-function corpusCodes() {
+function corpusInventory() {
   const codes = new Set();
+  const verses = new Set();
+
   for (const file of fs.readdirSync(BIBLE_DIR).filter(name => name.endsWith('.txt'))) {
     const raw = fs.readFileSync(path.join(BIBLE_DIR, file), 'utf8');
     const code = raw.match(/\\ubs-code\s*\r?\n([^\r\n]+)/)?.[1]?.trim();
-    if (code) codes.add(code);
+    if (!code) continue;
+    codes.add(code);
+
+    const marker = /\\v\s+([^\s.]+)\.(\d+)\.(\d+)\s*/g;
+    for (const match of raw.matchAll(marker)) {
+      verses.add(`${code}.${Number(match[2])}.${Number(match[3])}`);
+    }
   }
+
   if (codes.size !== 66) throw new Error(`Expected 66 BLIVRE book codes, found ${codes.size}`);
-  return codes;
+  if (verses.size !== 31102) throw new Error(`Expected 31,102 BLIVRE verses, found ${verses.size}`);
+  return { codes, verses };
+}
+
+function originalVerseKeys(allChapters) {
+  const keys = new Set();
+  for (const [key, verses] of allChapters) {
+    const [book, chapter] = key.split('.');
+    for (const verse of verses.keys()) keys.add(`${book}.${Number(chapter)}.${verse}`);
+  }
+  return keys;
 }
 
 function writeChapterPackages(allChapters, validCodes, metadata) {
@@ -295,7 +314,8 @@ async function main() {
   const required = ['TBESG','TBESH','TAGNT-MAT-JHN','TAGNT-ACT-REV','TAHOT-GEN-DEU','TAHOT-JOS-EST','TAHOT-JOB-SNG','TAHOT-ISA-MAL'];
   for (const id of required) if (!byId.has(id)) throw new Error(`Missing pinned dataset ${id}`);
 
-  const validCodes = corpusCodes();
+  const corpus = corpusInventory();
+  const validCodes = corpus.codes;
   const [tbesgRaw, tbeshRaw] = await Promise.all([
     fetchPinned(byId.get('TBESG')),
     fetchPinned(byId.get('TBESH')),
@@ -320,6 +340,14 @@ async function main() {
     for (const [key, value] of parsed.chapters) allChapters.set(key, value);
   }
 
+  const originalRefs = originalVerseKeys(allChapters);
+  const originalOnlyRefs = [...originalRefs].filter(ref => !corpus.verses.has(ref)).sort();
+  const bibleOnlyRefs = [...corpus.verses].filter(ref => !originalRefs.has(ref)).sort();
+
+  if (originalOnlyRefs.length > 20 || bibleOnlyRefs.length > 20) {
+    throw new Error(`Original-language versification divergence too large: original-only=${originalOnlyRefs.length}, bible-only=${bibleOnlyRefs.length}`);
+  }
+
   const coverage = writeChapterPackages(allChapters, validCodes, {
     languageFor: book => ['MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'].includes(book) ? 'grc' : 'hbo',
   });
@@ -334,6 +362,11 @@ async function main() {
     ntSelection: 'TAGNT tokens attested in TR, matching the integrated BLIVRE NT textual tradition at word-selection level',
     otSelection: 'TAHOT primary English/NRSV reference; verse 0 superscriptions omitted',
     portugueseAlignment: 'none automatic',
+    versificationAudit: {
+      originalOnlyRefs,
+      bibleOnlyRefs,
+      note: 'Differences are surfaced, never silently shifted. Passage UI may show original data only where the exact canonical reference exists.',
+    },
     ...coverage,
     buildStats: stats,
   };
