@@ -79,3 +79,12 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 
 .turnstile-gate{margin-top:18px;min-height:34px;display:flex;align-items:center}
 .turnstile-gate>span{color:var(--muted);font:11px/1.4 var(--sans)}
+
+
+.ai-claims,.ai-limitations{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.ai-claims h3,.ai-limitations h3{margin:0 0 14px;font:600 12px var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.ai-claims article{padding:14px 0}
+.ai-claims article+article{border-top:1px solid var(--line)}
+.ai-claims article>p{margin:10px 0!important;font:16px/1.6 var(--serif)!important}
+.ai-claims article>small{display:block;color:var(--muted);font:600 10px var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.ai-claims ul,.ai-limitations ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font:12px/1.55 var(--sans)}
