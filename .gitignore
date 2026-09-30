@@ -12,3 +12,5 @@ artifacts/
 public/original/step/
 artifacts/playwright-report/
 test-results/
+.cache/openbible/
+public/connections/openbible/
