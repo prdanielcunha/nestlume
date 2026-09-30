@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nestlume-ai",
+  "main": "index.js",
+  "compatibility_date": "2026-09-30",
+  "ai": { "binding": "AI" },
+  "vars": {
+    "APP_ORIGIN": "https://nestlume.millionsnest.com",
+    "MODEL": "@cf/google/gemma-4-26b-a4b-it",
+    "ALLOW_LOCAL_DEV": "false"
+  }
+}
