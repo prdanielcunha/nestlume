@@ -63,3 +63,17 @@ Live generation is fail-closed. No secret-bearing provider request exists in cli
 
 ## Security
 No frontend role check is authority. Hub integration, if later approved, must reuse canonical MillionsNest contracts. Private notes remain outside organization scope unless a later explicit synchronization design says otherwise.
+
+
+## Provider-neutral AI contract
+The PWA uses `src/lib/ai.ts` and never receives provider credentials. Every outbound generation request is prepared with a versioned consent record, an explicit evidence bundle and hard size limits. The application does not silently truncate user text.
+
+A public `VITE_NESTLUME_AI_ENDPOINT` may point to an approved server-side adapter after F1 passes. This URL is not a secret. Provider credentials and bindings remain server-side.
+
+The first candidate adapter lives under `workers/ai/`. It is source-only until F1 approval and real Cloudflare deployment evidence exist. It uses a Workers AI binding, configures no prompt storage, restricts production CORS to the NestLume origin, requires evidence, treats pasted/evidence content as untrusted data and fails closed on quota/provider errors.
+
+The product contract is provider-neutral:
+- Cloudflare Workers AI is the zero-additional-cost F1 candidate.
+- A future OpenAI API adapter may replace or complement it without redesigning the product. OpenAI's current under-18 API guidance permits apps serving minors when additional safeguards and applicable child/privacy requirements are implemented; personal data below the applicable digital-consent age requires Zero Data Retention first.
+- Current Google Cloud Generative AI terms prohibit use in applications directed to or likely accessed by under-18s. Paid Gemini/Vertex therefore is not currently a teen-accessible migration path; re-evaluate if Google's terms change.
+- A ChatGPT consumer subscription is never treated as API credit.
