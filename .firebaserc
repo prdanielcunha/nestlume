@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "millionsnest"
+  },
+  "targets": {
+    "millionsnest": {
+      "hosting": {
+        "nestlume": [
+          "nestlume-555464791734"
+        ]
+      }
+    }
+  }
+}
