@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "edition": {
+    "id": "blivre-2018.2.0-tr",
+    "name": "Bíblia Livre",
+    "abbreviation": "BLIVRE",
+    "release": "2018.2.0",
+    "releaseDate": "2018-02-25",
+    "textualTradition": "Textus Receptus",
+    "sourceRepository": "https://github.com/blivre/BibliaLivre",
+    "sourceDirectory": "textos/f4/tr",
+    "license": "Creative Commons Atribuição 3.0 Brasil",
+    "copyright": "© Diego Santos, Mario Sérgio e Marco Teles",
+    "importedAt": "2026-09-30",
+    "expectedBookFiles": 66,
+    "attribution": "Todas as Escrituras em português citadas são da Bíblia Livre (BLIVRE), Copyright © Diego Santos, Mario Sérgio, e Marco Teles — fevereiro de 2018. Licença Creative Commons Atribuição 3.0 Brasil."
+  },
+  "integrity": {
+    "algorithm": "git-blob-sha1",
+    "note": "Each hash is the Git object hash of the exact upstream release blob. NestLume must preserve byte identity for these source files."
+  },
+  "files": [
+    {
+      "name": "1cor.txt",
+      "sourcePath": "textos/f4/tr/1cor.txt",
+      "gitBlobSha1": "5009c9c22a0c62918dcdef66aac6bcee5dc4fa65",
+      "bytes": 58678
+    },
+    {
+      "name": "1crn.txt",
+      "sourcePath": "textos/f4/tr/1crn.txt",
+      "gitBlobSha1": "4b46d3512105b7a6f3dd99aa5298d69e9941bc6b",
+      "bytes": 115972
+    },
+    {
+      "name": "1joao.txt",
+      "sourcePath": "textos/f4/tr/1joao.txt",
+      "gitBlobSha1": "fd0546a3b8e6d9c9a3b5f2e7202d96303ee06d63",
+      "bytes": 13819
+    },
+    {
+      "name": "1ped.txt",
+      "sourcePath": "textos/f4/tr/1ped.txt",
+      "gitBlobSha1": "d0a886f9deab9465a5dbf792d938ceff6d68c6a6",
+      "bytes": 17894
+    },
+    {
+      "name": "1rs.txt",
+      "sourcePath": "textos/f4/tr/1rs.txt",
+      "gitBlobSha1": "e15266ab13d89be0e49c111630ee0c12d1bf27bb",
+      "bytes": 128109
+    },
+    {
+      "name": "1sa.txt",
+      "sourcePath": "textos/f4/tr/1sa.txt",
+      "gitBlobSha1": "5c2e95055cff341ed03c18ced17a3796aae8448e",
+      "bytes": 129066
+    },
+    {
+      "name": "1tes.txt",
+      "sourcePath": "textos/f4/tr/1tes.txt",
+      "gitBlobSha1": "f77ac3f72d3656213f6a41c06bc2c2190acb9284",
+      "bytes": 12367
+    },
+    {
+      "name": "1tim.txt",
+      "sourcePath": "textos/f4/tr/1tim.txt",
+      "gitBlobSha1": "1a1c752126e3283e46e6b99b283877d3ad454f2f",
+      "bytes": 15538
+    },
+    {
+      "name": "2cor.txt",
+      "sourcePath": "textos/f4/tr/2cor.txt",
+      "gitBlobSha1": "60354f03531701d3f2632962953a4c563f255bd1",
+      "bytes": 38685
+    },
+    {
+      "name": "2crn.txt",
+      "sourcePath": "textos/f4/tr/2crn.txt",
+      "gitBlobSha1": "b9f739b84880f64f67ee13cea4d8119213717cf8",
+      "bytes": 137465
+    },
+    {
+      "name": "2joao.txt",
+      "sourcePath": "textos/f4/tr/2joao.txt",
+      "gitBlobSha1": "c01db5378638df28d5bd7d652c8f3f457e4be9ba",
+      "bytes": 1908
+    },
+    {
+      "name": "2ped.txt",
+      "sourcePath": "textos/f4/tr/2ped.txt",
+      "gitBlobSha1": "3a66c3989261ef3efba28ba108bb56c243f70a67",
+      "bytes": 10078
+    },
+    {
+      "name": "2rs.txt",
+      "sourcePath": "textos/f4/tr/2rs.txt",
+      "gitBlobSha1": "f16809709097da0bd2754420ccd00da7b8ac47d5",
+      "bytes": 118876
+    },
+    {
+      "name": "2sa.txt",
+      "sourcePath": "textos/f4/tr/2sa.txt",
+      "gitBlobSha1": "2186d217df554c75b7b4396e339a6e8cf97d4134",
+      "bytes": 106223
+    },
+    {
+      "name": "2tes.txt",
+      "sourcePath": "textos/f4/tr/2tes.txt",
+      "gitBlobSha1": "dc84e5e890cd9d913a83339f7230d7dde6ea988a",
+      "bytes": 6727
+    },
+    {
+      "name": "2tim.txt",
+      "sourcePath": "textos/f4/tr/2tim.txt",
+      "gitBlobSha1": "d99e9a94398f4493c873527557e0652d703ff9fc",
+      "bytes": 11097
+    },
+    {
+      "name": "3joao.txt",
+      "sourcePath": "textos/f4/tr/3joao.txt",
+      "gitBlobSha1": "c8cf9af8a8dff483d0375673c00f5a7923eabcb5",
+      "bytes": 2095
+    },
+    {
+      "name": "ageu.txt",
+      "sourcePath": "textos/f4/tr/ageu.txt",
+      "gitBlobSha1": "5dbdbc1b642f20c8685640615f913880775882a0",
+      "bytes": 6321
+    },
+    {
+      "name": "amos.txt",
+      "sourcePath": "textos/f4/tr/amos.txt",
+      "gitBlobSha1": "cdda22aa94af14637c572e8ea3a4230925616731",
+      "bytes": 23200
+    },
+    {
+      "name": "apo.txt",
+      "sourcePath": "textos/f4/tr/apo.txt",
+      "gitBlobSha1": "c17df6854c5e369c6a558d41f5d3294c24ce923b",
+      "bytes": 68335
+    },
+    {
+      "name": "atos.txt",
+      "sourcePath": "textos/f4/tr/atos.txt",
+      "gitBlobSha1": "177ec3f7809e471d2646d0a18eac6512f8602523",
+      "bytes": 150064
+    },
+    {
+      "name": "cant.txt",
+      "sourcePath": "textos/f4/tr/cant.txt",
+      "gitBlobSha1": "1b1a2f8d06ea8c3557d5babf629ee18591b4899f",
+      "bytes": 17439
+    },
+    {
+      "name": "col.txt",
+      "sourcePath": "textos/f4/tr/col.txt",
+      "gitBlobSha1": "3433041afb9b9bf28f6a6e4b28f9e0cc8e8380d6",
+      "bytes": 13560
+    },
+    {
+      "name": "dan.txt",
+      "sourcePath": "textos/f4/tr/dan.txt",
+      "gitBlobSha1": "9325901fe3c25614748384a42bd4f8107c5ea8bd",
+      "bytes": 65220
+    },
+    {
+      "name": "deut.txt",
+      "sourcePath": "textos/f4/tr/deut.txt",
+      "gitBlobSha1": "f3fcfdcf08ee272aed21c278e930d68921d224a7",
+      "bytes": 141315
+    },
+    {
+      "name": "ecl.txt",
+      "sourcePath": "textos/f4/tr/ecl.txt",
+      "gitBlobSha1": "3bb148ec7fbdb80306fd1bd0944093e2a70cb058",
+      "bytes": 33517
+    },
+    {
+      "name": "efes.txt",
+      "sourcePath": "textos/f4/tr/efes.txt",
+      "gitBlobSha1": "b04565b02f9b7ef8d77041c9ec5ba6b3c71c00ea",
+      "bytes": 19978
+    },
+    {
+      "name": "esd.txt",
+      "sourcePath": "textos/f4/tr/esd.txt",
+      "gitBlobSha1": "fc8eeb0d5d837680843cbce74bdcd96c608c6c2d",
+      "bytes": 41994
+    },
+    {
+      "name": "est.txt",
+      "sourcePath": "textos/f4/tr/est.txt",
+      "gitBlobSha1": "132e8479189b08a4b2f82be6f4769062630fc3b8",
+      "bytes": 31683
+    },
+    {
+      "name": "exod.txt",
+      "sourcePath": "textos/f4/tr/exod.txt",
+      "gitBlobSha1": "95d3cbaaf07d3c41131cdc81d3399754974462f5",
+      "bytes": 166346
+    },
+    {
+      "name": "eze.txt",
+      "sourcePath": "textos/f4/tr/eze.txt",
+      "gitBlobSha1": "e64a1f3f16b0bcb8f9c208c0464c2f51d997a466",
+      "bytes": 217131
+    },
+    {
+      "name": "fil.txt",
+      "sourcePath": "textos/f4/tr/fil.txt",
+      "gitBlobSha1": "4b6d22ec58fc96387c139a871da02a58a630c3ce",
+      "bytes": 13967
+    },
+    {
+      "name": "flm.txt",
+      "sourcePath": "textos/f4/tr/flm.txt",
+      "gitBlobSha1": "973ea59acfd674e054821c9b989dcc20d9b1585e",
+      "bytes": 3204
+    },
+    {
+      "name": "gal.txt",
+      "sourcePath": "textos/f4/tr/gal.txt",
+      "gitBlobSha1": "f91730d5cdc20f7d8b175363972e264cdf6c0b93",
+      "bytes": 20161
+    },
+    {
+      "name": "gen.txt",
+      "sourcePath": "textos/f4/tr/gen.txt",
+      "gitBlobSha1": "3e37845997fef2a7b91ff8558bf5b2753e7b9893",
+      "bytes": 199032
+    },
+    {
+      "name": "hab.txt",
+      "sourcePath": "textos/f4/tr/hab.txt",
+      "gitBlobSha1": "62e07d219629c4f39a9522ae04777dc45f65d8a2",
+      "bytes": 8577
+    },
+    {
+      "name": "heb.txt",
+      "sourcePath": "textos/f4/tr/heb.txt",
+      "gitBlobSha1": "eb21ac1342c814b14634969b90d0c65d4fd61742",
+      "bytes": 49546
+    },
+    {
+      "name": "isa.txt",
+      "sourcePath": "textos/f4/tr/isa.txt",
+      "gitBlobSha1": "651c272a77e96f05dc9b62d7fe64cabceb6e297f",
+      "bytes": 220537
+    },
+    {
+      "name": "jer.txt",
+      "sourcePath": "textos/f4/tr/jer.txt",
+      "gitBlobSha1": "a6b6785f08cb69f850b37e6a1cbd50862f5eff6e",
+      "bytes": 239921
+    },
+    {
+      "name": "jo.txt",
+      "sourcePath": "textos/f4/tr/jo.txt",
+      "gitBlobSha1": "0aefa962a7c198a25712bf0542b8d9a6437cb654",
+      "bytes": 114218
+    },
+    {
+      "name": "joao.txt",
+      "sourcePath": "textos/f4/tr/joao.txt",
+      "gitBlobSha1": "dd9a64a2a80ade176acedd46a638e9e7d644077f",
+      "bytes": 106246
+    },
+    {
+      "name": "joel.txt",
+      "sourcePath": "textos/f4/tr/joel.txt",
+      "gitBlobSha1": "a0a73608b759b8056c56a17fe64cf9b67a0a3ee6",
+      "bytes": 11462
+    },
+    {
+      "name": "jon.txt",
+      "sourcePath": "textos/f4/tr/jon.txt",
+      "gitBlobSha1": "154efaafe78d89799b061e45f221d83b4752b926",
+      "bytes": 7420
+    },
+    {
+      "name": "jos.txt",
+      "sourcePath": "textos/f4/tr/jos.txt",
+      "gitBlobSha1": "f459ef28c3ccad083f5a41b529e3a2e1227f68f5",
+      "bytes": 97895
+    },
+    {
+      "name": "jud.txt",
+      "sourcePath": "textos/f4/tr/jud.txt",
+      "gitBlobSha1": "c0b7c9b8e286c74729a90c709089af4deb7cebc3",
+      "bytes": 4298
+    },
+    {
+      "name": "juiz.txt",
+      "sourcePath": "textos/f4/tr/juiz.txt",
+      "gitBlobSha1": "beb70c2032c0c664898ad47c4615fbac9cc62638",
+      "bytes": 97285
+    },
+    {
+      "name": "lam.txt",
+      "sourcePath": "textos/f4/tr/lam.txt",
+      "gitBlobSha1": "0ec351ba19512af02f04bb5462aae49d166b649e",
+      "bytes": 20852
+    },
+    {
+      "name": "lev.txt",
+      "sourcePath": "textos/f4/tr/lev.txt",
+      "gitBlobSha1": "b0336cc403a3b5be3bf82786cab1e499e45a88d5",
+      "bytes": 122728
+    },
+    {
+      "name": "luc.txt",
+      "sourcePath": "textos/f4/tr/luc.txt",
+      "gitBlobSha1": "c0dfa33027e5303f64d93a49070abfb8f1041b2f",
+      "bytes": 148041
+    },
+    {
+      "name": "mal.txt",
+      "sourcePath": "textos/f4/tr/mal.txt",
+      "gitBlobSha1": "d573609ac0d08ffd2a20f2c9995c9d6b1b836f1c",
+      "bytes": 10024
+    },
+    {
+      "name": "mar.txt",
+      "sourcePath": "textos/f4/tr/mar.txt",
+      "gitBlobSha1": "f1a3fe5c2b572abc75386816c86c968110e96d24",
+      "bytes": 86167
+    },
+    {
+      "name": "mat.txt",
+      "sourcePath": "textos/f4/tr/mat.txt",
+      "gitBlobSha1": "827e03bedd05fc15af6498d2bca415055f790c1e",
+      "bytes": 144508
+    },
+    {
+      "name": "miq.txt",
+      "sourcePath": "textos/f4/tr/miq.txt",
+      "gitBlobSha1": "dffe07df87ca66503c43a5f06fb785297fb803e1",
+      "bytes": 17850
+    },
+    {
+      "name": "naum.txt",
+      "sourcePath": "textos/f4/tr/naum.txt",
+      "gitBlobSha1": "545b419cc2c1d688ac9f5cacbcf658e38eadf936",
+      "bytes": 7657
+    },
+    {
+      "name": "nee.txt",
+      "sourcePath": "textos/f4/tr/nee.txt",
+      "gitBlobSha1": "65009f6f1bd53c73d196630d9f360224204fcc7c",
+      "bytes": 59597
+    },
+    {
+      "name": "num.txt",
+      "sourcePath": "textos/f4/tr/num.txt",
+      "gitBlobSha1": "cf83263e76de0f28db1127462fb7f62b577ff0ab",
+      "bytes": 169609
+    },
+    {
+      "name": "oba.txt",
+      "sourcePath": "textos/f4/tr/oba.txt",
+      "gitBlobSha1": "e6b7d22db43dacf7484e3beb0af43ca8eb7c0ffe",
+      "bytes": 3869
+    },
+    {
+      "name": "ose.txt",
+      "sourcePath": "textos/f4/tr/ose.txt",
+      "gitBlobSha1": "5632a098c259d0d255903b1e7d4cbf064e33cd93",
+      "bytes": 30321
+    },
+    {
+      "name": "prov.txt",
+      "sourcePath": "textos/f4/tr/prov.txt",
+      "gitBlobSha1": "70f93be4bc77c8265d36ff0a290843bc21076fc1",
+      "bytes": 99010
+    },
+    {
+      "name": "rom.txt",
+      "sourcePath": "textos/f4/tr/rom.txt",
+      "gitBlobSha1": "34d55d4ca0de2adcbeb51f23ceb2e6c9c3caa421",
+      "bytes": 62020
+    },
+    {
+      "name": "rute.txt",
+      "sourcePath": "textos/f4/tr/rute.txt",
+      "gitBlobSha1": "04cfca340d4021163b154fb29f3b318e080b8259",
+      "bytes": 12865
+    },
+    {
+      "name": "sal.txt",
+      "sourcePath": "textos/f4/tr/sal.txt",
+      "gitBlobSha1": "e359313db928fb708b3470b3a6384086b52ae14d",
+      "bytes": 278606
+    },
+    {
+      "name": "sof.txt",
+      "sourcePath": "textos/f4/tr/sof.txt",
+      "gitBlobSha1": "1e70d3e8e59d64764d3446ebd63f8234a06dc66c",
+      "bytes": 9276
+    },
+    {
+      "name": "tiag.txt",
+      "sourcePath": "textos/f4/tr/tiag.txt",
+      "gitBlobSha1": "cf882bbe7765469a517b55cacec63276f04b26b2",
+      "bytes": 14372
+    },
+    {
+      "name": "tito.txt",
+      "sourcePath": "textos/f4/tr/tito.txt",
+      "gitBlobSha1": "b5f958e63a3367e6d01ca3397571067205bd3821",
+      "bytes": 6748
+    },
+    {
+      "name": "zac.txt",
+      "sourcePath": "textos/f4/tr/zac.txt",
+      "gitBlobSha1": "acbe89aa56cd813aaac3dc03bb7816ae3e51ee59",
+      "bytes": 34311
+    }
+  ]
+}
