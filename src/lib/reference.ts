@@ -9,22 +9,30 @@ export function normalizeText(value: string): string {
 }
 
 export type ParsedReference = { book: string; chapter: number; startVerse?: number; endVerse?: number };
+export type ReferenceSyntax = { bookQuery: string; chapter: number; startVerse?: number; endVerse?: number };
 
-export function parseReference(input: string): ParsedReference | null {
+export function parseReferenceSyntax(input: string): ReferenceSyntax | null {
   const cleaned = normalizeText(input).replace(/\s+/g, ' ');
-  const match = cleaned.match(/^(1\s*)?([a-z]+)\s+(\d+)(?:\s+(\d+)(?:\s+(\d+))?)?$/);
+  const match = cleaned.match(/^(.+?)\s+(\d+)(?:\s+(\d+)(?:\s+(\d+))?)?$/);
   if (!match) return null;
-  const prefix = match[1] ? '1' : '';
-  const key = `${prefix}${match[2]}`;
-  const book = aliases[key];
+  const chapter = Number(match[2]);
+  const startVerse = match[3] ? Number(match[3]) : undefined;
+  const endVerse = match[4] ? Number(match[4]) : startVerse;
+  if (chapter < 1 || (startVerse !== undefined && startVerse < 1) || (endVerse !== undefined && endVerse < startVerse!)) return null;
+  return { bookQuery: match[1], chapter, startVerse, endVerse };
+}
+
+// Backward-compatible parser for the first editorial prototype coverage.
+// New full-corpus flows use parseReferenceSyntax + resolveBook(catalog).
+export function parseReference(input: string): ParsedReference | null {
+  const syntax = parseReferenceSyntax(input);
+  if (!syntax) return null;
+  const compact = syntax.bookQuery.replace(/\s+/g, '');
+  const book = aliases[compact];
   if (!book) return null;
-  const chapter = Number(match[3]);
-  const startVerse = match[4] ? Number(match[4]) : undefined;
-  const endVerse = match[5] ? Number(match[5]) : startVerse;
-  if (book === 'João' && (chapter < 1 || chapter > 21)) return null;
-  if (book === '1 João' && (chapter < 1 || chapter > 5)) return null;
-  if (book === 'Provérbios' && (chapter < 1 || chapter > 31)) return null;
-  if (startVerse !== undefined && startVerse < 1) return null;
-  if (endVerse !== undefined && endVerse < startVerse!) return null;
+  const { chapter, startVerse, endVerse } = syntax;
+  if (book === 'João' && chapter > 21) return null;
+  if (book === '1 João' && chapter > 5) return null;
+  if (book === 'Provérbios' && chapter > 31) return null;
   return { book, chapter, startVerse, endVerse };
 }
