@@ -183,12 +183,48 @@ jobs:
 
           jq -n             --arg sha "$RELEASE_SHA"             --arg project "$PROJECT_ID"             --arg site "$SITE_ID"             --arg defaultUrl "https://$SITE_ID.web.app"             --arg customDomain "$CUSTOM_DOMAIN"             '{releaseSha:$sha,projectId:$project,siteId:$site,defaultUrl:$defaultUrl,customDomain:$customDomain}'             > artifacts/firebase-release.json
 
+      - name: Apply only Firebase-requested DNS records when Cloudflare credentials already exist
+        shell: bash
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ZONE_NAME: millionsnest.com
+          FIREBASE_CUSTOM_DOMAIN_JSON: artifacts/firebase-custom-domain.json
+        run: |
+          set -o pipefail
+          node scripts/upsert-cloudflare-dns.mjs | tee artifacts/cloudflare-dns.log
+
+      - name: Re-read Firebase domain state after optional DNS update
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 12
+          TOKEN="$(gcloud auth print-access-token)"
+          DOMAIN_URL="https://firebasehosting.googleapis.com/v1beta1/projects/$PROJECT_ID/sites/$SITE_ID/customDomains/$CUSTOM_DOMAIN"
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            "$DOMAIN_URL" > artifacts/firebase-custom-domain-after-dns.json
+          jq '{
+            name,
+            hostState,
+            ownershipState,
+            reconciling,
+            cert: (.cert // null),
+            issues: (.issues // []),
+            requiredDnsUpdates: (.requiredDnsUpdates // null)
+          }' artifacts/firebase-custom-domain-after-dns.json | tee artifacts/firebase-domain-after-dns-status.json
+
       - name: Probe official custom domain without hiding DNS/certificate state
         shell: bash
         continue-on-error: true
         run: |
           set -o pipefail
-          curl --fail --silent --show-error --location --max-time 20 "https://$CUSTOM_DOMAIN/"             | grep -q "NestLume"             && echo "CUSTOM_DOMAIN_SMOKE=success"             || echo "CUSTOM_DOMAIN_SMOKE=pending"
+          curl --fail --silent --show-error --location --max-time 20 "https://$CUSTOM_DOMAIN/" \
+            | grep -q "NestLume" \
+            && echo "CUSTOM_DOMAIN_SMOKE=success" \
+            || echo "CUSTOM_DOMAIN_SMOKE=pending"
 
       - name: Upload publication evidence
         uses: actions/upload-artifact@v4
