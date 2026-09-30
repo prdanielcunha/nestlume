@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Locale, messages } from './i18n/messages';
 import {
   CorpusBook,
@@ -79,6 +79,7 @@ export default function App() {
   const [page, setPage] = useState<Page>(() => routeFromLocation());
   const [routeVersion, setRouteVersion] = useState(0);
   const [panel, setPanel] = useState<Panel>(null);
+  const panelRef = useRef<Panel>(null);
   const [locale, setLocale] = useState<Locale>(() => (localStorage.getItem('nestlume:locale') as Locale) || 'pt');
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('nestlume:theme') as Theme) || 'system');
   const [fontScale, setFontScale] = useState(() => Number(localStorage.getItem('nestlume:fontScale') || 1));
@@ -101,6 +102,11 @@ export default function App() {
 
   useEffect(() => {
     const pop = () => {
+      if (panelRef.current) {
+        panelRef.current = null;
+        setPanel(null);
+        return;
+      }
       setPage(routeFromLocation());
       setPanel(null);
       setRouteVersion(version => version + 1);
@@ -109,11 +115,36 @@ export default function App() {
     return () => window.removeEventListener('popstate', pop);
   }, []);
 
+  const setContextPanel = (next: Panel) => {
+    const current = panelRef.current;
+
+    if (next && !current) {
+      window.history.pushState(
+        { ...(window.history.state || {}), nestlumePanel: true },
+        '',
+        window.location.href,
+      );
+    }
+
+    if (!next && current && window.history.state?.nestlumePanel) {
+      window.history.back();
+      return;
+    }
+
+    panelRef.current = next;
+    setPanel(next);
+  };
+
+  const resetPanel = () => {
+    panelRef.current = null;
+    setPanel(null);
+  };
+
   const navigate = (next: Exclude<Page, 'read'>) => {
     const path = { today: '/', explore: '/explorar', paste: '/colar', ask: '/perguntar', notebook: '/caderno', states: '/estados' }[next];
     window.history.pushState({}, '', path);
     setPage(next);
-    setPanel(null);
+    resetPanel();
     setRouteVersion(version => version + 1);
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
@@ -122,7 +153,7 @@ export default function App() {
     setPastedStudyDraft(draft);
     window.history.pushState({}, '', '/perguntar?mode=texto');
     setPage('ask');
-    setPanel(null);
+    resetPanel();
     setRouteVersion(version => version + 1);
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
@@ -130,7 +161,7 @@ export default function App() {
   const askPassage = (reference: string) => {
     window.history.pushState({}, '', `/perguntar?ref=${encodeURIComponent(reference)}`);
     setPage('ask');
-    setPanel(null);
+    resetPanel();
     setRouteVersion(version => version + 1);
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
@@ -138,7 +169,7 @@ export default function App() {
   const openReader = (target: ReaderTarget) => {
     window.history.pushState({}, '', readerPath(target));
     setPage('read');
-    setPanel(null);
+    resetPanel();
     setRouteVersion(version => version + 1);
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
@@ -157,7 +188,7 @@ export default function App() {
             fontScale={fontScale}
             setFontScale={setFontScale}
             panel={panel}
-            setPanel={setPanel}
+            setPanel={setContextPanel}
             onOpenReader={openReader}
             onAskPassage={askPassage}
           />
@@ -354,6 +385,59 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   const [offlineState, setOfflineState] = useState<'idle' | 'loading' | 'ready' | 'partial' | 'error'>('idle');
   const [note, setNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
+  const panelOpenerRef = useRef<HTMLElement | null>(null);
+
+  const selectPanel = (next: Panel) => {
+    if (next && !panel && document.activeElement instanceof HTMLElement) {
+      panelOpenerRef.current = document.activeElement;
+    }
+    setPanel(next);
+  };
+
+  useEffect(() => {
+    if (!panel) {
+      if (panelOpenerRef.current?.isConnected) panelOpenerRef.current.focus();
+      panelOpenerRef.current = null;
+      return;
+    }
+
+    const panelElement = document.querySelector<HTMLElement>('.context-panel');
+    if (!panelElement) return;
+
+    const focusable = () => [...panelElement.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )].filter(element => element.offsetParent !== null);
+
+    requestAnimationFrame(() => {
+      const first = focusable()[0];
+      first?.focus();
+    });
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setPanel(null);
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [panel, setPanel]);
 
   useEffect(() => {
     let alive = true;
@@ -446,7 +530,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
           <div className="reader-controls" aria-label="Controles de leitura">
             <button onClick={() => setFontScale(Math.max(.9, fontScale - .1))} aria-label="Diminuir texto">A−</button>
             <button onClick={() => setFontScale(Math.min(1.3, fontScale + .1))} aria-label="Aumentar texto">A+</button>
-            <button onClick={() => setPanel('explore')}>{t.explore}</button>
+            <button onClick={() => selectPanel('explore')}>{t.explore}</button>
             <button onClick={() => void bookmark()}>{saved ? t.saved : t.save}</button>
           </div>
         </div>
@@ -460,13 +544,13 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
         <div className="scripture" style={{ '--font-scale': fontScale } as React.CSSProperties}>
           {verses.map(verse => (
             <p key={verse.verse} id={'v' + verse.verse}>
-              <sup>{verse.verse}</sup>{renderVerse(verse.text, verse.verse, isJohnOne, setPanel)}
+              <sup>{verse.verse}</sup>{renderVerse(verse.text, verse.verse, isJohnOne, selectPanel)}
             </p>
           ))}
         </div>
 
         <div className="reader-meta">
-          <p className="attribution">Bíblia Livre (BLIVRE), © Diego Santos, Mario Sérgio e Marco Teles, fevereiro de 2018. Corpus integrado: release 2018.2.0 / Textus Receptus, CC BY 3.0 Brasil. <button onClick={() => setPanel('source')}>{t.source}</button></p>
+          <p className="attribution">Bíblia Livre (BLIVRE), © Diego Santos, Mario Sérgio e Marco Teles, fevereiro de 2018. Corpus integrado: release 2018.2.0 / Textus Receptus, CC BY 3.0 Brasil. <button onClick={() => selectPanel('source')}>{t.source}</button></p>
           <button className="offline-button" onClick={() => void downloadOffline()} disabled={offlineState === 'loading'}>
             {offlineState === 'loading' ? t.loading : offlineState === 'ready' ? t.offlineComplete : offlineState === 'partial' ? t.offlinePartial : t.downloadOffline}
           </button>
@@ -511,7 +595,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
                   </div>
                 );
               })}
-              <button className="thread-card" onClick={() => setPanel('thread')}>
+              <button className="thread-card" onClick={() => selectPanel('thread')}>
                 <span className="micro-label">{t.thread.toUpperCase()}</span><strong>Criação → Luz → Nova criação</strong><span>Seguir conexão →</span>
               </button>
               <p className="source-note">{editorialStudy.review.status === 'published'
@@ -540,11 +624,11 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
         </section>
       </article>
 
-      <aside className={'context-panel ' + (panel ? 'open' : '')} aria-hidden={!panel}>
-        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} onSelectPanel={setPanel} onOpenReader={onOpenReader} />}
+      <aside className={'context-panel ' + (panel ? 'open' : '')} aria-hidden={!panel} role={panel ? 'dialog' : undefined} aria-modal={panel ? 'true' : undefined} aria-label={panel ? t.explore : undefined}>
+        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} onSelectPanel={selectPanel} onOpenReader={onOpenReader} />}
       </aside>
       {panel && <button className="panel-backdrop" onClick={() => setPanel(null)} aria-label={t.close} />}
-      <button className="floating-explore" onClick={() => setPanel(panel ? null : 'explore')}>{t.explore}<span>{referenceLabel}</span></button>
+      <button className="floating-explore" onClick={() => panel ? setPanel(null) : selectPanel('explore')}>{t.explore}<span>{referenceLabel}</span></button>
     </div>
   );
 }
@@ -567,7 +651,6 @@ function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenRe
   panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; t: T; onClose: () => void; onSelectPanel: (panel: Panel) => void; onOpenReader: (target: ReaderTarget) => void;
 }) {
   const onCloseAndOpen = (next: ReaderTarget) => {
-    onClose();
     onOpenReader(next);
   };
   const content = useMemo(() => ({
@@ -595,7 +678,7 @@ function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenRe
     source: <><p className="kicker">PROVENIÊNCIA DO TEXTO</p><h2>Bíblia Livre</h2><dl><div><dt>Arquivo deste livro</dt><dd>{book.file}</dd></div><div><dt>Release integrada</dt><dd>2018.2.0</dd></div><div><dt>Tradição textual</dt><dd>Textus Receptus</dd></div><div><dt>Licença da release integrada</dt><dd>Creative Commons Atribuição 3.0 Brasil</dd></div><div><dt>Integridade</dt><dd>{book.gitBlobSha1 ? `Git blob ${book.gitBlobSha1.slice(0, 12)}…` : 'Verificada no build'}</dd></div></dl><p>O manifesto registra a identidade de cada arquivo importado da release oficial dos autores. A distribuição atual do eBible é registrada separadamente e não é tratada como byte idêntica sem prova.</p><a className="text-link" href="https://github.com/blivre/BibliaLivre/releases/tag/2018.2.0" target="_blank" rel="noreferrer">Abrir release de origem ↗</a></>,
   }), [book, t, target, onOpenReader]);
 
-  return <div className="panel-inner"><button className="panel-close" onClick={onClose}>Fechar</button>{content[panel]}</div>;
+  return <div className="panel-inner"><button className="panel-close" onClick={onClose}>{t.close}</button>{content[panel]}</div>;
 }
 
 function Paste({ t, onOpenReader, onStudyWithAi }: { t: T; onOpenReader: (target: ReaderTarget) => void; onStudyWithAi: (draft: PastedStudyDraft) => void }) {
