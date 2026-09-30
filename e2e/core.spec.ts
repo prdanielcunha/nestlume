@@ -405,3 +405,27 @@ test('pasted text reaches AI flow only through explicit private consent and neve
   await page.getByRole('button', { name: 'Estudar com IA' }).click();
   await expect(page.getByText(/provedor de produção ainda não foi conectado/i)).toBeVisible();
 });
+
+
+test('contextual panel supports Escape Back and focus restoration without losing the passage', async ({ page }) => {
+  await page.goto('/ler/jhn/1?v=1');
+  const explore = page.locator('.floating-explore');
+
+  await explore.focus();
+  await explore.click();
+  await expect(page.locator('.context-panel.open')).toHaveAttribute('role', 'dialog');
+  await expect(page.locator('.panel-close')).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.context-panel')).not.toHaveClass(/open/);
+  await expect(explore).toBeFocused();
+  await expect(page).toHaveURL(/\/ler\/jhn\/1\?v=1$/);
+  await expect(page.getByRole('heading', { name: /João 1:1/i })).toBeVisible();
+
+  await explore.click();
+  await expect(page.locator('.context-panel.open')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('.context-panel')).not.toHaveClass(/open/);
+  await expect(page).toHaveURL(/\/ler\/jhn\/1\?v=1$/);
+  await expect(page.getByRole('heading', { name: /João 1:1/i })).toBeVisible();
+});
