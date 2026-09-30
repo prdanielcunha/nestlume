@@ -6,6 +6,7 @@ import {
   AI_DISCLOSURE_VERSION,
   AiConsent,
   AiEvidence,
+  AiStudyResponse,
   configuredAiEndpoint,
   configuredTurnstileSiteKey,
   prepareAiRequest,
@@ -27,7 +28,8 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
   const [reference, setReference] = useState('João 1:1-5');
   const [accepted, setAccepted] = useState(false);
   const [status, setStatus] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [result, setResult] = useState<AiStudyResponse | null>(null);
+  const [lastEvidence, setLastEvidence] = useState<AiEvidence[]>([]);
   const [sending, setSending] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileReset, setTurnstileReset] = useState(0);
@@ -67,11 +69,13 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setStatus('');
-    setAnswer('');
+    setResult(null);
+    setLastEvidence([]);
     setSending(true);
 
     try {
       const { evidence } = await buildEvidence();
+      setLastEvidence(evidence);
       const consent: AiConsent | null = accepted ? {
         disclosureVersion: AI_DISCLOSURE_VERSION,
         provider,
@@ -107,8 +111,8 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
       }
 
       const response = await requestAiStudy(prepared.request, endpoint, turnstileToken);
-      setAnswer(response.answer);
-      setStatus(response.limitations?.length ? response.limitations.join(' · ') : '');
+      setResult(response);
+      setStatus('');
     } catch (cause) {
       setStatus(cause instanceof Error ? cause.message : t.error);
     } finally {
@@ -190,11 +194,37 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
         <p>{status || (endpoint ? t.aiEndpointConfiguredBody : t.aiEndpointPendingBody)}</p>
       </div>
 
-      {answer && (
+      {result && (
         <section className="ai-answer">
           <p className="micro-label">{t.aiUnreviewed.toUpperCase()}</p>
           <h2>{t.answer}</h2>
-          <p>{answer}</p>
+          <p>{result.answer}</p>
+
+          {!!result.claims?.length && (
+            <div className="ai-claims">
+              <h3>{t.aiClaims}</h3>
+              {result.claims.map((claim, index) => {
+                const sources = lastEvidence.filter(item => claim.evidenceIds.includes(item.id));
+                return (
+                  <article key={index}>
+                    <div className="claim-meta">
+                      <span>{t.certainty}: <strong>{claim.certainty === 'high' ? t.certaintyHigh : claim.certainty === 'medium' ? t.certaintyMedium : t.certaintyLow}</strong></span>
+                    </div>
+                    <p>{claim.text}</p>
+                    <small>{t.supportingSources}</small>
+                    <ul>{sources.map(source => <li key={source.id}>{source.sourceLabel}</li>)}</ul>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+
+          {!!result.limitations?.length && (
+            <div className="ai-limitations">
+              <h3>{t.limitations}</h3>
+              <ul>{result.limitations.map((item, index) => <li key={index}>{item}</li>)}</ul>
+            </div>
+          )}
         </section>
       )}
     </div>
