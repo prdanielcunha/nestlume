@@ -21,6 +21,49 @@ function allowedOrigin(request, env) {
   return '';
 }
 
+
+async function validateTurnstile(request, input, env) {
+  if (env.REQUIRE_TURNSTILE !== 'true') return { ok: true };
+  if (!env.TURNSTILE_SECRET) return { ok: false, status: 503, error: 'anti_abuse_not_configured' };
+
+  const token = typeof input.turnstileToken === 'string' ? input.turnstileToken : '';
+  if (!token || token.length > 2048) return { ok: false, status: 403, error: 'anti_abuse_required' };
+
+  const body = new FormData();
+  body.append('secret', env.TURNSTILE_SECRET);
+  body.append('response', token);
+  const remoteIp = request.headers.get('CF-Connecting-IP');
+  if (remoteIp) body.append('remoteip', remoteIp);
+  body.append('idempotency_key', crypto.randomUUID());
+
+  let response;
+  try {
+    response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body,
+    });
+  } catch {
+    return { ok: false, status: 503, error: 'anti_abuse_unavailable' };
+  }
+
+  if (!response.ok) return { ok: false, status: 503, error: 'anti_abuse_unavailable' };
+
+  const result = await response.json();
+  if (!result?.success) return { ok: false, status: 403, error: 'anti_abuse_failed' };
+
+  const expectedAction = env.TURNSTILE_EXPECTED_ACTION || 'nestlume_ai_study';
+  if (result.action && result.action !== expectedAction) {
+    return { ok: false, status: 403, error: 'anti_abuse_action_mismatch' };
+  }
+
+  const expectedHostname = env.TURNSTILE_EXPECTED_HOSTNAME || '';
+  if (expectedHostname && result.hostname && result.hostname !== expectedHostname) {
+    return { ok: false, status: 403, error: 'anti_abuse_hostname_mismatch' };
+  }
+
+  return { ok: true };
+}
+
 function validate(input) {
   if (!input || input.schemaVersion !== 1) return 'schema inválido';
   if (input.provider !== 'cloudflare-workers-ai') return 'provedor inválido';
@@ -69,6 +112,9 @@ export default {
 
     const validationError = validate(input);
     if (validationError) return json({ error: 'invalid_request', detail: validationError }, 400, origin);
+
+    const antiAbuse = await validateTurnstile(request, input, env);
+    if (!antiAbuse.ok) return json({ error: antiAbuse.error }, antiAbuse.status, origin);
 
     const evidence = input.evidence.map(item => ({
       id: item.id,
