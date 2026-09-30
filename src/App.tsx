@@ -193,7 +193,7 @@ function Today({ t, onNavigate, onOpenReader }: {
   return (
     <div className="page page-home">
       <section className="hero editorial-width">
-        <p className="kicker">JOÃO · VENHAM E VEJAM</p>
+        <p className="kicker">BÍBLIA INTEIRA · LEIA, PERCEBA, APROFUNDE</p>
         <h1>Há mais luz no texto<br />do que pressa consegue ver.</h1>
         <p className="hero-copy">Leia a Bíblia inteira com espaço para perceber contexto, palavras, conexões e fontes — sem transformar profundidade em espetáculo.</p>
         <div className="hero-actions">
@@ -210,7 +210,7 @@ function Today({ t, onNavigate, onOpenReader }: {
         <p className="micro-label">BÍBLIA COMPLETA · BLIVRE 2018</p>
         <button className="discovery-teaser" onClick={() => onOpenReader({ code: 'JHN', chapter: 1, startVerse: 1, endVerse: 18 })}>
           <span className="teaser-number">01</span>
-          <span><strong>“No princípio” não começa em Belém.</strong><small>Abra João 1:1–18 e veja a primeira camada editorial do NestLume.</small></span>
+          <span><strong>Encontro em destaque: “No princípio” não começa em Belém.</strong><small>João 1:1–18 é um dos exemplos editoriais; leitura, busca e estudo abrangem os 66 livros.</small></span>
           <span aria-hidden="true">→</span>
         </button>
       </section>
