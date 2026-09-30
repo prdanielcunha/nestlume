@@ -169,3 +169,17 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .pasted-ai-preview>p:last-child{margin:0;white-space:pre-wrap;color:var(--muted);font:15px/1.55 var(--serif)}
 .pasted-consent{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 @media(max-width:650px){.paste-actions{flex-direction:column}.paste-actions button{width:100%}}
+
+
+/* Contextual Explore menu */
+.explore-menu>h2,.passage-context-panel>h2{font:400 30px/1.12 var(--serif);margin:8px 0 10px}
+.explore-menu>p:not(.kicker),.passage-context-panel>p:not(.kicker):not(.source-note){color:var(--muted);font:14px/1.6 var(--sans)}
+.explore-actions{display:grid;gap:8px;margin:22px 0}
+.explore-actions button{display:flex;flex-direction:column;align-items:flex-start;width:100%;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--paper-2);color:var(--ink);text-align:left;cursor:pointer}
+.explore-actions button:hover{background:var(--paper)}
+.explore-actions strong{font:600 14px/1.35 var(--sans)}
+.explore-actions span{margin-top:4px;color:var(--muted);font:12px/1.45 var(--sans)}
+.context-verses{margin:20px 0}
+.context-verses p{margin:0;padding:8px 10px;border-left:2px solid transparent;font:16px/1.62 var(--serif);color:var(--muted)}
+.context-verses p.selected{border-left-color:var(--accent);background:var(--paper-2);color:var(--ink)}
+.context-verses sup{display:inline-block;min-width:22px;color:var(--muted);font:600 9px var(--sans)}
