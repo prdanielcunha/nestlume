@@ -160,3 +160,12 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .person-relation small{display:block;color:var(--muted);font:600 9px var(--sans);text-transform:uppercase;letter-spacing:.08em}
 .person-relation p{margin:4px 0 0;font:13px/1.45 var(--sans)}
 @media(max-width:650px){.person-list article>header{align-items:flex-start;flex-direction:column;gap:4px}.person-forms>div{grid-template-columns:1fr}.person-forms small{margin-top:-3px}}
+
+
+/* Private pasted-text AI flow */
+.paste-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.pasted-ai-preview{margin:6px 0 22px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--paper-2)}
+.pasted-ai-preview>strong{display:block;margin:5px 0 10px;font:600 12px/1.4 var(--sans);color:var(--ink)}
+.pasted-ai-preview>p:last-child{margin:0;white-space:pre-wrap;color:var(--muted);font:15px/1.55 var(--serif)}
+.pasted-consent{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+@media(max-width:650px){.paste-actions{flex-direction:column}.paste-actions button{width:100%}}
