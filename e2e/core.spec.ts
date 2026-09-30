@@ -131,7 +131,7 @@ test('local build meets the initial layout/performance budget', async ({ page },
 test('Bible-wide sourced connections navigate to a related passage', async ({ page }) => {
   await page.goto('/ler/jhn/3?v=16');
   await page.getByRole('button', { name: 'Fio da Bíblia' }).click();
-  await expect(page.getByText(/OpenBible\.info/i)).toBeVisible();
+  await expect(page.getByRole('link', { name: /OpenBible\.info/i })).toBeVisible();
   const links = page.locator('.connection-list button');
   await expect(links.first()).toBeVisible();
   await links.first().click();
@@ -142,7 +142,7 @@ test('Bible-wide sourced connections navigate to a related passage', async ({ pa
 test('sourced biblical places are available without invented certainty', async ({ page }) => {
   await page.goto('/ler/jhn/4?v=5');
   await page.getByRole('button', { name: 'Lugares' }).click();
-  await expect(page.getByText(/OpenBible\.info/i)).toBeVisible();
+  await expect(page.getByRole('link', { name: /OpenBible\.info/i })).toBeVisible();
   await expect(page.locator('.place-list article').first()).toBeVisible();
   await expect(page.getByText(/Score da fonte/i).first()).toBeVisible();
 });
