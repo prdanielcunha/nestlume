@@ -14,3 +14,5 @@ artifacts/playwright-report/
 test-results/
 .cache/openbible/
 public/connections/openbible/
+.cache/openbible-geo/
+public/entities/places/
