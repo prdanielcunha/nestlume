@@ -1,0 +1,67 @@
+name: NestLume Firebase Read-only Preflight
+
+on:
+  push:
+    branches: [ production ]
+    paths:
+      - ".github/workflows/firebase-readonly-preflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: nestlume-firebase-readonly-preflight
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact branch state
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Attempt existing MillionsNest production WIF authentication
+        id: auth
+        continue-on-error: true
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          workload_identity_provider: projects/555464791734/locations/global/workloadIdentityPools/mn-prod-github/providers/github
+          service_account: mn-web-deployer@millionsnest.iam.gserviceaccount.com
+
+      - name: Report unavailable WIF without mutating infrastructure
+        if: steps.auth.outcome != 'success'
+        run: |
+          echo "WIF_AUTH_AVAILABLE=false"
+          echo "The existing production provider does not currently authorize this NestLume repository/ref, or the deployer cannot be impersonated."
+          echo "No cloud resource was changed."
+
+      - name: Read-only Google/Firebase discovery
+        if: steps.auth.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "WIF_AUTH_AVAILABLE=true"
+          echo "ACTIVE_IDENTITY:"
+          gcloud auth list --filter=status:ACTIVE --format='value(account)'
+
+          echo "ACCESSIBLE_PROJECTS_MATCHING_NESTLUME:"
+          gcloud projects list --filter='projectId~nestlume OR name~NestLume' --format='table(projectId,name,lifecycleState)' || true
+
+          echo "MILLIONSNEST_PROJECT:"
+          gcloud projects describe millionsnest --format='table(projectId,name,lifecycleState)' || true
+
+          echo "MILLIONSNEST_BILLING_LINK:"
+          gcloud beta billing projects describe millionsnest --format='yaml(projectId,billingAccountName,billingEnabled)' || true
+
+          npm install -g firebase-tools@15.26.0 >/dev/null 2>&1
+
+          echo "ACCESSIBLE_FIREBASE_PROJECTS:"
+          firebase projects:list --json 2>/dev/null | python3 -c 'import json,sys; x=json.load(sys.stdin); print(json.dumps([{"projectId":p.get("projectId"),"displayName":p.get("displayName"),"state":p.get("state")} for p in x.get("results",[]) if "nestlume" in ((p.get("projectId") or "")+" "+(p.get("displayName") or "")).lower()],indent=2))' || true
+
+          echo "MILLIONSNEST_HOSTING_SITES:"
+          firebase hosting:sites:list --project millionsnest 2>/dev/null || true
+
+          echo "READ_ONLY_PREFLIGHT_COMPLETE=true"
+          echo "No cloud resource was created, modified, deployed, linked to billing, or deleted."
