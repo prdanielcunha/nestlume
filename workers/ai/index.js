@@ -75,6 +75,37 @@ function validate(input) {
   return null;
 }
 
+
+function parseModelJson(raw) {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  const unfenced = trimmed
+    .replace(/^\`\`\`(?:json)?\s*/i, '')
+    .replace(/\s*\`\`\`$/, '');
+  try {
+    return JSON.parse(unfenced);
+  } catch {
+    return null;
+  }
+}
+
+function validateModelOutput(parsed, evidenceIds) {
+  if (!parsed || typeof parsed.answer !== 'string' || !parsed.answer.trim()) return null;
+
+  const claims = Array.isArray(parsed.claims) ? parsed.claims : [];
+  const limitations = Array.isArray(parsed.limitations) ? parsed.limitations : [];
+  if (!limitations.every(item => typeof item === 'string')) return null;
+
+  for (const claim of claims) {
+    if (!claim || typeof claim.text !== 'string' || !claim.text.trim()) return null;
+    if (!Array.isArray(claim.evidenceIds) || !claim.evidenceIds.length) return null;
+    if (!claim.evidenceIds.every(id => typeof id === 'string' && evidenceIds.has(id))) return null;
+    if (!['high', 'medium', 'low'].includes(claim.certainty)) return null;
+  }
+
+  return { answer: parsed.answer.trim(), claims, limitations };
+}
+
 export default {
   async fetch(request, env) {
     const origin = allowedOrigin(request, env);
@@ -156,18 +187,14 @@ export default {
       });
 
       const raw = result?.response ?? result?.choices?.[0]?.message?.content ?? '';
-      let parsed;
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        return json({ error: 'model_output_invalid' }, 502, origin);
-      }
+      const parsed = parseModelJson(raw);
+      const validated = validateModelOutput(parsed, new Set(evidence.map(item => item.id)));
+      if (!validated) return json({ error: 'model_output_invalid' }, 502, origin);
 
-      if (!parsed?.answer || typeof parsed.answer !== 'string') return json({ error: 'model_output_invalid' }, 502, origin);
       return json({
-        answer: parsed.answer,
-        claims: Array.isArray(parsed.claims) ? parsed.claims : [],
-        limitations: Array.isArray(parsed.limitations) ? parsed.limitations : [],
+        answer: validated.answer,
+        claims: validated.claims,
+        limitations: validated.limitations,
         provider: 'cloudflare-workers-ai',
         model: env.MODEL || MODEL_DEFAULT,
       }, 200, origin);
