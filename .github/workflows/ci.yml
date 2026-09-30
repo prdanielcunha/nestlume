@@ -26,6 +26,11 @@ jobs:
         with:
           path: .cache/openbible
           key: openbible-crossrefs-${{ runner.os }}-301fed486c8842c60dc95e930ec4d4c7bee0e101
+      - name: Cache pinned OpenBible geography
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible-geo
+          key: openbible-geo-${{ runner.os }}-b127b4446c6f4ba36ec62dde290c752afeb51bf3
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm test
