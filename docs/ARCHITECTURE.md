@@ -77,3 +77,11 @@ The product contract is provider-neutral:
 - A future OpenAI API adapter may replace or complement it without redesigning the product. OpenAI's current under-18 API guidance permits apps serving minors when additional safeguards and applicable child/privacy requirements are implemented; personal data below the applicable digital-consent age requires Zero Data Retention first.
 - Current Google Cloud Generative AI terms prohibit use in applications directed to or likely accessed by under-18s. Paid Gemini/Vertex therefore is not currently a teen-accessible migration path; re-evaluate if Google's terms change.
 - A ChatGPT consumer subscription is never treated as API credit.
+
+
+## Whole-Bible coverage model
+NestLume's base capability is canonical-reference driven, not study-file driven. The complete integrated Bible remains the primary corpus. A generic editorial registry maps optional human-reviewed encounters onto passages without making those encounters a prerequisite for study.
+
+João/Provérbios are initial validation fixtures only. The same reader, grounded-AI contract, evidence model, source provenance, entity model and lexical registry must work across all 66 books.
+
+For a passage with no published editorial encounter, the reader still exposes Bible-wide study actions. Advanced layers fail closed individually: for example, the absence of a validated Hebrew alignment disables a precise Hebrew word panel for that occurrence but does not disable reading, notes, search or a Scripture-grounded question.
