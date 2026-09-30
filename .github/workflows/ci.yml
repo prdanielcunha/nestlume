@@ -21,6 +21,11 @@ jobs:
         with:
           path: .cache/stepbible
           key: stepbible-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
+      - name: Cache pinned OpenBible mirror
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible
+          key: openbible-crossrefs-${{ runner.os }}-301fed486c8842c60dc95e930ec4d4c7bee0e101
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm test
