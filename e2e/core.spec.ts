@@ -126,3 +126,14 @@ test('local build meets the initial layout/performance budget', async ({ page },
   expect(metrics!.lcp).toBeLessThanOrEqual(2500);
   if (metrics!.maxEvent > 0) expect(metrics!.maxEvent).toBeLessThanOrEqual(200);
 });
+
+
+test('Bible-wide sourced connections navigate to a related passage', async ({ page }) => {
+  await page.goto('/ler/jhn/3?v=16');
+  await page.getByRole('button', { name: 'Fio da Bíblia' }).click();
+  await expect(page.getByText(/OpenBible\.info/i)).toBeVisible();
+  const links = page.locator('.connection-list button');
+  await expect(links.first()).toBeVisible();
+  await links.first().click();
+  await expect(page).toHaveURL(/\/ler\//);
+});
