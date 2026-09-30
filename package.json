@@ -12,7 +12,7 @@
     "lint": "tsc --noEmit",
     "corpus:check": "node scripts/build-corpus.mjs --check",
     "corpus:build": "node scripts/build-corpus.mjs",
-    "test": "npm run corpus:check && tsx --test tests/*.test.ts",
+    "test": "npm run corpus:check && tsx --test tests/*.test.ts && node --test workers/ai/*.test.mjs",
     "build": "npm run corpus:build && vite build",
     "check": "npm run lint && npm run test && npm run build",
     "ai:battery": "node scripts/run-ai-battery.mjs"
