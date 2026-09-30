@@ -6,6 +6,7 @@ const endpoint = (process.env.NESTLUME_AI_ENDPOINT || '').replace(/\/$/, '');
 const outputPath = process.env.NESTLUME_AI_BATTERY_OUTPUT || 'artifacts/ai-battery-result.json';
 const disclosureVersion = '2026-09-30.1';
 const provider = 'cloudflare-workers-ai';
+const turnstileToken = process.env.NESTLUME_TURNSTILE_TOKEN || '';
 
 if (!endpoint) {
   console.error('NESTLUME_AI_ENDPOINT is required. No request was sent.');
@@ -103,6 +104,7 @@ async function runCase(testCase) {
     reference: testCase.reference,
     pastedText: testCase.pastedText,
     evidence,
+    turnstileToken: turnstileToken || undefined,
     consent: {
       disclosureVersion,
       provider,
