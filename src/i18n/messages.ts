@@ -33,6 +33,7 @@ export const messages = {
     aiEndpointConfigured: 'Endpoint de IA configurado', aiEndpointConfiguredBody: 'Esta instalação possui um endpoint server-side configurado. A solicitação continua exigindo consentimento e evidências.',
     aiEndpointPending: 'IA preservada, ainda não ativada', aiEndpointPendingBody: 'A experiência e o contrato de segurança já estão implementados. O envio permanece bloqueado até a prova F1 e o deploy do adaptador server-side.',
     aiInvalidReference: 'Informe uma referência bíblica válida e existente na Bíblia Livre para fundamentar a pergunta.',
+    evidence: 'Fonte e certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Média', certaintyLow: 'Baixa', supportingSources: 'Fontes que sustentam esta afirmação',
   },
   en: {
     today: 'Today', explore: 'Explore', notebook: 'My notebook', continue: 'Continue reading',
@@ -66,6 +67,7 @@ export const messages = {
     aiEndpointConfigured: 'AI endpoint configured', aiEndpointConfiguredBody: 'This installation has a server-side endpoint configured. Requests still require consent and evidence.',
     aiEndpointPending: 'AI preserved, not activated yet', aiEndpointPendingBody: 'The experience and safety contract are implemented. Sending remains blocked until the F1 proof and server-side adapter deployment.',
     aiInvalidReference: 'Provide a valid Bible reference that exists in the integrated Bible edition to ground the question.',
+    evidence: 'Source and certainty', certainty: 'Certainty', certaintyHigh: 'High', certaintyMedium: 'Medium', certaintyLow: 'Low', supportingSources: 'Sources supporting this claim',
   },
   es: {
     today: 'Hoy', explore: 'Explorar', notebook: 'Mi cuaderno', continue: 'Continuar lectura',
@@ -99,5 +101,6 @@ export const messages = {
     aiEndpointConfigured: 'Endpoint de IA configurado', aiEndpointConfiguredBody: 'Esta instalación tiene un endpoint server-side configurado. La solicitud sigue exigiendo consentimiento y evidencias.',
     aiEndpointPending: 'IA preservada, aún no activada', aiEndpointPendingBody: 'La experiencia y el contrato de seguridad ya están implementados. El envío sigue bloqueado hasta la prueba F1 y el despliegue del adaptador server-side.',
     aiInvalidReference: 'Indica una referencia bíblica válida y existente en la edición integrada para fundamentar la pregunta.',
+    evidence: 'Fuente y certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Media', certaintyLow: 'Baja', supportingSources: 'Fuentes que sustentan esta afirmación',
   },
 } as const;
