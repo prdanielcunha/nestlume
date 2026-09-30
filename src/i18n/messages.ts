@@ -34,7 +34,7 @@ export const messages = {
     aiEndpointPending: 'IA preservada, ainda não ativada', aiEndpointPendingBody: 'A experiência e o contrato de segurança já estão implementados. O envio permanece bloqueado até a prova F1 e o deploy do adaptador server-side.',
     aiInvalidReference: 'Informe uma referência bíblica válida e existente na Bíblia Livre para fundamentar a pergunta.',
     aiAntiAbuseRequired: 'Conclua a verificação antiabuso antes de enviar esta solicitação.', aiAntiAbuseMissing: 'A IA está configurada, mas a proteção antiabuso ainda não foi configurada. A solicitação foi bloqueada.', aiAntiAbuseError: 'Não foi possível concluir a verificação antiabuso. Tente novamente.',
-    evidence: 'Fonte e certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Média', certaintyLow: 'Baixa', supportingSources: 'Fontes que sustentam esta afirmação',
+    evidence: 'Fonte e certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Média', certaintyLow: 'Baixa', supportingSources: 'Fontes que sustentam esta afirmação', aiClaims: 'Afirmações verificáveis', limitations: 'Limites desta resposta',
   },
   en: {
     today: 'Today', explore: 'Explore', notebook: 'My notebook', continue: 'Continue reading',
@@ -69,7 +69,7 @@ export const messages = {
     aiEndpointPending: 'AI preserved, not activated yet', aiEndpointPendingBody: 'The experience and safety contract are implemented. Sending remains blocked until the F1 proof and server-side adapter deployment.',
     aiInvalidReference: 'Provide a valid Bible reference that exists in the integrated Bible edition to ground the question.',
     aiAntiAbuseRequired: 'Complete the anti-abuse check before sending this request.', aiAntiAbuseMissing: 'AI is configured, but anti-abuse protection is not configured yet. The request was blocked.', aiAntiAbuseError: 'The anti-abuse check could not be completed. Try again.',
-    evidence: 'Source and certainty', certainty: 'Certainty', certaintyHigh: 'High', certaintyMedium: 'Medium', certaintyLow: 'Low', supportingSources: 'Sources supporting this claim',
+    evidence: 'Source and certainty', certainty: 'Certainty', certaintyHigh: 'High', certaintyMedium: 'Medium', certaintyLow: 'Low', supportingSources: 'Sources supporting this claim', aiClaims: 'Verifiable claims', limitations: 'Limits of this answer',
   },
   es: {
     today: 'Hoy', explore: 'Explorar', notebook: 'Mi cuaderno', continue: 'Continuar lectura',
@@ -104,6 +104,6 @@ export const messages = {
     aiEndpointPending: 'IA preservada, aún no activada', aiEndpointPendingBody: 'La experiencia y el contrato de seguridad ya están implementados. El envío sigue bloqueado hasta la prueba F1 y el despliegue del adaptador server-side.',
     aiInvalidReference: 'Indica una referencia bíblica válida y existente en la edición integrada para fundamentar la pregunta.',
     aiAntiAbuseRequired: 'Completa la verificación antiabuso antes de enviar esta solicitud.', aiAntiAbuseMissing: 'La IA está configurada, pero la protección antiabuso aún no está configurada. La solicitud fue bloqueada.', aiAntiAbuseError: 'No se pudo completar la verificación antiabuso. Inténtalo de nuevo.',
-    evidence: 'Fuente y certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Media', certaintyLow: 'Baja', supportingSources: 'Fuentes que sustentan esta afirmación',
+    evidence: 'Fuente y certeza', certainty: 'Certeza', certaintyHigh: 'Alta', certaintyMedium: 'Media', certaintyLow: 'Baja', supportingSources: 'Fuentes que sustentan esta afirmación', aiClaims: 'Afirmaciones verificables', limitations: 'Límites de esta respuesta',
   },
 } as const;
