@@ -326,7 +326,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
-  const [offlineState, setOfflineState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [offlineState, setOfflineState] = useState<'idle' | 'loading' | 'ready' | 'partial' | 'error'>('idle');
   const [note, setNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
 
@@ -401,8 +401,8 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
     if (!book) return;
     setOfflineState('loading');
     try {
-      await requestOfflineBook(book.file, book.gitBlobSha1);
-      setOfflineState('ready');
+      const result = await requestOfflineBook(book.file, book.gitBlobSha1, book.ubsCode, book.chapters);
+      setOfflineState(result.originalLanguageOk ? 'ready' : 'partial');
     } catch {
       setOfflineState('error');
     }
@@ -443,9 +443,10 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
         <div className="reader-meta">
           <p className="attribution">Bíblia Livre (BLIVRE), © Diego Santos, Mario Sérgio e Marco Teles, fevereiro de 2018. Corpus integrado: release 2018.2.0 / Textus Receptus, CC BY 3.0 Brasil. <button onClick={() => setPanel('source')}>{t.source}</button></p>
           <button className="offline-button" onClick={() => void downloadOffline()} disabled={offlineState === 'loading'}>
-            {offlineState === 'loading' ? t.loading : offlineState === 'ready' ? 'Disponível offline' : t.downloadOffline}
+            {offlineState === 'loading' ? t.loading : offlineState === 'ready' ? t.offlineComplete : offlineState === 'partial' ? t.offlinePartial : t.downloadOffline}
           </button>
-          {offlineState === 'error' && <p className="field-error" role="alert">Não foi possível validar e salvar este livro offline.</p>}
+          {offlineState === 'partial' && <p className="source-note" role="status">{t.offlinePartialBody}</p>}
+          {offlineState === 'error' && <p className="field-error" role="alert">{t.offlineError}</p>}
         </div>
 
         {editorialStudy ? (
