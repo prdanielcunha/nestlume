@@ -20,7 +20,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/stepbible
-          key: stepbible-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
+          key: stepbible-v2-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
       - name: Cache pinned OpenBible mirror
         uses: actions/cache@v4
         with:
