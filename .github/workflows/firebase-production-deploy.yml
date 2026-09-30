@@ -1,0 +1,147 @@
+name: NestLume Firebase Production Deploy
+
+on:
+  workflow_run:
+    workflows: ["NestLume CI"]
+    branches: [production]
+    types: [completed]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: nestlume-firebase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PROJECT_ID: millionsnest
+      SITE_ID: nestlume-555464791734
+      CUSTOM_DOMAIN: nestlume.millionsnest.com
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Checkout exact CI-approved production SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+
+      - name: Authenticate with existing MillionsNest WIF
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          workload_identity_provider: projects/555464791734/locations/global/workloadIdentityPools/mn-prod-github/providers/github
+          service_account: mn-web-deployer@millionsnest.iam.gserviceaccount.com
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Cache pinned STEPBible snapshot
+        uses: actions/cache@v4
+        with:
+          path: .cache/stepbible
+          key: stepbible-v2-${{ runner.os }}-b99716b0cddb648ddb95cc786a197180f2f97d48
+
+      - name: Cache pinned OpenBible mirror
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible
+          key: openbible-crossrefs-${{ runner.os }}-301fed486c8842c60dc95e930ec4d4c7bee0e101
+
+      - name: Cache pinned OpenBible geography
+        uses: actions/cache@v4
+        with:
+          path: .cache/openbible-geo
+          key: openbible-geo-${{ runner.os }}-b127b4446c6f4ba36ec62dde290c752afeb51bf3
+
+      - name: Install exact app dependencies and Firebase CLI
+        run: |
+          npm ci --no-audit --no-fund
+          npm install --global firebase-tools@15.26.0
+
+      - name: Build exact release
+        run: npm run build
+
+      - name: Ensure isolated NestLume Hosting site exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if firebase hosting:sites:get "$SITE_ID" --project "$PROJECT_ID" >/tmp/nestlume-site.json 2>/tmp/nestlume-site.err; then
+            echo "SITE_EXISTS=true"
+          else
+            echo "Site does not exist yet; creating isolated NestLume Hosting site."
+            cat /tmp/nestlume-site.err || true
+            firebase hosting:sites:create "$SITE_ID" --project "$PROJECT_ID" --non-interactive
+          fi
+          firebase hosting:sites:get "$SITE_ID" --project "$PROJECT_ID"
+
+      - name: Deploy only NestLume Hosting target
+        run: firebase deploy --only hosting:nestlume --project "$PROJECT_ID" --non-interactive
+
+      - name: Smoke Firebase default URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://$SITE_ID.web.app"
+          for path in "/" "/ler/jhn/1?v=1" "/explorar" "/colar"; do
+            curl --fail --silent --show-error --location --retry 6 --retry-delay 3 "$BASE_URL$path" >/tmp/nestlume-smoke.html
+            grep -q "NestLume" /tmp/nestlume-smoke.html
+          done
+          echo "FIREBASE_DEFAULT_URL=$BASE_URL"
+          echo "FIREBASE_SMOKE=success"
+
+      - name: Ensure Firebase custom-domain resource exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          TOKEN="$(gcloud auth print-access-token)"
+          DOMAIN_URL="https://firebasehosting.googleapis.com/v1beta1/projects/$PROJECT_ID/sites/$SITE_ID/customDomains/$CUSTOM_DOMAIN"
+          HTTP_CODE="$(curl --silent --show-error --output artifacts/custom-domain-before.json --write-out '%{http_code}'             -H "Authorization: Bearer $TOKEN"             -H "Content-Type: application/json"             "$DOMAIN_URL")"
+
+          if [ "$HTTP_CODE" = "404" ]; then
+            CREATE_URL="https://firebasehosting.googleapis.com/v1beta1/projects/$PROJECT_ID/sites/$SITE_ID/customDomains?customDomainId=$CUSTOM_DOMAIN"
+            CREATE_CODE="$(curl --silent --show-error --output artifacts/custom-domain-create-operation.json --write-out '%{http_code}'               --request POST               -H "Authorization: Bearer $TOKEN"               -H "Content-Type: application/json"               --data '{}'               "$CREATE_URL")"
+            if [ "$CREATE_CODE" -lt 200 ] || [ "$CREATE_CODE" -ge 300 ]; then
+              cat artifacts/custom-domain-create-operation.json
+              exit 1
+            fi
+            sleep 8
+          elif [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            cat artifacts/custom-domain-before.json
+            exit 1
+          fi
+
+          curl --fail --silent --show-error             -H "Authorization: Bearer $TOKEN"             -H "Content-Type: application/json"             "$DOMAIN_URL" > artifacts/firebase-custom-domain.json
+
+          jq '{
+            name,
+            hostState,
+            ownershipState,
+            reconciling,
+            cert: (.cert // null),
+            issues: (.issues // []),
+            requiredDnsUpdates: (.requiredDnsUpdates // null)
+          }' artifacts/firebase-custom-domain.json | tee artifacts/firebase-domain-status.json
+
+          jq -n             --arg sha "$RELEASE_SHA"             --arg project "$PROJECT_ID"             --arg site "$SITE_ID"             --arg defaultUrl "https://$SITE_ID.web.app"             --arg customDomain "$CUSTOM_DOMAIN"             '{releaseSha:$sha,projectId:$project,siteId:$site,defaultUrl:$defaultUrl,customDomain:$customDomain}'             > artifacts/firebase-release.json
+
+      - name: Probe official custom domain without hiding DNS/certificate state
+        shell: bash
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          curl --fail --silent --show-error --location --max-time 20 "https://$CUSTOM_DOMAIN/"             | grep -q "NestLume"             && echo "CUSTOM_DOMAIN_SMOKE=success"             || echo "CUSTOM_DOMAIN_SMOKE=pending"
+
+      - name: Upload publication evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: nestlume-firebase-release-${{ env.RELEASE_SHA }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
