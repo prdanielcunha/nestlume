@@ -11,7 +11,7 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 | F2 Premium design/prototype | IMPLEMENTADO | Responsive premium editorial experience includes Today, full reader, contextual panels, Explore, paste, notebook, light/dark/system and reduced-motion handling. Real-device/user validation still required before TESTADO. |
 | F3 App foundation | TESTADO | React/TS/Vite, strict checks, PWA shell, no runtime secrets, Firebase Hosting config without project binding. GitHub Actions continuously runs install, typecheck/tests/corpus gate/build. |
 | F4 Bible/reference engine | IMPLEMENTADO | Full 66-book BLIVRE corpus imported; build verifies 1,189 chapters / 31,102 verses and exact source hashes; dynamic chapter reader, ranges, font size, resume, catalog-bound reference validation, word search, credits and explicit verified offline-book packages are wired. Browser/device smoke remains before TESTADO. |
-| F5 Initial editorial library | EM ANDAMENTO | João 1:1–18 draft is rendered and explicitly labeled unreviewed. 8–12 reviewed João/Provérbios encounters and named human review are still required. |
+| F5 Initial editorial library | EM ANDAMENTO | João 1:1–18 now uses a versioned editorial schema with claim IDs, layer, certainty, source links and a hard human-review gate; the UI exposes source/certainty without cluttering reading. 8–12 reviewed João/Provérbios encounters and named human review are still required. |
 | F6 Threads/entities/originals | EM ANDAMENTO | João 1 entity/thread/original-language UX exists with explicit limitation. STEPBible CC BY data was investigated but is not bundled until exact datasets/commit/hash/transforms are pinned. |
 | F7 Paste text | IMPLEMENTADO | Text stays local, version/ref optional, local corpus candidate identification, reference confirmation and honest unknown state. No third-party transmission. Broader browser test matrix remains. |
 | F8 Grounded AI | EM ANDAMENTO | Consent/evidence request contract, fail-closed limits and Cloudflare Worker adapter source are implemented. Live generation remains disabled until real F1 inference tests, quota behavior and production rate limiting pass. No static fallback is represented as AI. |
@@ -21,7 +21,7 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 | F12 Expansion | NÃO INICIADO | Post-core only. |
 
 ## Automated evidence
-The full-reader commit `b9c9f99e26414dd2862c6fa16c9219ff8908951d` passed NestLume CI run **36698477742**. Earlier corpus, parser, offline-package and IndexedDB commits also passed CI. CI executes TypeScript checks, tests, full corpus integrity/count verification, production build and secret-like file rejection.
+The AI/editorial integration through commit `fad8c2edf5cf0afb14a11dd64a77899784c31641` passed NestLume CI run **36707060508**. The earlier full-reader commit `b9c9f99e26414dd2862c6fa16c9219ff8908951d` passed run **36698477742**. CI executes TypeScript checks, tests, full corpus integrity/count verification, production build, AI Worker syntax validation and secret-like file rejection.
 
 ## Known validation limitation
 A separate local browser smoke could not be run from the current container because its network cannot resolve GitHub to clone the repository. This is **not** counted as a browser pass. GitHub Actions is real CI evidence; real browser/device evidence remains an explicit F10 gate.
