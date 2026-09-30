@@ -17,6 +17,7 @@ import { findEditorialStudy } from './editorial/registry';
 import john1Greek from './editorial/lexical/generated/jhn-1-1.json';
 import john14Greek from './editorial/lexical/generated/jhn-1-14.json';
 import { LexicalPanel } from './features/reader/LexicalPanel';
+import { OriginalLanguagePanel } from './features/reader/OriginalLanguagePanel';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -34,7 +35,7 @@ import {
 
 type T = Record<keyof typeof messages.pt, string>;
 type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'states';
-type Panel = 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | null;
+type Panel = 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
 
@@ -420,6 +421,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
           <div className="reader-controls" aria-label="Controles de leitura">
             <button onClick={() => setFontScale(Math.max(.9, fontScale - .1))} aria-label="Diminuir texto">A−</button>
             <button onClick={() => setFontScale(Math.min(1.3, fontScale + .1))} aria-label="Aumentar texto">A+</button>
+            <button onClick={() => setPanel('original')}>{t.originalLanguage}</button>
             <button onClick={() => void bookmark()}>{saved ? t.saved : t.save}</button>
           </div>
         </div>
@@ -513,7 +515,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
       </article>
 
       <aside className={'context-panel ' + (panel ? 'open' : '')} aria-hidden={!panel}>
-        {panel && <PanelContent panel={panel} book={book} onClose={() => setPanel(null)} />}
+        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} />}
       </aside>
       {panel && <button className="panel-backdrop" onClick={() => setPanel(null)} aria-label={t.close} />}
       {isJohnOne && <button className="floating-explore" onClick={() => setPanel(panel ? null : 'logos1')}>Explorar <span>Palavra</span></button>}
@@ -535,14 +537,17 @@ function renderVerse(text: string, verse: number, interactive: boolean, setPanel
   return text;
 }
 
-function PanelContent({ panel, book, onClose }: { panel: Exclude<Panel, null>; book: CorpusBook; onClose: () => void }) {
+function PanelContent({ panel, book, target, t, onClose }: {
+  panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; t: T; onClose: () => void;
+}) {
   const content = useMemo(() => ({
     logos1: <LexicalPanel bundle={john1Greek} verse={1} />,
     logos14: <LexicalPanel bundle={john14Greek} verse={14} />,
     john: <><p className="kicker">PESSOA · JOÃO 1:6</p><h2>João Batista</h2><p>O próprio trecho o apresenta como homem enviado por Deus e testemunha da Luz — e imediatamente nega que ele próprio fosse a Luz.</p><div className="certainty"><span>Identidade</span><strong>João Batista</strong><small>Não confundir automaticamente com João filho de Zebedeu ou com a questão da autoria do evangelho.</small></div></>,
     thread: <><p className="kicker">FIO DA BÍBLIA</p><h2>Luz que atravessa a história</h2><ol className="thread-list"><li><span>Gênesis 1</span><p>Luz aparece no cenário da criação. A ligação com João começa pela abertura “No princípio”.</p></li><li><span>João 1</span><p>Vida e luz são usadas para apresentar a Palavra. É conexão literária explícita, não um código escondido.</p></li><li><span>João 8</span><p>O evangelho retomará a linguagem da luz na fala de Jesus.</p></li></ol><p className="source-note">Percurso inicial e curado; não é apresentado como lista de todas as ocorrências.</p></>,
+    original: <OriginalLanguagePanel t={t} bookCode={book.ubsCode} chapter={target.chapter} initialVerse={target.startVerse} />,
     source: <><p className="kicker">PROVENIÊNCIA DO TEXTO</p><h2>Bíblia Livre</h2><dl><div><dt>Arquivo deste livro</dt><dd>{book.file}</dd></div><div><dt>Release integrada</dt><dd>2018.2.0</dd></div><div><dt>Tradição textual</dt><dd>Textus Receptus</dd></div><div><dt>Licença da release integrada</dt><dd>Creative Commons Atribuição 3.0 Brasil</dd></div><div><dt>Integridade</dt><dd>{book.gitBlobSha1 ? `Git blob ${book.gitBlobSha1.slice(0, 12)}…` : 'Verificada no build'}</dd></div></dl><p>O manifesto registra a identidade de cada arquivo importado da release oficial dos autores. A distribuição atual do eBible é registrada separadamente e não é tratada como byte idêntica sem prova.</p><a className="text-link" href="https://github.com/blivre/BibliaLivre/releases/tag/2018.2.0" target="_blank" rel="noreferrer">Abrir release de origem ↗</a></>,
-  }), [book]);
+  }), [book, t, target.chapter, target.startVerse]);
 
   return <div className="panel-inner"><button className="panel-close" onClick={onClose}>Fechar</button>{content[panel]}</div>;
 }
