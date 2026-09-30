@@ -13,7 +13,7 @@ import {
 } from './lib/corpus';
 import { parseReferenceSyntax } from './lib/reference';
 import { AskPage } from './features/ai/AskPage';
-import { john1PrologueStudy } from './editorial/studies/john-1-1-18';
+import { findEditorialStudy } from './editorial/registry';
 import john1Greek from './editorial/lexical/generated/jhn-1-1.json';
 import john14Greek from './editorial/lexical/generated/jhn-1-14.json';
 import { LexicalPanel } from './features/reader/LexicalPanel';
@@ -111,6 +111,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
 
+  const askPassage = (reference: string) => {
+    window.history.pushState({}, '', `/perguntar?ref=${encodeURIComponent(reference)}`);
+    setPage('ask');
+    setPanel(null);
+    setRouteVersion(version => version + 1);
+    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+
   const openReader = (target: ReaderTarget) => {
     window.history.pushState({}, '', readerPath(target));
     setPage('read');
@@ -135,6 +143,7 @@ export default function App() {
             panel={panel}
             setPanel={setPanel}
             onOpenReader={openReader}
+            onAskPassage={askPassage}
           />
         )}
         {page === 'paste' && <Paste t={t} onOpenReader={openReader} />}
@@ -301,7 +310,7 @@ function Explore({ t, onNavigate, onOpenReader }: {
   );
 }
 
-function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenReader }: {
+function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenReader, onAskPassage }: {
   t: T;
   target: ReaderTarget;
   fontScale: number;
@@ -309,6 +318,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   panel: Panel;
   setPanel: (panel: Panel) => void;
   onOpenReader: (target: ReaderTarget) => void;
+  onAskPassage: (reference: string) => void;
 }) {
   const [book, setBook] = useState<CorpusBook | null>(null);
   const [verses, setVerses] = useState<CorpusVerse[]>([]);
@@ -347,7 +357,12 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   }, [target.code, target.chapter, target.startVerse, target.endVerse, t.error]);
 
   const isJohnOne = book?.ubsCode === 'JHN' && target.chapter === 1;
-  const studyVisible = isJohnOne && (!target.startVerse || target.startVerse <= 18);
+  const editorialStudy = book ? findEditorialStudy({
+    bookCode: book.ubsCode,
+    chapter: target.chapter,
+    startVerse: target.startVerse,
+    endVerse: target.endVerse,
+  }) : null;
 
   async function bookmark() {
     if (!book) return;
@@ -431,15 +446,15 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
           {offlineState === 'error' && <p className="field-error" role="alert">Não foi possível validar e salvar este livro offline.</p>}
         </div>
 
-        {studyVisible ? (
+        {editorialStudy ? (
           <>
             <div className="study-divider"><span>{t.study}</span></div>
             <section className="study-prose">
-              <p className="kicker">RASCUNHO EDITORIAL · JOÃO 1:1–18</p>
-              <h2>{john1PrologueStudy.title}</h2>
-              <p className="lead">{john1PrologueStudy.lead}</p>
-              {john1PrologueStudy.sections.map(section => {
-                const claims = john1PrologueStudy.claims.filter(claim => section.claimIds.includes(claim.id));
+              <p className="kicker">{editorialStudy.review.status === 'published' ? 'ESTUDO EDITORIAL PUBLICADO' : 'RASCUNHO EDITORIAL'} · {referenceLabel.toUpperCase()}</p>
+              <h2>{editorialStudy.title}</h2>
+              <p className="lead">{editorialStudy.lead}</p>
+              {editorialStudy.sections.map(section => {
+                const claims = editorialStudy.claims.filter(claim => section.claimIds.includes(claim.id));
                 return (
                   <div className="study-section" key={section.id}>
                     <p className="micro-label">{section.eyebrow}</p>
@@ -449,7 +464,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
                       <summary>{t.evidence}</summary>
                       {claims.map(claim => {
                         const certainty = claim.certainty === 'high' ? t.certaintyHigh : claim.certainty === 'medium' ? t.certaintyMedium : t.certaintyLow;
-                        const sources = john1PrologueStudy.sources.filter(source => claim.sourceIds.includes(source.id));
+                        const sources = editorialStudy.sources.filter(source => claim.sourceIds.includes(source.id));
                         return (
                           <div className="claim-evidence" key={claim.id}>
                             <div className="claim-meta">
@@ -471,16 +486,23 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
               <button className="thread-card" onClick={() => setPanel('thread')}>
                 <span className="micro-label">{t.thread.toUpperCase()}</span><strong>Criação → Luz → Nova criação</strong><span>Seguir conexão →</span>
               </button>
-              <p className="source-note">Este encontro é um rascunho editorial de demonstração. Ele não recebe selo de revisão humana até que uma pessoa revisora real seja registrada.</p>
+              <p className="source-note">{editorialStudy.review.status === 'published'
+                ? t.editorialPublishedNote
+                : t.editorialDraftNote}</p>
             </section>
           </>
         ) : (
           <section className="unavailable-study">
-            <p className="micro-label">COBERTURA EDITORIAL</p>
+            <p className="micro-label">{t.wholeBibleScope.toUpperCase()}</p>
             <h2>{t.unavailableStudy}</h2>
             <p>{t.unavailableStudyBody}</p>
+            <button className="primary simple" onClick={() => onAskPassage(referenceLabel)}>{t.studyThisPassage}</button>
           </section>
         )}
+
+        <section className="reader-study-actions">
+          <button className="secondary" onClick={() => onAskPassage(referenceLabel)}>{t.askAboutThisPassage}</button>
+        </section>
 
         <section className="reader-note-box">
           <label className="field"><span>{t.note} · {t.localOnly}</span>
