@@ -1,41 +1,71 @@
 # NestLume — roadmap execution status
 
-Evidence snapshot: 2026-09-30
+Evidence snapshot: 2026-09-30  
+Source version: **1.0.0-rc.1**
 
 Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTADO` · `PUBLICADO` · `BLOQUEADO`.
 
-| Phase | Status | Evidence / next gate |
+| Phase | Status | Evidence / remaining gate |
 |---|---|---|
-| F0 Product contract & rights | EM ANDAMENTO | Exact BLIVRE release 2018.2.0/TR pinned; 66 raw files + per-file Git object hashes + upstream license/README preserved; integrity/count gate passes. Future lexical/media inventory and a real human reviewer are still pending. |
-| F1 AI feasibility | EM ANDAMENTO | Cloudflare Workers AI passes the current documentary cost/privacy/license architecture gate and is the implementation candidate. Provider-neutral request/consent contracts, tests and a source-only Worker adapter exist. Real Cloudflare account inference + the 20-case Portuguese battery remain mandatory before TESTADO. |
-| F2 Premium design/prototype | IMPLEMENTADO | Responsive premium editorial experience includes Today, full reader, contextual panels, Explore, paste, notebook, light/dark/system and reduced-motion handling. Real-device/user validation still required before TESTADO. |
-| F3 App foundation | TESTADO | React/TS/Vite, strict checks, PWA shell, no runtime secrets, Firebase Hosting config without project binding. GitHub Actions continuously runs install, typecheck/tests/corpus gate/build. |
-| F4 Bible/reference engine | IMPLEMENTADO | Full 66-book BLIVRE corpus imported; build verifies 1,189 chapters / 31,102 verses and exact source hashes; dynamic chapter reader, ranges, font size, resume, catalog-bound reference validation, word search, credits and explicit verified offline-book packages are wired. Browser/device smoke remains before TESTADO. |
-| F5 Editorial layer & whole-Bible coverage | EM ANDAMENTO | The product scope is Bible-wide. João 1 is only the first registered editorial fixture, not a scope boundary. A generic passage registry now separates optional human-reviewed editorial coverage from the core ability to study any valid Bible passage. Named human review and broader canon coverage remain required before the editorial layer is considered mature. |
-| F6 Threads/entities/originals | EM ANDAMENTO | Architecture is Bible-wide; João 1 is the first verified lexical/entity fixture only. STEPBible is pinned at commit `b99716b0cddb648ddb95cc786a197180f2f97d48`; TBESG/TBESH/TAGNT/TAHOT provenance is recorded and verified João 1 Greek bundles prove the pipeline. Expansion across Greek NT plus Hebrew/Aramaic OT requires deterministic alignment validation before each bundle is shown. |
-| F7 Paste text | IMPLEMENTADO | Text stays local, version/ref optional, local corpus candidate identification, reference confirmation and honest unknown state. No third-party transmission. Broader browser test matrix remains. |
-| F8 Grounded AI | EM ANDAMENTO | Consent/evidence request contract, fail-closed limits and Cloudflare Worker adapter source are implemented. Live generation remains disabled until real F1 inference tests, quota behavior and production rate limiting pass. No static fallback is represented as AI. |
-| F9 Continuity/offline | IMPLEMENTADO | IndexedDB position/bookmarks/notes, JSON export, validated import with explicit merge/replace, local deletion and verified explicit book caching are implemented. Interrupted-cache and browser migration/restore tests remain before TESTADO. |
-| F10 Premium quality/pilot | NÃO INICIADO | CI is green, but real mobile/desktop devices, accessibility tooling, a whole-Bible representative test matrix across canonical genres, performance measurements and human pilot remain required. |
-| F11 Publication/operation | BLOQUEADO | Source has Firebase Hosting config, but this session still lacks authenticated Firebase project-management and authoritative DNS write access. No project/domain/HTTPS is claimed. |
-| F12 Expansion | NÃO INICIADO | Post-core only. |
+| F0 Product contract & rights | TESTADO | Current distributed corpus/datasets are pinned by source/version/hash and license inventory. Dependency license allowlist runs in CI. New future datasets still require the same gate before inclusion. |
+| F1 AI feasibility | BLOQUEADO | Cloudflare Workers AI passes the current documentary cost/privacy/model-license architecture gate and the server adapter + 20-case harness exist. Real authorized Cloudflare account/binding, actual Portuguese inference battery, quota behavior and human review remain external gates. |
+| F2 Premium design/prototype | IMPLEMENTADO | Premium editorial mobile-first UI, Today/Explore/Reader/Paste/AI/Notebook, light/dark/system, reduced motion and responsive layouts exist. Automated desktop/mobile Chromium coverage exists; real-device and human-reader validation remain F10 gates. |
+| F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets, Firebase Hosting config without accidental project binding and CI gates are implemented. |
+| F4 Bible/reference engine | IMPLEMENTADO | Full 66-book Bíblia Livre corpus; 1,189 chapters / 31,102 verses; reference/range validation, reading, search, resume, chapter navigation, font size, credits and verified book-offline packaging. Full release CI is required on the exact release SHA before promotion. |
+| F5 Editorial layer & whole-Bible study | EM ANDAMENTO | Whole-Bible study capability is independent of hand-authored studies. João 1 is only the first versioned editorial fixture with claims/sources/certainty and a hard human-review gate. No content is falsely labeled human-reviewed; a named real reviewer and broader reviewed editorial library remain human-work gates. |
+| F6 Context/entities/originals | IMPLEMENTADO | Generic contextual Explore flow exposes local passage context, STEPBible-derived Greek/Hebrew/Aramaic packages, sourced people, sourced places, Bible-wide connections and provenance. Builds fail on broken/pinned-source coverage and versification differences are surfaced rather than silently shifted. |
+| F7 Pasted text | IMPLEMENTADO | Private paste preserves user text, supports optional version/reference, local corpus identification and handoff to AI only in session memory. Private text never enters the URL; third-party processing requires separate explicit consent. |
+| F8 Grounded AI | BLOQUEADO | Provider-neutral request/evidence contract, claim→evidence validation, prompt-injection boundary, timeout/quota states, Turnstile-before-inference protection and Cloudflare Worker source are implemented. Live generation is disabled until F1 real-account tests pass. |
+| F9 Continuity/offline | IMPLEMENTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. CI includes a real browser offline reload test. |
+| F10 Premium quality/pilot | EM ANDAMENTO | CI includes desktop/mobile Chromium, whole-Bible representative genre matrix, accessible-name/overflow checks, performance budget, offline smoke and contextual-panel focus/Escape/Back behavior. Real iOS/Android/desktop device testing and human pilot cannot be truthfully claimed from CI. |
+| F11 Publication/operation | BLOQUEADO | Release contract, Firebase config and rollback rules exist. This session has no authenticated Firebase/Google Cloud/Cloudflare/DNS tooling, so no project/site/domain/certificate/public smoke can be executed or claimed. |
+| F12 Expansion | NÃO INICIADO | Post-core expansion only: additional licensed translations, richer media, optional cloud sync/groups and further editorial journeys after current gates are validated. |
 
-## Automated evidence
-The AI/editorial integration through commit `fad8c2edf5cf0afb14a11dd64a77899784c31641` passed NestLume CI run **36707060508**. The earlier full-reader commit `b9c9f99e26414dd2862c6fa16c9219ff8908951d` passed run **36698477742**. CI executes TypeScript checks, tests, full corpus integrity/count verification, production build, AI Worker syntax validation and secret-like file rejection.
+## Whole-Bible execution rule
 
-## Known validation limitation
-A separate local browser smoke could not be run from the current container because its network cannot resolve GitHub to clone the repository. This is **not** counted as a browser pass. GitHub Actions is real CI evidence; real browser/device evidence remains an explicit F10 gate.
+João and Provérbios in planning materials are validation examples, **not** the product boundary. Every valid passage in the integrated 66-book corpus remains readable/searchable/notable and can enter the grounded study flow. Editorial studies, entity detail and lexical precision are additional layers whose availability depends on verified evidence for the exact passage.
+
+## Release gate
+
+A SHA is eligible for `production` only when the full NestLume CI succeeds for that exact SHA. The gate covers:
+
+- TypeScript checks;
+- corpus and generated-data integrity;
+- notebook/editorial/reference/AI security tests;
+- dependency-license allowlist;
+- deterministic production build;
+- desktop and mobile Chromium smoke;
+- representative whole-Bible genre coverage;
+- verified offline reload;
+- performance budget;
+- contextual-panel keyboard/history behavior;
+- AI Worker + F1 battery syntax;
+- secret-like file rejection.
+
+The GitHub Actions run associated with the promoted SHA is the release evidence; this file deliberately avoids a hard-coded run number that becomes stale after documentation-only commits.
+
+## External blockers that code cannot fabricate
+
+### Live AI
+No Cloudflare account/binding/token is exposed to this session. Therefore the real 20-case F1 model battery cannot be executed yet. The UI remains fail-closed and does not substitute static content for AI.
+
+### Firebase + domain
+No Firebase/Google Cloud authenticated CLI/connector and no authoritative DNS write connector are available. Therefore no project/site creation, deploy, DNS mutation, certificate verification or public-domain smoke is claimed.
+
+Target domain remains `nestlume.millionsnest.com`.
 
 ## Publication truth
-- No Firebase project/site has been created or changed by this execution.
-- No DNS record has been created or changed.
-- No `production` release is claimed.
-- `nestlume.millionsnest.com` is not claimed operational until deployment, DNS, certificate and public smoke tests are evidenced.
 
+- `main` is the integration/homologation line.
+- `production` is synchronized only to a full-CI-passing approved SHA by fast-forward.
+- Branch equality proves **code synchronization**, not hosting publication.
+- Status becomes `PUBLICADO` only after Firebase deployment, DNS, HTTPS and public smoke are evidenced for the same SHA.
 
-## AI provider migration
-Cloudflare Workers AI is the current R$0 candidate. The product-facing contract is provider-neutral so a future OpenAI API adapter can be introduced without redesigning the study experience. Current Google Cloud Generative AI age restrictions still block a teen-accessible NestLume use case even on paid Google Cloud; re-evaluate only if Google's terms change. Consumer ChatGPT subscriptions are never treated as API credits.
+## Human gates
 
+Some requirements cannot be manufactured by automation:
+- human doctrinal/editorial review must identify the actual reviewer;
+- a human-reader pilot must involve real readers;
+- real-device testing must use real devices, not browser emulation.
 
-## Whole-Bible scope clarification
-João and Provérbios in the planning documents are validation examples/pilot material, not the intended product boundary. The authoritative execution rule is documented in `WHOLE_BIBLE_SCOPE.md`: every valid passage in the integrated 66-book corpus must remain readable and studyable through the core engine, while human-reviewed editorial encounters, lexical precision, entities and other advanced layers expand only where their evidence has actually been validated.
+Until those happen, the app reports the relevant layer honestly instead of inventing approval.
