@@ -90,7 +90,7 @@ test('accepts fenced JSON but still validates evidence references', async () => 
     MODEL: '@cf/google/gemma-4-26b-a4b-it',
     AI: {
       run: async () => ({
-        response: '```json\\n{\"answer\":\"Resposta fundamentada.\",\"claims\":[{\"text\":\"A Palavra já era no princípio.\",\"evidenceIds\":[\"scripture:JHN.1.1\"],\"certainty\":\"high\"}],\"limitations\":[]}\\n```',
+        response: '```json\n{\"answer\":\"Resposta fundamentada.\",\"claims\":[{\"text\":\"A Palavra já era no princípio.\",\"evidenceIds\":[\"scripture:JHN.1.1\"],\"certainty\":\"high\"}],\"limitations\":[]}\n```',
       }),
     },
   });
