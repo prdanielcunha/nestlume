@@ -1,21 +1,25 @@
-# Sources and provenance — first batch
+# NestLume source registry
 
-## Bíblia Livre
-- eBible edition page: https://ebible.org/Bible/details.php?id=porbr2018
-- Copyright/license page: https://ebible.org/porbr2018/copyright.htm
-- João 1 current chapter page used by prototype: https://ebible.org/porbr2018/JHN01.htm
-- Copyright © 2018 Diego Santos, Mario Sérgio and Marco Teles.
-- Current eBible distribution statement: Creative Commons Attribution 4.0.
+Evidence date: 2026-09-30
 
-## Historical source repository
-- https://github.com/blivre/BibliaLivre
-- Used for provenance investigation only in this batch; not silently treated as byte-identical to the current eBible export because its recorded license/version structure differs.
+## Scripture actually bundled
+- Bíblia Livre upstream authors' repository: https://github.com/blivre/BibliaLivre
+- Exact pinned release: https://github.com/blivre/BibliaLivre/releases/tag/2018.2.0
+- Imported directory: `textos/f4/tr`
+- Exact release license preserved at `public/corpus/blivre/2018.2.0/LICENCA_UPSTREAM.md`
+- Per-file source hashes: `public/corpus/blivre/2018.2.0/manifest.json`
+- Current eBible distribution (separate provenance record): https://ebible.org/porbr2018/
 
-## AI feasibility sources
-- Google Gemini API Additional Terms (current terms reviewed 2026-09-30).
-- GitHub Models documentation/current retirement notice.
-- Hugging Face pricing/current Inference Provider credit policy.
-- Cloudflare Workers AI pricing, data usage and Qwen3 model documentation.
-- Qwen/Qwen3-30B-A3B model card/license (Apache-2.0).
+## Candidate original-language data — not yet bundled
+- STEPBible Data: https://github.com/STEPBible/STEPBible-Data
+- Repository README states CC BY 4.0 and attribution to STEP Bible.
+- Candidate datasets: TAGNT/TAHOT for tagged original texts; TBESG/TBESH for brief lexicons; TIPNR for proper-noun identity/reference data.
+- No claim is made that AI-generated descriptions inside some STEPBible datasets are human-reviewed facts; dataset fields must be selectively audited before display.
 
-Links are documentation pointers, not proof that a future provider remains unchanged. Re-verify at each AI release gate.
+## Infrastructure / AI policy evidence
+- Firebase pricing: https://firebase.google.com/pricing
+- Firebase Hosting usage/pricing: https://firebase.google.com/docs/hosting/usage-quotas-pricing
+- Gemini API terms: https://ai.google.dev/gemini-api/terms
+
+## Project editorial sources
+The master study guide and author-reference document define editorial method and author roles. They do not grant rights to reproduce the listed authors' books. A published claim may cite an author only when the actual source passage was consulted and use is permitted.
