@@ -159,6 +159,14 @@ for(const [key,verses] of [...byChapter.entries()].sort()){
  fs.writeFileSync(path.join(dir,`${chapter}.json`),JSON.stringify(payload));
  packages+=1;
 }
+const sentinel = byChapter.get('JHN.1')?.get(6) ?? [];
+if (!sentinel.some(person => person.name === 'John')) {
+ throw new Error('TIPNR sentinel missing: expected John at JHN.1.6');
+}
+if (people < 1000 || exactOccurrences < 10000 || packages < 100) {
+ throw new Error(`TIPNR coverage unexpectedly low: people=${people}, exactOccurrences=${exactOccurrences}, packages=${packages}`);
+}
+
 fs.mkdirSync(OUTPUT,{recursive:true});
 fs.writeFileSync(path.join(OUTPUT,'manifest.json'),JSON.stringify({
  schemaVersion:1,sourceCommit:SOURCE_COMMIT,sourceBlobSha1:EXPECTED_BLOB,license:'CC BY 4.0',
