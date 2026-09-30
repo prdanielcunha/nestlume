@@ -102,3 +102,13 @@ A ChatGPT Plus/Pro subscription is not an API backend or API credit and must nev
 Paying for Google Cloud does **not** currently remove the age restriction relevant to NestLume. Current Google Cloud Generative AI service terms prohibit customers and End Users from using a Generative AI Service as part of an application likely to be accessed by people under 18. Therefore paid Gemini/Vertex AI remains blocked for the intended general-audience NestLume unless Google's terms change or the product audience is legitimately re-scoped with compliant age assurance.
 
 Because the NestLume frontend speaks to a provider-neutral server-side contract, switching providers later does not require rebuilding the reading/study UX.
+
+
+## Evidence links — rechecked 2026-09-30
+- Cloudflare Workers AI pricing/free allocation: https://developers.cloudflare.com/workers-ai/platform/pricing/
+- Cloudflare Workers AI customer-content handling: https://developers.cloudflare.com/workers-ai/platform/data-usage/
+- Workers Free model availability changelog: https://developers.cloudflare.com/changelog/post/2026-07-28-models-require-workers-paid/
+- Gemma 4 Workers AI announcement: https://developers.cloudflare.com/changelog/post/2026-04-04-gemma-4-26b-a4b-workers-ai/
+- Cloudflare privacy policy / customer End User distinction: https://www.cloudflare.com/privacypolicy/
+- OpenAI under-18 API guidance: https://developers.openai.com/api/docs/guides/safety-checks/under-18-api-guidance
+- Google Cloud Generative AI age restriction: https://cloud.google.com/terms/service-terms
