@@ -167,7 +167,12 @@ export default function App() {
   };
 
   const openReader = (target: ReaderTarget) => {
-    window.history.pushState({}, '', readerPath(target));
+    const path = readerPath(target);
+    if (panelRef.current && window.history.state?.nestlumePanel) {
+      window.history.replaceState({}, '', path);
+    } else {
+      window.history.pushState({}, '', path);
+    }
     setPage('read');
     resetPanel();
     setRouteVersion(version => version + 1);
