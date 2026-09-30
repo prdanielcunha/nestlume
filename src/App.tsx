@@ -435,9 +435,36 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
               <p className="kicker">RASCUNHO EDITORIAL · JOÃO 1:1–18</p>
               <h2>{john1PrologueStudy.title}</h2>
               <p className="lead">{john1PrologueStudy.lead}</p>
-              {john1PrologueStudy.sections.map(section => (
-                <div className="study-section" key={section.title}><p className="micro-label">{section.eyebrow}</p><h3>{section.title}</h3><p>{section.body}</p></div>
-              ))}
+              {john1PrologueStudy.sections.map(section => {
+                const claims = john1PrologueStudy.claims.filter(claim => section.claimIds.includes(claim.id));
+                return (
+                  <div className="study-section" key={section.id}>
+                    <p className="micro-label">{section.eyebrow}</p>
+                    <h3>{section.title}</h3>
+                    <p>{section.body}</p>
+                    <details className="study-evidence">
+                      <summary>{t.evidence}</summary>
+                      {claims.map(claim => {
+                        const certainty = claim.certainty === 'high' ? t.certaintyHigh : claim.certainty === 'medium' ? t.certaintyMedium : t.certaintyLow;
+                        const sources = john1PrologueStudy.sources.filter(source => claim.sourceIds.includes(source.id));
+                        return (
+                          <div className="claim-evidence" key={claim.id}>
+                            <div className="claim-meta">
+                              <span>{claim.layer.toUpperCase()}</span>
+                              <span>{t.certainty}: <strong>{certainty}</strong></span>
+                            </div>
+                            <p>{claim.text}</p>
+                            <small>{t.supportingSources}</small>
+                            <ul>
+                              {sources.map(source => <li key={source.id}><strong>{source.title}</strong>{source.locator ? ` · ${source.locator}` : ''}</li>)}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </details>
+                  </div>
+                );
+              })}
               <button className="thread-card" onClick={() => setPanel('thread')}>
                 <span className="micro-label">{t.thread.toUpperCase()}</span><strong>Criação → Luz → Nova criação</strong><span>Seguir conexão →</span>
               </button>
