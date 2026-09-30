@@ -7,6 +7,9 @@
   "vars": {
     "APP_ORIGIN": "https://nestlume.millionsnest.com",
     "MODEL": "@cf/google/gemma-4-26b-a4b-it",
-    "ALLOW_LOCAL_DEV": "false"
+    "ALLOW_LOCAL_DEV": "false",
+    "REQUIRE_TURNSTILE": "true",
+    "TURNSTILE_EXPECTED_ACTION": "nestlume_ai_study",
+    "TURNSTILE_EXPECTED_HOSTNAME": "nestlume.millionsnest.com"
   }
 }
