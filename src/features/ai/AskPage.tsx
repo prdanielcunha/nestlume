@@ -25,7 +25,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook }: {
 }) {
   const provider = 'cloudflare-workers-ai' as const;
   const [question, setQuestion] = useState('');
-  const [reference, setReference] = useState('João 1:1-5');
+  const [reference, setReference] = useState(() => new URLSearchParams(window.location.search).get('ref') || 'João 1:1-5');
   const [accepted, setAccepted] = useState(false);
   const [status, setStatus] = useState('');
   const [result, setResult] = useState<AiStudyResponse | null>(null);
