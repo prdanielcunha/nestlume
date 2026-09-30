@@ -1,0 +1,675 @@
+{
+  "schemaVersion": 1,
+  "id": "step-jhn-1-14",
+  "generatedOn": "2026-09-30",
+  "transformVersion": "step-jhn-1-14-v1",
+  "license": "CC BY 4.0",
+  "attribution": "STEP Bible — https://www.STEPBible.org/",
+  "provenance": {
+    "repository": "STEPBible/STEPBible-Data",
+    "commit": "b99716b0cddb648ddb95cc786a197180f2f97d48",
+    "tagnt": {
+      "blobSha": "705c1bc1cf752e013efcef99b8d9a3b7853bf843",
+      "path": "Translators Amalgamated OT+NT/TAGNT Mat-Jhn - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt"
+    },
+    "tbesg": {
+      "blobSha": "efe271a1dbb73fa01f8fa6e0f164c6687757a9ae",
+      "path": "Lexicons/TBESG - Translators Brief lexicon of Extended Strongs for Greek - STEPBible.org CC BY.txt"
+    }
+  },
+  "passage": {
+    "book": "Jhn",
+    "chapter": 1,
+    "verse": 14
+  },
+  "alignmentNote": "TAGNT attests the included João 1:14 tokens in listed critical/traditional editions. NestLume maps only explicitly curated BLIVRE display words.",
+  "tokens": [
+    {
+      "refInstance": "Jhn.1.14#01",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "And",
+      "translationEs": "Y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#02",
+      "type": "NKO",
+      "surface": "ὁ",
+      "surfaceTransliteration": "ho",
+      "translationEn": "the",
+      "translationEs": "la",
+      "eStrong": "G3588",
+      "grammar": "T-NSM",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#03",
+      "type": "NKO",
+      "surface": "λόγος",
+      "surfaceTransliteration": "logos",
+      "translationEn": "Word",
+      "translationEs": "Palabra",
+      "eStrong": "G3056",
+      "grammar": "N-NSM",
+      "lemma": "λόγος",
+      "lemmaGloss": "word",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#04",
+      "type": "NKO",
+      "surface": "σὰρξ",
+      "surfaceTransliteration": "sarx",
+      "translationEn": "flesh",
+      "translationEs": "carne",
+      "eStrong": "G4561",
+      "grammar": "N-NSF",
+      "lemma": "σάρξ",
+      "lemmaGloss": "flesh",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#05",
+      "type": "NKO",
+      "surface": "ἐγένετο",
+      "surfaceTransliteration": "egeneto",
+      "translationEn": "became",
+      "translationEs": "llegó a ser",
+      "eStrong": "G1096",
+      "grammar": "V-2ADI-3S",
+      "lemma": "γίνομαι",
+      "lemmaGloss": "to be",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#06",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "and",
+      "translationEs": "y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#07",
+      "type": "NKO",
+      "surface": "ἐσκήνωσεν",
+      "surfaceTransliteration": "eskēnōsen",
+      "translationEn": "He dwelt",
+      "translationEs": "habitó en tienda",
+      "eStrong": "G4637",
+      "grammar": "V-AAI-3S",
+      "lemma": "σκηνόω",
+      "lemmaGloss": "to dwell",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#08",
+      "type": "NKO",
+      "surface": "ἐν",
+      "surfaceTransliteration": "en",
+      "translationEn": "among",
+      "translationEs": "entre",
+      "eStrong": "G1722",
+      "grammar": "PREP",
+      "lemma": "ἐν",
+      "lemmaGloss": "in/on/among",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#09",
+      "type": "NKO",
+      "surface": "ἡμῖν,",
+      "surfaceTransliteration": "hēmin",
+      "translationEn": "us,",
+      "translationEs": "nosotros",
+      "eStrong": "G3165",
+      "grammar": "P-1DP",
+      "lemma": "ἐγώ",
+      "lemmaGloss": "I/we",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#10",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "and",
+      "translationEs": "y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#11",
+      "type": "NKO",
+      "surface": "ἐθεασάμεθα",
+      "surfaceTransliteration": "etheasametha",
+      "translationEn": "we beheld",
+      "translationEs": "vimos",
+      "eStrong": "G2300",
+      "grammar": "V-ADI-1P",
+      "lemma": "θεάομαι",
+      "lemmaGloss": "to look at",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#12",
+      "type": "NKO",
+      "surface": "τὴν",
+      "surfaceTransliteration": "tēn",
+      "translationEn": "the",
+      "translationEs": "el",
+      "eStrong": "G3588",
+      "grammar": "T-ASF",
+      "lemma": "ὁ",
+      "lemmaGloss": "the/this/who",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#13",
+      "type": "NKO",
+      "surface": "δόξαν",
+      "surfaceTransliteration": "doxan",
+      "translationEn": "glory",
+      "translationEs": "esplendor",
+      "eStrong": "G1391",
+      "grammar": "N-ASF",
+      "lemma": "δόξα",
+      "lemmaGloss": "glory",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#14",
+      "type": "NKO",
+      "surface": "αὐτοῦ,",
+      "surfaceTransliteration": "autou",
+      "translationEn": "of Him,",
+      "translationEs": "de él",
+      "eStrong": "G0846",
+      "grammar": "P-GSM",
+      "lemma": "αὐτός",
+      "lemmaGloss": "he/she/it/self",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#15",
+      "type": "NKO",
+      "surface": "δόξαν",
+      "surfaceTransliteration": "doxan",
+      "translationEn": "a glory",
+      "translationEs": "esplendor",
+      "eStrong": "G1391",
+      "grammar": "N-ASF",
+      "lemma": "δόξα",
+      "lemmaGloss": "glory",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#16",
+      "type": "NKO",
+      "surface": "ὡς",
+      "surfaceTransliteration": "hōs",
+      "translationEn": "as",
+      "translationEs": "como",
+      "eStrong": "G5613",
+      "grammar": "PRT",
+      "lemma": "ὡς",
+      "lemmaGloss": "which/how",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#17",
+      "type": "NKO",
+      "surface": "μονογενοῦς",
+      "surfaceTransliteration": "monogenous",
+      "translationEn": "of an only begotten",
+      "translationEs": "de unigénito",
+      "eStrong": "G3439",
+      "grammar": "A-GSM",
+      "lemma": "μονογενής",
+      "lemmaGloss": "unique",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#18",
+      "type": "NKO",
+      "surface": "παρὰ",
+      "surfaceTransliteration": "para",
+      "translationEn": "from",
+      "translationEs": "al lado de",
+      "eStrong": "G3844",
+      "grammar": "PREP",
+      "lemma": "παρά",
+      "lemmaGloss": "from with",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#19",
+      "type": "NKO",
+      "surface": "πατρός,",
+      "surfaceTransliteration": "patros",
+      "translationEn": "[the] Father,",
+      "translationEs": "Padre",
+      "eStrong": "G3962",
+      "grammar": "N-GSM-T",
+      "lemma": "πατήρ",
+      "lemmaGloss": "father",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#20",
+      "type": "NKO",
+      "surface": "πλήρης",
+      "surfaceTransliteration": "plērēs",
+      "translationEn": "full",
+      "translationEs": "lleno",
+      "eStrong": "G4134",
+      "grammar": "A-NSM",
+      "lemma": "πλήρης",
+      "lemmaGloss": "full",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#21",
+      "type": "NKO",
+      "surface": "χάριτος",
+      "surfaceTransliteration": "charitos",
+      "translationEn": "of grace",
+      "translationEs": "de bondad inmerecida",
+      "eStrong": "G5485",
+      "grammar": "N-GSF",
+      "lemma": "χάρις",
+      "lemmaGloss": "grace",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#22",
+      "type": "NKO",
+      "surface": "καὶ",
+      "surfaceTransliteration": "kai",
+      "translationEn": "and",
+      "translationEs": "y",
+      "eStrong": "G2532",
+      "grammar": "CONJ",
+      "lemma": "καί",
+      "lemmaGloss": "and",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    },
+    {
+      "refInstance": "Jhn.1.14#23",
+      "type": "NKO",
+      "surface": "ἀληθείας.¶",
+      "surfaceTransliteration": "alētheias",
+      "translationEn": "truth.",
+      "translationEs": "verdad",
+      "eStrong": "G0225",
+      "grammar": "N-GSF",
+      "lemma": "ἀλήθεια",
+      "lemmaGloss": "truth",
+      "editions": [
+        "NA28",
+        "NA27",
+        "Tyn",
+        "SBL",
+        "WH",
+        "Treg",
+        "TR",
+        "Byz"
+      ]
+    }
+  ],
+  "lexicon": {
+    "G0225": {
+      "eStrong": "G0225",
+      "greek": "ἀλήθεια",
+      "transliteration": "alētheia",
+      "morph": "G:N-F",
+      "gloss": "truth"
+    },
+    "G0846": {
+      "eStrong": "G0846",
+      "greek": "αὐτός",
+      "transliteration": "autos",
+      "morph": "G:P",
+      "gloss": "it/s/he"
+    },
+    "G1096": {
+      "eStrong": "G1096",
+      "greek": "γίνομαι",
+      "transliteration": "ginomai",
+      "morph": "G:V",
+      "gloss": "to be"
+    },
+    "G1391": {
+      "eStrong": "G1391",
+      "greek": "δόξα",
+      "transliteration": "doxa",
+      "morph": "G:N-F",
+      "gloss": "glory"
+    },
+    "G1722": {
+      "eStrong": "G1722",
+      "greek": "ἐν",
+      "transliteration": "en",
+      "morph": "G:PREP",
+      "gloss": "in/on/among"
+    },
+    "G2300": {
+      "eStrong": "G2300",
+      "greek": "θεάομαι",
+      "transliteration": "theaomai",
+      "morph": "G:V",
+      "gloss": "to look at"
+    },
+    "G2532": {
+      "eStrong": "G2532",
+      "greek": "καί",
+      "transliteration": "kai",
+      "morph": "G:CONJ",
+      "gloss": "and"
+    },
+    "G3056": {
+      "eStrong": "G3056",
+      "greek": "λόγος",
+      "transliteration": "logos",
+      "morph": "G:N-M",
+      "gloss": "word"
+    },
+    "G3165": {
+      "eStrong": "G3165",
+      "greek": "μέ",
+      "transliteration": "me",
+      "morph": "G:P-1",
+      "gloss": "me"
+    },
+    "G3439": {
+      "eStrong": "G3439",
+      "greek": "μονογενής",
+      "transliteration": "monogenēs",
+      "morph": "G:A",
+      "gloss": "unique"
+    },
+    "G3588": {
+      "eStrong": "G3588",
+      "greek": "ὁ",
+      "transliteration": "ho",
+      "morph": "G:T",
+      "gloss": "the/this/who"
+    },
+    "G3844": {
+      "eStrong": "G3844",
+      "greek": "παρά",
+      "transliteration": "para",
+      "morph": "G:PREP",
+      "gloss": "from/with/beside"
+    },
+    "G3962": {
+      "eStrong": "G3962",
+      "greek": "πατήρ",
+      "transliteration": "patēr",
+      "morph": "G:N-M",
+      "gloss": "father"
+    },
+    "G4134": {
+      "eStrong": "G4134",
+      "greek": "πλήρης",
+      "transliteration": "plērēs",
+      "morph": "G:A",
+      "gloss": "full"
+    },
+    "G4561": {
+      "eStrong": "G4561",
+      "greek": "σάρξ",
+      "transliteration": "sarx",
+      "morph": "G:N-F",
+      "gloss": "flesh"
+    },
+    "G4637": {
+      "eStrong": "G4637",
+      "greek": "σκηνόω",
+      "transliteration": "skēnoō",
+      "morph": "G:V",
+      "gloss": "to dwell"
+    },
+    "G5485": {
+      "eStrong": "G5485",
+      "greek": "χάρις",
+      "transliteration": "charis",
+      "morph": "G:N-F",
+      "gloss": "grace"
+    },
+    "G5613": {
+      "eStrong": "G5613",
+      "greek": "ὡς",
+      "transliteration": "hōs",
+      "morph": "G:PREP",
+      "gloss": "as/when"
+    }
+  },
+  "curatedMappings": [
+    {
+      "bibleEditionId": "blivre-2018.2.0-tr",
+      "displayedWord": "Palavra",
+      "verse": 14,
+      "eStrong": "G3056",
+      "sourceInstances": [
+        "Jhn.1.14#03"
+      ],
+      "mappingType": "curated-contextual",
+      "certainty": "high"
+    }
+  ]
+}
