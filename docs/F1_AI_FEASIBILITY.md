@@ -48,3 +48,39 @@ The current app exposes an honest “IA ao vivo ainda não está habilitada” s
 
 ## Exit criteria
 F1 becomes **TESTADO** only after a real provider account/terms fit is confirmed and all 20 cases are executed. It becomes **IMPLEMENTADO** only after the approved server-side adapter, quota ceiling, timeouts, rate limit, privacy controls and evidence validation exist. Until then F8 remains blocked by dependency.
+
+
+## Decision update — age gate and consent (2026-09-30)
+
+A generic “I am 18+” checkbox is **not** accepted as a workaround for Gemini Developer API. The current Gemini Additional Terms say the APIs may not be used as part of an API Client directed to or likely to be accessed by people under 18, and also describe Gemini API / AI Studio as developer services for professional or business purposes rather than consumer use. NestLume is intentionally useful to teenagers, so an adult-only toggle inside the same public Bible app does not remove that underlying terms conflict.
+
+Brazilian age-assurance guidance also makes a pure self-declaration a weak control when a service truly needs to exclude minors: ANPD’s March 2026 preliminary guidance describes self-declaration-only mechanisms as having low reliability because they are easy to manipulate. Therefore NestLume will not pretend that a checkbox is strong age verification.
+
+### Product rule
+NestLume will preserve the full AI product vision while keeping the provider interchangeable.
+
+Before the first third-party AI request, the UI must present a concise AI processing disclosure and require an explicit user action. The disclosure must identify:
+- that a third-party inference provider will process the submitted study request;
+- which categories of content are sent;
+- whether pasted text is included;
+- the provider/data-retention posture applicable to that request;
+- that AI can be unavailable when the free quota is exhausted;
+- that the user can continue Bible reading and local editorial study without AI.
+
+Age gating is provider/risk dependent. We will not impose an 18+ wall merely to fit a provider whose terms conflict with the intended audience. If a future provider legally requires an adult-only experience, that provider remains disabled unless the required age-assurance mechanism is both compliant and proportionate.
+
+### Current preferred technical candidate
+Cloudflare Workers AI on Workers Free is the leading F1 candidate, not yet approved. Current documentation states:
+- 10,000 Neurons/day free allocation;
+- Workers Free cannot consume paid AI overage; additional inference fails when the free allocation is exhausted;
+- Workers AI customer content is not used to train AI models or improve Cloudflare/third-party services without explicit consent;
+- model licenses remain independently applicable.
+
+The adapter must remain server-side and fail closed. No Cloudflare token or provider secret may be placed in the PWA bundle.
+
+### F1 next evidence
+1. Verify Cloudflare account/service terms and chosen model license for the intended public, commercial, teen-accessible use.
+2. Establish an authorized free Workers AI account/binding without billing.
+3. Run the documented 20-case Portuguese biblical-quality battery.
+4. Measure latency, quota consumption and 429/quota-exhaustion behavior.
+5. Implement the provider adapter, explicit AI disclosure/consent state, rate limiting and evidence validator only after steps 1–4 pass.
