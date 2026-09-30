@@ -100,6 +100,12 @@ export function prepareAiRequest(input: AiStudyInput, consent: AiConsent | null)
   };
 }
 
+export function configuredTurnstileSiteKey(): string | null {
+  const env = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
+  const value = env?.VITE_NESTLUME_TURNSTILE_SITE_KEY?.trim();
+  return value || null;
+}
+
 export function configuredAiEndpoint(): string | null {
   const env = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
   const raw = env?.VITE_NESTLUME_AI_ENDPOINT?.trim();
@@ -113,7 +119,7 @@ export function configuredAiEndpoint(): string | null {
   }
 }
 
-export async function requestAiStudy(request: AiStudyRequest, endpoint = configuredAiEndpoint()): Promise<AiStudyResponse> {
+export async function requestAiStudy(request: AiStudyRequest, endpoint = configuredAiEndpoint(), turnstileToken?: string): Promise<AiStudyResponse> {
   if (!endpoint) throw new Error('A IA ao vivo ainda não foi conectada a um provedor aprovado.');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
@@ -121,7 +127,7 @@ export async function requestAiStudy(request: AiStudyRequest, endpoint = configu
     const response = await fetch(`${endpoint}/v1/study`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(request),
+      body: JSON.stringify({ ...request, turnstileToken: turnstileToken || undefined }),
       signal: controller.signal,
       credentials: 'omit',
     });
