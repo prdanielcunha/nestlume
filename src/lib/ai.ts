@@ -131,7 +131,7 @@ export async function requestAiStudy(request: AiStudyRequest, endpoint = configu
       signal: controller.signal,
       credentials: 'omit',
     });
-    if (response.status === 429) throw new Error('A cota gratuita de IA está temporariamente indisponível. A Bíblia e os estudos salvos continuam funcionando.');
+    if (response.status === 429) throw new Error('A IA atingiu um limite temporário de proteção ou da cota gratuita. Aguarde um pouco e tente novamente; a Bíblia e os estudos salvos continuam funcionando.');
     if (!response.ok) throw new Error(`A IA não conseguiu concluir esta solicitação (${response.status}).`);
     const data = await response.json() as AiStudyResponse;
     if (!data.answer?.trim()) throw new Error('A resposta da IA chegou sem conteúdo utilizável.');
