@@ -4,7 +4,7 @@ NestLume is a premium, local-first Bible reading and study PWA designed to help 
 
 ## Release candidate
 
-Current source version: **1.0.0-rc.2**.
+Current source version: **1.0.0-rc.3**.
 
 The release candidate is Bible-wide in architecture and user flow. The initial editorial library now contains 10 Scripture-grounded encounters across João and Provérbios; they remain explicitly marked as drafts until real human review is recorded.
 
@@ -24,10 +24,11 @@ The release candidate is Bible-wide in architecture and user flow. The initial e
 
 ## AI status
 
-Live AI is **not enabled in production yet**. Cloudflare Workers AI is the current zero-additional-cost F1 candidate. The source adapter, consent flow, anti-abuse gate and 20-case Portuguese evaluation harness exist, but a real authorized Cloudflare account/binding and real model execution are still required before the feature is called tested.
+Live grounded AI is enabled in production through Cloudflare Workers AI. The browser never receives provider credentials: requests go to the `nestlume-ai` Worker, are restricted to the official NestLume origin, require explicit processing consent and a valid Cloudflare Turnstile challenge, and are rate-limited before inference.
 
-The provider contract is intentionally swappable. A future OpenAI API adapter can be added without redesigning the reading experience. A ChatGPT consumer subscription is never treated as API credit or automated as a backend.
+The server accepts only an explicit evidence bundle. Generated claims must reference evidence IDs supplied with that request; output that violates the contract fails closed. The production release gate runs a real Portuguese battery against the same Worker before Firebase Hosting is published. Greek/Hebrew battery cases use pinned STEPBible-derived evidence; unsupported textual-variant analysis remains unavailable rather than being invented.
 
+The provider contract remains swappable. Cloudflare Workers AI is the current zero-additional-cost implementation; free-quota exhaustion and protection limits return an unavailable state while Bible reading, offline content and the local notebook continue working.
 ## Scripture and source rights
 
 The integrated initial corpus is the pinned Bíblia Livre 2018.2.0/TR release. Its exact source files, Git object identities and attribution are recorded and checked by the build. Additional translations are not bundled merely because they exist online.
@@ -52,7 +53,7 @@ Target production hosting is **Firebase Hosting in an isolated Spark/no-billing 
 
 `https://nestlume.millionsnest.com`
 
-Source intentionally contains no Firebase project binding until authenticated infrastructure access verifies the exact project/site and billing state. No Firebase deployment, DNS change or HTTPS status is claimed from source code alone.
+Production deploys use the isolated Firebase Hosting site `nestlume-555464791734` in project `millionsnest` through Workload Identity Federation. The release workflow verifies the exact SHA, publishes only the NestLume hosting target, checks Firebase's default URL and probes the official custom domain before recording publication evidence.
 
 ## Branch contract
 
