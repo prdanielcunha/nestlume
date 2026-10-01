@@ -190,3 +190,17 @@ html[data-theme='dark'] { --paper:#171714; --paper-2:#1f1e1a; --ink:#eee8dc; --m
 .open-question-box summary{cursor:pointer;color:var(--accent);font:600 12px/1.4 var(--sans);letter-spacing:.02em}
 .open-question-box>p{margin:9px 0 14px;color:var(--muted);font:12px/1.55 var(--sans)}
 .open-question-box textarea{min-height:92px}
+
+
+/* Deterministic reading lenses */
+.reading-lenses>h2{font:400 30px/1.12 var(--serif);margin:8px 0 10px}
+.reading-lenses>p:not(.kicker):not(.source-note){color:var(--muted);font:14px/1.6 var(--sans)}
+.reading-lenses>section{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.lens-word-list,.lens-contrast-list{display:grid;gap:8px;margin-top:12px}
+.lens-word-list article,.lens-contrast-list article{padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:var(--paper-2)}
+.lens-word-list article{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.lens-word-list strong{font:600 15px/1.4 var(--sans)}
+.lens-word-list span{color:var(--muted);font:11px/1.4 var(--sans)}
+.lens-contrast-list strong{font:600 11px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.06em}
+.lens-contrast-list p{margin:7px 0 0;font:15px/1.5 var(--serif);color:var(--ink)}
+@media(max-width:650px){.lens-word-list article{align-items:flex-start;flex-direction:column;gap:3px}}
