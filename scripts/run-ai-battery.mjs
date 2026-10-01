@@ -7,6 +7,8 @@ const outputPath = process.env.NESTLUME_AI_BATTERY_OUTPUT || 'artifacts/ai-batte
 const disclosureVersion = '2026-09-30.1';
 const provider = 'cloudflare-workers-ai';
 const turnstileToken = process.env.NESTLUME_TURNSTILE_TOKEN || '';
+const requestPath = process.env.NESTLUME_AI_PATH || '/v1/study';
+const ciValidationToken = process.env.NESTLUME_AI_CI_TOKEN || '';
 
 if (!endpoint) {
   console.error('NESTLUME_AI_ENDPOINT is required. No request was sent.');
@@ -116,11 +118,12 @@ async function runCase(testCase) {
   const started = Date.now();
   let response;
   try {
-    response = await fetch(`${endpoint}/v1/study`, {
+    response = await fetch(`${endpoint}${requestPath}`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         origin: 'https://nestlume.millionsnest.com',
+        ...(ciValidationToken ? { 'x-nestlume-ci-token': ciValidationToken } : {}),
       },
       body: JSON.stringify(body),
     });
@@ -174,6 +177,7 @@ const summary = {
   generatedAt: new Date().toISOString(),
   endpoint,
   provider,
+  requestPath,
   total: results.length,
   awaitingHumanReview: results.filter(result => result.status === 'awaiting-human-review').length,
   structuralFail: results.filter(result => result.status === 'structural-fail').length,
