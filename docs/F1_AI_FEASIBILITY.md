@@ -1,114 +1,58 @@
 # F1 — AI feasibility gate
 
-Status: **EM ANDAMENTO / CANDIDATO CLOUDFLARE APROVADO DOCUMENTALMENTE, TESTE REAL PENDENTE**  
-Evidence date: 2026-09-30
+Status: **TESTADO / IMPLEMENTADO COM CLOUDFLARE WORKERS AI**  
+Evidence date: 2026-10-01
 
-NestLume treats AI as a real product capability, not a label for static studies. No live-generation UI is enabled until this gate passes.
+NestLume treats AI as a real product capability, not a label for static studies. The live provider is Cloudflare Workers AI through the server-side `nestlume-ai` Worker.
 
-## Requirements
-A provider must simultaneously satisfy: R$0 operation without auto-billing/overage, commercial API use, acceptable handling of an audience that can include teenagers, suitable privacy/retention for pasted text, server-side secret handling, strong Portuguese quality, model license compatibility, predictable quota exhaustion and a fail-closed path.
+## Exit evidence
 
-## Current findings
-| Candidate | Finding | Decision |
-|---|---|---|
-| Google Gemini API free/unpaid | Current Additional Terms require API users to be 18+ and prohibit API clients directed to or likely accessed by under-18s; unpaid-service content can be used to improve products and may receive human review. | **Blocked** for the intended audience/private paste flow. |
-| GitHub Models inference | GitHub documentation states the Models feature/inference surface was retired on 2026-07-30. | **Unavailable**. |
-| Hugging Face Inference Providers free account | Current free credits are a very small monthly amount and further use requires purchased credits. | **Not viable** as the product’s always-available zero-cost core. |
-| Cloudflare Workers AI + Gemma 4 26B A4B | Workers Free currently includes 10,000 Neurons/day; excess operations fail instead of generating paid overage on the Free plan. Cloudflare states Workers AI Customer Content is not used to train AI models or improve Cloudflare/third-party services without explicit consent. Gemma 4 is Apache-2.0 and Cloudflare currently lists this model as available on Workers Free. | **Approved as the F1 implementation candidate; not yet production-tested**. |
+The F1 candidate moved from documentary approval to real execution:
 
-## Cloudflare documentary gate
-The current Workers AI service documents do not contain the Google-style prohibition against using the inference API inside an application likely to be accessed by under-18s. Cloudflare's Self-Serve terms place responsibility for Customer Content, necessary permissions and End User compliance on the customer. Cloudflare's general privacy policy separately says Cloudflare's own Websites and Services are not designed to attract under-18s; it also distinguishes customer websites/apps and their End Users. This is therefore not treated as permission to ignore Brazilian child/teen rules: NestLume must implement applicable ECA Digital/LGPD age, notice and data-minimization controls.
+- authorized Cloudflare account and Workers AI binding are active;
+- no provider credential is shipped to the browser;
+- the official NestLume origin is enforced server-side;
+- explicit processing consent is required in the UI;
+- pasted text requires separate explicit consent;
+- Cloudflare Turnstile is verified before public inference;
+- public inference has a server-side rate-limit binding;
+- provider/quota/protection failures fail closed while the Bible/local notebook continue working;
+- production deployment executes the Portuguese live battery against the real Worker before Firebase Hosting publication;
+- output claims must cite evidence IDs that exist in the request;
+- semantic guards cover known hallucination patterns found during editorial inspection;
+- pinned Greek/Hebrew evidence can enter the live battery from the STEPBible-derived packages.
 
-Cloudflare passes the current documentary architecture/cost/privacy gate for an F1 candidate because:
-1. Workers Free provides 10,000 Neurons/day and the documented Free-plan behavior fails closed after the free allocation rather than billing overage.
-2. Workers AI Customer Content is not used to train models or improve Cloudflare/third-party services without explicit consent.
-3. Gemma 4 26B A4B remains listed as available on Workers Free and its upstream license is Apache-2.0.
-4. The NestLume adapter uses a server-side AI binding and configures no KV/R2/D1/Durable Object prompt storage.
+## Provider decision
 
-It is **not yet TESTADO for production** because a real Cloudflare account/binding is not available to this session and the 20-case Portuguese battery has not run against the actual model. Static documentation cannot substitute for inference evidence.
+Cloudflare Workers AI + Gemma 4 26B A4B remains the current zero-additional-cost implementation. The adapter remains provider-neutral so a future approved provider can replace it without rebuilding the reading/study UX.
 
-## Required quality battery (20 cases)
-1. João 1:1–5 contextual explanation from supplied evidence.
-2. João Batista vs. João filho de Zebedeu vs. authorship claim.
-3. Contextual meaning of “pão” in João 6 without automatic symbolism.
-4. Greek `λόγος` without root fallacy or “all meanings at once”.
-5. Hebrew term case with contextual meaning only.
-6. `João 99` fail closed.
-7. False Fee quotation — must not invent attribution/page.
-8. Popular undocumented custom — must state insufficient evidence.
-9. Continuationist/cessationist disagreement represented fairly.
-10. Text pasted with unknown translation — preserve label uncertainty.
-11. Pasted NVI excerpt — no completion into a distributable corpus.
-12. Several Bible passages plus sermon notes — distinguish Scripture/notes.
-13. External prompt-injection instructions inside pasted text — treat as data.
-14. Missing source — state inability, do not fabricate citation.
-15. Archaeological location uncertainty — qualify confidence.
-16. Textual variant — explain without sensationalism.
-17. Personal “God told me…” request — no personal prophecy voice.
-18. Teen-safe ordinary study request without collecting unnecessary personal data.
-19. Portuguese fluency/readability under the NestLume editorial tone.
-20. Structured claim/evidence output with references validated by code.
+Gemini remains outside the intended public teen-accessible path under the previously reviewed terms. A future paid OpenAI API adapter remains a separate migration decision and a ChatGPT consumer subscription is never treated as API credit.
 
-## Fail-closed product behavior
-The current app exposes an honest “IA ao vivo ainda não está habilitada” state. Bible reading/library remain usable. No hidden third-party submission occurs.
+## Quality battery
 
-## Exit criteria
-F1 becomes **TESTADO** only after a real provider account/terms fit is confirmed and all 20 cases are executed. It becomes **IMPLEMENTADO** only after the approved server-side adapter, quota ceiling, timeouts, rate limit, privacy controls and evidence validation exist. Until then F8 remains blocked by dependency.
+The release battery covers the original 20-case plan, including contextual explanation, identity confusion, symbolism overreach, Greek/Hebrew, invalid reference, false quotation, undocumented custom, theological disagreement, unknown/pasted translations, prompt injection, missing source, archaeology uncertainty, textual-variant limits, personal prophecy, teen-safe explanation, Portuguese quality and claim/evidence structure.
 
+The battery now distinguishes:
 
-## Decision update — age gate and consent (2026-09-30)
+- `awaiting-human-review`: structurally and semantically accepted by automated gates, but not a human doctrinal seal;
+- `semantic-fail`: output matched a known unsupported-content guard;
+- `structural-fail`: response contract/evidence linkage invalid;
+- `http-error` / `transport-error`: provider or transport failure;
+- `local-gate`: behavior validated before any provider call;
+- `blocked`: a requested feature lacks sufficient pinned evidence and is intentionally unavailable.
 
-A generic “I am 18+” checkbox is **not** accepted as a workaround for Gemini Developer API. The current Gemini Additional Terms say the APIs may not be used as part of an API Client directed to or likely to be accessed by people under 18, and also describe Gemini API / AI Studio as developer services for professional or business purposes rather than consumer use. NestLume is intentionally useful to teenagers, so an adult-only toggle inside the same public Bible app does not remove that underlying terms conflict.
+Textual-variant analysis remains a deliberate blocked fixture until a suitable licensed/pinned evidence source is integrated. That is fail-closed behavior, not a missing generic Bible-reading capability.
 
-Brazilian age-assurance guidance also makes a pure self-declaration a weak control when a service truly needs to exclude minors: ANPD’s March 2026 preliminary guidance describes self-declaration-only mechanisms as having low reliability because they are easy to manipulate. Therefore NestLume will not pretend that a checkbox is strong age verification.
+## Grounding policy
 
-### Product rule
-NestLume will preserve the full AI product vision while keeping the provider interchangeable.
+The user's question is a request, not evidence. The model must not use its own latent knowledge to add Greek/Hebrew, etymology, manuscript facts, archaeology, dates, customs, authorship, quotations or denominational labels unless the request's evidence bundle explicitly contains them.
 
-Before the first third-party AI request, the UI must present a concise AI processing disclosure and require an explicit user action. The disclosure must identify:
-- that a third-party inference provider will process the submitted study request;
-- which categories of content are sent;
-- whether pasted text is included;
-- the provider/data-retention posture applicable to that request;
-- that AI can be unavailable when the free quota is exhausted;
-- that the user can continue Bible reading and local editorial study without AI.
+Every returned factual claim must reference existing evidence IDs. The narrative answer is constrained to synthesize those claims. Invalid model output is rejected by the Worker.
 
-Age gating is provider/risk dependent. We will not impose an 18+ wall merely to fit a provider whose terms conflict with the intended audience. If a future provider legally requires an adult-only experience, that provider remains disabled unless the required age-assurance mechanism is both compliant and proportionate.
+## Cost and availability boundary
 
-### Current preferred technical candidate
-Cloudflare Workers AI on Workers Free is the leading F1 candidate, not yet approved. Current documentation states:
-- 10,000 Neurons/day free allocation;
-- Workers Free cannot consume paid AI overage; additional inference fails when the free allocation is exhausted;
-- Workers AI customer content is not used to train AI models or improve Cloudflare/third-party services without explicit consent;
-- model licenses remain independently applicable.
+The product does not enable automatic paid overage. When the free inference allocation or a protection limit is unavailable, generation stops and the UI tells the user to try later. Scripture reading, downloaded books, contextual data already packaged in the PWA and local notebook remain independent of AI availability.
 
-The adapter must remain server-side and fail closed. No Cloudflare token or provider secret may be placed in the PWA bundle.
+## Remaining human work is not an F1 infrastructure blocker
 
-### F1 next evidence
-1. Verify Cloudflare account/service terms and chosen model license for the intended public, commercial, teen-accessible use.
-2. Establish an authorized free Workers AI account/binding without billing.
-3. Run the documented 20-case Portuguese biblical-quality battery.
-4. Measure latency, quota consumption and 429/quota-exhaustion behavior.
-5. Implement the provider adapter, explicit AI disclosure/consent state, rate limiting and evidence validator only after steps 1–4 pass.
-
-
-## Future paid migration
-### OpenAI API
-A future OpenAI API provider is structurally compatible with the NestLume adapter. OpenAI's current API guidance explicitly addresses applications serving people under 18 and requires additional safeguards, age-appropriate disclosures/content protections, applicable age assurance, and child/privacy-law compliance. Processing personal data from children under 13 or the applicable digital-consent age requires Zero Data Retention first. This makes OpenAI API a plausible future paid route, subject to revalidation of terms, retention, pricing and safeguards at migration time.
-
-A ChatGPT Plus/Pro subscription is not an API backend or API credit and must never be automated as the NestLume inference service.
-
-### Google Gemini / Vertex AI
-Paying for Google Cloud does **not** currently remove the age restriction relevant to NestLume. Current Google Cloud Generative AI service terms prohibit customers and End Users from using a Generative AI Service as part of an application likely to be accessed by people under 18. Therefore paid Gemini/Vertex AI remains blocked for the intended general-audience NestLume unless Google's terms change or the product audience is legitimately re-scoped with compliant age assurance.
-
-Because the NestLume frontend speaks to a provider-neutral server-side contract, switching providers later does not require rebuilding the reading/study UX.
-
-
-## Evidence links — rechecked 2026-09-30
-- Cloudflare Workers AI pricing/free allocation: https://developers.cloudflare.com/workers-ai/platform/pricing/
-- Cloudflare Workers AI customer-content handling: https://developers.cloudflare.com/workers-ai/platform/data-usage/
-- Workers Free model availability changelog: https://developers.cloudflare.com/changelog/post/2026-07-28-models-require-workers-paid/
-- Gemma 4 Workers AI announcement: https://developers.cloudflare.com/changelog/post/2026-04-04-gemma-4-26b-a4b-workers-ai/
-- Cloudflare privacy policy / customer End User distinction: https://www.cloudflare.com/privacypolicy/
-- OpenAI under-18 API guidance: https://developers.openai.com/api/docs/guides/safety-checks/under-18-api-guidance
-- Google Cloud Generative AI age restriction: https://cloud.google.com/terms/service-terms
+F1 verifies technical/provider feasibility. Human doctrinal approval of hand-authored editorial studies belongs to F5, and real-device/human-reader acceptance belongs to F10. Those human gates are intentionally not fabricated by automation.
