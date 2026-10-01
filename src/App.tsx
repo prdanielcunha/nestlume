@@ -22,6 +22,7 @@ import { ConnectionsPanel } from './features/reader/ConnectionsPanel';
 import { PlacesPanel } from './features/reader/PlacesPanel';
 import { PeoplePanel } from './features/reader/PeoplePanel';
 import { ContextPanel } from './features/reader/ContextPanel';
+import { ReadingLensesPanel } from './features/reader/ReadingLensesPanel';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -39,7 +40,7 @@ import {
 
 type T = Record<keyof typeof messages.pt, string>;
 type Page = 'today' | 'explore' | 'read' | 'paste' | 'ask' | 'notebook' | 'states';
-type Panel = 'explore' | 'context' | 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | 'places' | 'people' | null;
+type Panel = 'explore' | 'context' | 'logos1' | 'logos14' | 'john' | 'thread' | 'source' | 'original' | 'places' | 'people' | 'lenses' | null;
 type Theme = 'system' | 'light' | 'dark';
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
 type PastedStudyDraft = { text: string; version: string; reference: string };
@@ -659,7 +660,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
       </article>
 
       <aside className={'context-panel ' + (panel ? 'open' : '')} aria-hidden={!panel} role={panel ? 'dialog' : undefined} aria-modal={panel ? 'true' : undefined} aria-label={panel ? t.explore : undefined}>
-        {panel && <PanelContent panel={panel} book={book} target={target} t={t} onClose={() => setPanel(null)} onSelectPanel={selectPanel} onOpenReader={onOpenReader} />}
+        {panel && <PanelContent panel={panel} book={book} target={target} verses={verses} t={t} onClose={() => setPanel(null)} onSelectPanel={selectPanel} onOpenReader={onOpenReader} />}
       </aside>
       {panel && <button className="panel-backdrop" onClick={() => setPanel(null)} aria-label={t.close} />}
       <button className="floating-explore" onClick={() => panel ? setPanel(null) : selectPanel('explore')}>{t.explore}<span>{referenceLabel}</span></button>
@@ -681,8 +682,8 @@ function renderVerse(text: string, verse: number, interactive: boolean, setPanel
   return text;
 }
 
-function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenReader }: {
-  panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; t: T; onClose: () => void; onSelectPanel: (panel: Panel) => void; onOpenReader: (target: ReaderTarget) => void;
+function PanelContent({ panel, book, target, verses, t, onClose, onSelectPanel, onOpenReader }: {
+  panel: Exclude<Panel, null>; book: CorpusBook; target: ReaderTarget; verses: CorpusVerse[]; t: T; onClose: () => void; onSelectPanel: (panel: Panel) => void; onOpenReader: (target: ReaderTarget) => void;
 }) {
   const onCloseAndOpen = (next: ReaderTarget) => {
     onOpenReader(next);
@@ -694,6 +695,7 @@ function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenRe
       <p>{t.explorePassageIntro}</p>
       <div className="explore-actions">
         <button onClick={() => onSelectPanel('context')}><strong>{t.context}</strong><span>{t.contextActionBody}</span></button>
+        <button onClick={() => onSelectPanel('lenses')}><strong>{t.helpMeSee}</strong><span>{t.lensesActionBody}</span></button>
         <button onClick={() => onSelectPanel('original')}><strong>{t.originalLanguage}</strong><span>{t.originalActionBody}</span></button>
         <button onClick={() => onSelectPanel('people')}><strong>{t.people}</strong><span>{t.peopleActionBody}</span></button>
         <button onClick={() => onSelectPanel('places')}><strong>{t.places}</strong><span>{t.placesActionBody}</span></button>
@@ -702,6 +704,7 @@ function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenRe
       </div>
     </div>,
     context: <ContextPanel t={t} book={book} target={target} />,
+    lenses: <ReadingLensesPanel t={t} verses={verses} />,
     logos1: <LexicalPanel bundle={john1Greek} verse={1} />,
     logos14: <LexicalPanel bundle={john14Greek} verse={14} />,
     john: <><p className="kicker">PESSOA · JOÃO 1:6</p><h2>João Batista</h2><p>O próprio trecho o apresenta como homem enviado por Deus e testemunha da Luz — e imediatamente nega que ele próprio fosse a Luz.</p><div className="certainty"><span>Identidade</span><strong>João Batista</strong><small>Não confundir automaticamente com João filho de Zebedeu ou com a questão da autoria do evangelho.</small></div></>,
@@ -710,7 +713,7 @@ function PanelContent({ panel, book, target, t, onClose, onSelectPanel, onOpenRe
     places: <PlacesPanel t={t} target={target} />,
     people: <PeoplePanel t={t} target={target} />,
     source: <><p className="kicker">PROVENIÊNCIA DO TEXTO</p><h2>Bíblia Livre</h2><dl><div><dt>Arquivo deste livro</dt><dd>{book.file}</dd></div><div><dt>Release integrada</dt><dd>2018.2.0</dd></div><div><dt>Tradição textual</dt><dd>Textus Receptus</dd></div><div><dt>Licença da release integrada</dt><dd>Creative Commons Atribuição 3.0 Brasil</dd></div><div><dt>Integridade</dt><dd>{book.gitBlobSha1 ? `Git blob ${book.gitBlobSha1.slice(0, 12)}…` : 'Verificada no build'}</dd></div></dl><p>O manifesto registra a identidade de cada arquivo importado da release oficial dos autores. A distribuição atual do eBible é registrada separadamente e não é tratada como byte idêntica sem prova.</p><a className="text-link" href="https://github.com/blivre/BibliaLivre/releases/tag/2018.2.0" target="_blank" rel="noreferrer">Abrir release de origem ↗</a></>,
-  }), [book, t, target, onOpenReader]);
+  }), [book, t, target, verses, onOpenReader]);
 
   return <div className="panel-inner"><button className="panel-close" onClick={onClose}>{t.close}</button>{content[panel]}</div>;
 }
