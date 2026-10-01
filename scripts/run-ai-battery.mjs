@@ -8,7 +8,7 @@ const disclosureVersion = '2026-09-30.1';
 const provider = 'cloudflare-workers-ai';
 const turnstileToken = process.env.NESTLUME_TURNSTILE_TOKEN || '';
 const requestPath = process.env.NESTLUME_AI_PATH || '/v1/study';
-const ciValidationToken = process.env.NESTLUME_AI_CI_TOKEN || process.env.NESTLUME_CI_VALIDATION_TOKEN || '';
+const ciValidationToken = process.env.NESTLUME_CI_VALIDATION_TOKEN || process.env.NESTLUME_AI_CI_TOKEN || '';
 
 if (!endpoint) {
   console.error('NESTLUME_AI_ENDPOINT is required. No request was sent.');
