@@ -57,7 +57,7 @@ test('valid request reaches inference only when anti-abuse is disabled for isola
     AI: {
       run: async () => {
         called = true;
-        return { response: '{"answer":"O texto afirma que a Palavra já era no princípio.","claims":[],"limitations":[]}' };
+        return { response: '{"answer":"O texto afirma que a Palavra já era no princípio.","claims":[{"text":"A Palavra já era no princípio.","evidenceIds":["scripture:JHN.1.1"],"certainty":"high"}],"limitations":[]}' };
       },
     },
   });
@@ -125,7 +125,7 @@ test('CI validation route can test real inference without weakening public Turns
       AI: {
         run: async () => {
           called = true;
-          return { response: '{"answer":"Resposta validada.","claims":[],"limitations":[]}' };
+          return { response: '{"answer":"Resposta validada a partir da evidência.","claims":[{"text":"A evidência apresenta a Palavra no princípio.","evidenceIds":["scripture:JHN.1.1"],"certainty":"high"}],"limitations":[]}' };
         },
       },
     },
