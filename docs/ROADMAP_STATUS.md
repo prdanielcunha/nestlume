@@ -12,13 +12,13 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 | F2 Premium design/prototype | IMPLEMENTADO | Premium editorial mobile-first UI, Today/Explore/Reader/Paste/AI/Notebook, light/dark/system, reduced motion and responsive layouts exist. Automated desktop/mobile Chromium coverage exists; real-device and human-reader validation remain F10 gates. |
 | F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets, Firebase Hosting config without accidental project binding and CI gates are implemented. |
 | F4 Bible/reference engine | TESTADO | Full 66-book Bíblia Livre corpus; 1,189 chapters / 31,102 verses; reference/range validation, reading, search, resume, chapter navigation, font size, credits and verified book-offline packaging passed the full CI/browser gate on the release-candidate code. |
-| F5 Editorial layer & whole-Bible study | EM ANDAMENTO | Whole-Bible study capability is independent of hand-authored studies. João 1 is only the first versioned editorial fixture with claims/sources/certainty and a hard human-review gate. No content is falsely labeled human-reviewed; a named real reviewer and broader reviewed editorial library remain human-work gates. |
+| F5 Editorial layer & whole-Bible study | EM ANDAMENTO | Whole-Bible study capability is independent of hand-authored studies. The initial library now has 10 Scripture-grounded encounters across João and Provérbios with claims/sources/certainty. All remain explicitly `draft` until a named real reviewer records human review; no content is falsely labeled reviewed. |
 | F6 Context/entities/originals | TESTADO | Generic contextual Explore flow exposes local passage context, STEPBible-derived Greek/Hebrew/Aramaic packages, sourced people, sourced places, Bible-wide connections and provenance. Source integrity, representative Greek/Hebrew coverage, versification mismatch behavior and desktop/mobile contextual navigation passed CI/browser gates. |
 | F7 Pasted text | TESTADO | Private paste preserves user text, supports optional version/reference, local corpus identification and handoff to AI only in session memory. Browser tests verify private text is not placed in the URL and third-party processing requires separate explicit consent. |
 | F8 Grounded AI | BLOQUEADO | Provider-neutral request/evidence contract, claim→evidence validation, prompt-injection boundary, timeout/quota states, Turnstile-before-inference protection and Cloudflare Worker source are implemented. Live generation is disabled until F1 real-account tests pass. |
-| F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Desktop browser CI successfully reloads downloaded Scripture and original-language data with the network disabled. |
+| F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Writes resolve only after IndexedDB transaction commit, preventing navigation races. Desktop browser CI reloads downloaded Scripture and original-language data with the network disabled. |
 | F10 Premium quality/pilot | EM ANDAMENTO | CI includes desktop/mobile Chromium, whole-Bible representative genre matrix, accessible-name/overflow checks, performance budget, offline smoke and contextual-panel focus/Escape/Back behavior. Real iOS/Android/desktop device testing and human pilot cannot be truthfully claimed from CI. |
-| F11 Publication/operation | BLOQUEADO | Release contract, Firebase config and rollback rules exist. This session has no authenticated Firebase/Google Cloud/Cloudflare/DNS tooling, so no project/site/domain/certificate/public smoke can be executed or claimed. |
+| F11 Publication/operation | EM ANDAMENTO | The isolated Firebase Hosting target `nestlume-555464791734` has been deployed successfully through existing WIF and its default `web.app` URL passed public smoke. The Firebase custom-domain resource exists, but `nestlume.millionsnest.com` remains pending because authoritative DNS has not received the Firebase-requested record. |
 | F12 Expansion | NÃO INICIADO | Post-core expansion only: additional licensed translations, richer media, optional cloud sync/groups and further editorial journeys after current gates are validated. |
 
 ## Whole-Bible execution rule
@@ -50,7 +50,7 @@ The GitHub Actions run associated with the promoted SHA is the release evidence;
 No Cloudflare account/binding/token is exposed to this session. Therefore the real 20-case F1 model battery cannot be executed yet. The UI remains fail-closed and does not substitute static content for AI.
 
 ### Firebase + domain
-No Firebase/Google Cloud authenticated CLI/connector and no authoritative DNS write connector are available. Therefore no project/site creation, deploy, DNS mutation, certificate verification or public-domain smoke is claimed.
+Firebase publication is automated and has already succeeded through the repository's existing Workload Identity Federation path. The remaining external gate is authoritative DNS for `millionsnest.com`: the Firebase resource currently requests the NestLume subdomain record, while the deployment evidence reports no available DNS credential. Until that record exists and Firebase finishes certificate validation, only the default Firebase URL is claimed live.
 
 Target domain remains `nestlume.millionsnest.com`.
 
@@ -59,7 +59,7 @@ Target domain remains `nestlume.millionsnest.com`.
 - `main` is the integration/homologation line.
 - `production` is synchronized only to a full-CI-passing approved SHA by fast-forward.
 - Branch equality proves **code synchronization**, not hosting publication.
-- Status becomes `PUBLICADO` only after Firebase deployment, DNS, HTTPS and public smoke are evidenced for the same SHA.
+- F11 becomes fully `PUBLICADO` only after Firebase deployment, DNS, HTTPS and public smoke are evidenced for the same release SHA. A Firebase-default-URL publication may be live while the custom-domain gate is still pending.
 
 ## Human gates
 
@@ -72,4 +72,4 @@ Until those happen, the app reports the relevant layer honestly instead of inven
 
 
 ## Latest full automated gate
-The release-candidate code completed the full NestLume CI gate successfully on 2026-09-30 before this documentation reconciliation. The documentation-only final SHA must pass the same workflow again before branch promotion; no test status is inferred from branch naming alone.
+RC2 must pass the full NestLume CI gate on its exact final SHA before branch promotion. The most recent prior functional SHA completed the gate successfully; no test status is inferred from branch naming, previous runs or documentation alone.
