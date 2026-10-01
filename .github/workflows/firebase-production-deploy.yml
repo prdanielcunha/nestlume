@@ -173,6 +173,32 @@ jobs:
           NODE
           wrangler deploy --config workers/ai/wrangler.validation.jsonc
 
+      - name: Wait for validation Worker propagation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          ready=false
+          for attempt in $(seq 1 15); do
+            status="$(curl --silent --show-error --output artifacts/ai-validation-health.json --write-out '%{http_code}' "$VALIDATION_AI_ENDPOINT/health" || true)"
+            if [ "$status" = "200" ]; then
+              node --input-type=module - <<'NODE'
+              import fs from 'node:fs';
+              const health = JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json', 'utf8'));
+              if (!health.ok || health.provider !== 'cloudflare-workers-ai') process.exit(1);
+              NODE
+              ready=true
+              break
+            fi
+            echo "Validation Worker not ready yet (HTTP $status, attempt $attempt/15)."
+            sleep 2
+          done
+          if [ "$ready" != "true" ]; then
+            echo "Validation Worker did not become reachable in time." >&2
+            cat artifacts/ai-validation-health.json || true
+            exit 1
+          fi
+
       - name: Prepare corpus for live AI battery
         run: npm run corpus:build
 
