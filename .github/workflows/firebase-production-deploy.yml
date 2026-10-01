@@ -179,21 +179,29 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts
           ready=false
-          for attempt in $(seq 1 15); do
-            status="$(curl --silent --show-error --output artifacts/ai-validation-health.json --write-out '%{http_code}' "$VALIDATION_AI_ENDPOINT/health" || true)"
-            if [ "$status" = "200" ]; then
-              node --input-type=module -e "import fs from 'node:fs'; const health = JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json', 'utf8')); if (!health.ok || health.provider !== 'cloudflare-workers-ai') process.exit(1);"
+          for attempt in $(seq 1 20); do
+            health_status="$(curl --silent --show-error --output artifacts/ai-validation-health.json --write-out '%{http_code}' "$VALIDATION_AI_ENDPOINT/health" || true)"
+            post_status="$(curl --silent --show-error --output artifacts/ai-validation-post-probe.json --write-out '%{http_code}' \
+              --request POST \
+              -H 'content-type: application/json' \
+              -H 'origin: https://nestlume.millionsnest.com' \
+              --data '{}' \
+              "$VALIDATION_AI_ENDPOINT/v1/study" || true)"
+            if [ "$health_status" = "200" ] && [ "$post_status" = "400" ]; then
+              node --input-type=module -e "import fs from 'node:fs'; const health=JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json','utf8')); const probe=JSON.parse(fs.readFileSync('artifacts/ai-validation-post-probe.json','utf8')); if(!health.ok||health.provider!=='cloudflare-workers-ai'||probe.error!=='invalid_request') process.exit(1);"
               ready=true
               break
             fi
-            echo "Validation Worker not ready yet (HTTP $status, attempt $attempt/15)."
+            echo "Validation Worker not ready yet (health=$health_status post=$post_status, attempt $attempt/20)."
             sleep 2
           done
           if [ "$ready" != "true" ]; then
-            echo "Validation Worker did not become reachable in time." >&2
+            echo "Validation Worker routes did not become reachable in time." >&2
             cat artifacts/ai-validation-health.json || true
+            cat artifacts/ai-validation-post-probe.json || true
             exit 1
           fi
+          sleep 2
 
       - name: Prepare corpus for live AI battery
         run: npm run corpus:build
@@ -226,6 +234,8 @@ jobs:
           name: nestlume-live-ai-${{ env.RELEASE_SHA }}
           path: |
             artifacts/ai-health.json
+            artifacts/ai-validation-health.json
+            artifacts/ai-validation-post-probe.json
             artifacts/ai-battery-result.json
             artifacts/ai-validation-worker-delete.json
           if-no-files-found: ignore
