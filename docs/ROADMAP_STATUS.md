@@ -1,75 +1,64 @@
 # NestLume — roadmap execution status
 
-Evidence snapshot: 2026-09-30  
-Source version: **1.0.0-rc.1**
+Evidence snapshot: 2026-10-01  
+Source version: **1.0.0-rc.3**
 
 Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTADO` · `PUBLICADO` · `BLOQUEADO`.
 
 | Phase | Status | Evidence / remaining gate |
 |---|---|---|
-| F0 Product contract & rights | TESTADO | Current distributed corpus/datasets are pinned by source/version/hash and license inventory. Dependency license allowlist runs in CI. New future datasets still require the same gate before inclusion. |
-| F1 AI feasibility | BLOQUEADO | Cloudflare Workers AI passes the current documentary cost/privacy/model-license architecture gate and the server adapter + 20-case harness exist. Real authorized Cloudflare account/binding, actual Portuguese inference battery, quota behavior and human review remain external gates. |
-| F2 Premium design/prototype | IMPLEMENTADO | Premium editorial mobile-first UI, Today/Explore/Reader/Paste/AI/Notebook, light/dark/system, reduced motion and responsive layouts exist. Automated desktop/mobile Chromium coverage exists; real-device and human-reader validation remain F10 gates. |
-| F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets, Firebase Hosting config without accidental project binding and CI gates are implemented. |
-| F4 Bible/reference engine | TESTADO | Full 66-book Bíblia Livre corpus; 1,189 chapters / 31,102 verses; reference/range validation, reading, search, resume, chapter navigation, font size, credits and verified book-offline packaging passed the full CI/browser gate on the release-candidate code. |
-| F5 Editorial layer & whole-Bible study | EM ANDAMENTO | Whole-Bible study capability is independent of hand-authored studies. The initial library now has 10 Scripture-grounded encounters across João and Provérbios with claims/sources/certainty. All remain explicitly `draft` until a named real reviewer records human review; no content is falsely labeled reviewed. |
-| F6 Context/entities/originals | TESTADO | Generic contextual Explore flow exposes local passage context, STEPBible-derived Greek/Hebrew/Aramaic packages, sourced people, sourced places, Bible-wide connections and provenance. Source integrity, representative Greek/Hebrew coverage, versification mismatch behavior and desktop/mobile contextual navigation passed CI/browser gates. |
-| F7 Pasted text | TESTADO | Private paste preserves user text, supports optional version/reference, local corpus identification and handoff to AI only in session memory. Browser tests verify private text is not placed in the URL and third-party processing requires separate explicit consent. |
-| F8 Grounded AI | BLOQUEADO | Provider-neutral request/evidence contract, claim→evidence validation, prompt-injection boundary, timeout/quota states, Turnstile-before-inference protection and Cloudflare Worker source are implemented. Live generation is disabled until F1 real-account tests pass. |
-| F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Writes resolve only after IndexedDB transaction commit, preventing navigation races. Desktop browser CI reloads downloaded Scripture and original-language data with the network disabled. |
-| F10 Premium quality/pilot | EM ANDAMENTO | CI includes desktop/mobile Chromium, whole-Bible representative genre matrix, accessible-name/overflow checks, performance budget, offline smoke and contextual-panel focus/Escape/Back behavior. Real iOS/Android/desktop device testing and human pilot cannot be truthfully claimed from CI. |
-| F11 Publication/operation | PUBLICADO | RC2 (`dfdde79c17c01f6dfd09a678695af0090b65b562`) was deployed to the isolated Firebase Hosting target `nestlume-555464791734` through existing WIF. The default `web.app` URL passed smoke; Firebase reports `HOST_ACTIVE`, `OWNERSHIP_ACTIVE`, `CERT_ACTIVE`, no remaining DNS update, and the official `nestlume.millionsnest.com` smoke succeeded. |
-| F12 Expansion | NÃO INICIADO | Post-core expansion only: additional licensed translations, richer media, optional cloud sync/groups and further editorial journeys after current gates are validated. |
+| F0 Product contract & rights | TESTADO | Current distributed corpus/datasets are pinned by source/version/hash and license inventory. Dependency-license allowlist runs in CI. New future datasets/media must pass the same gate before inclusion. |
+| F1 AI feasibility | TESTADO | Cloudflare Workers AI was exercised on the real authorized account through the production Worker. The Portuguese live battery, quota/error path, Turnstile boundary and zero-additional-cost deployment path are part of the release evidence. |
+| F2 Premium design/prototype | IMPLEMENTADO | Premium mobile-first UI exists for Today/Explore/Reader/Paste/AI/Notebook, with light/dark/system, reduced motion and responsive layouts. Automated desktop/mobile Chromium coverage exists; real-reader validation remains an F10 human gate. |
+| F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets in the client, isolated Firebase Hosting and CI gates are implemented. |
+| F4 Bible/reference engine | TESTADO | Full 66-book Bíblia Livre corpus; 1,189 chapters / 31,102 verses; reference/range validation, search, resume, chapter navigation, font size, credits and verified book-offline packaging pass CI/browser gates. |
+| F5 Editorial layer | EM ANDAMENTO | Ten Scripture-grounded encounters across João and Provérbios exist with claims/sources/certainty. They remain explicitly `draft` until a named real human reviewer records review; no reviewer or seal is fabricated. |
+| F6 Context/entities/originals | TESTADO | Bible-wide contextual Explore flow exposes STEPBible-derived Greek/Hebrew packages, sourced people, sourced places, connections and provenance. Exact canonical-reference/versification limits fail closed. |
+| F7 Pasted text | TESTADO | Private paste preserves user text, supports optional version/reference, local identification and AI handoff only after separate explicit consent. Private text is not placed in the URL. |
+| F8 Grounded AI | PUBLICADO | Live Cloudflare Workers AI is connected through a server-side Worker with strict origin, Turnstile, request/evidence validation, claim→evidence validation, prompt-injection boundary, timeout/quota handling and public rate limiting. Production deploy reruns a live Portuguese battery before Firebase publication. Unsupported evidence-heavy features, such as textual-variant analysis without a pinned source, stay unavailable rather than being invented. |
+| F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Writes resolve after transaction commit and offline reload is covered in browser CI. |
+| F10 Premium quality/pilot | EM ANDAMENTO | Automated desktop/mobile Chromium, accessibility-name/overflow checks, performance budget, offline smoke, contextual keyboard/history behavior and a 50-case Bible/reference security matrix exist. Real iOS/Android/desktop device testing and the proposed human-reader/reviewer pilot are inherently human gates and are not claimed by CI. |
+| F11 Publication/operation | PUBLICADO | Firebase Hosting publication, default URL smoke, official custom-domain smoke, Cloudflare Worker publication and release artifacts are automated on the exact production SHA. Rollback documentation and previous releases remain available. |
+| F12 Expansion | NÃO INICIADO | Post-core expansion only: additional licensed translations, richer media, optional sync/groups and other future journeys. |
 
 ## Whole-Bible execution rule
 
-João and Provérbios in planning materials are validation examples, **not** the product boundary. Every valid passage in the integrated 66-book corpus remains readable/searchable/notable and can enter the grounded study flow. Editorial studies, entity detail and lexical precision are additional layers whose availability depends on verified evidence for the exact passage.
+João and Provérbios are validation/editorial examples, not the product boundary. Every valid passage in the integrated 66-book corpus remains readable, searchable, notable and eligible for grounded study when sufficient evidence is available.
+
+## AI grounding rule
+
+A user's question is a request, not evidence. The Worker may make factual claims only from the evidence included with that request. It must not silently add original-language facts, historical context, quotations, archaeology, authorship claims or denominational labels from model memory. Claims must cite existing evidence IDs, and malformed or unsupported output fails closed.
+
+The live battery includes explicit semantic guards for known failure modes found during editorial inspection, plus real pinned Greek and Hebrew evidence cases. The textual-variant fixture remains deliberately unavailable until a suitable pinned evidence source is added.
 
 ## Release gate
 
-A SHA is eligible for `production` only when the full NestLume CI succeeds for that exact SHA. The gate covers:
+A SHA is eligible for `production` only when the full NestLume CI succeeds for that exact SHA. The production workflow then:
 
-- TypeScript checks;
-- corpus and generated-data integrity;
-- notebook/editorial/reference/AI security tests;
-- dependency-license allowlist;
-- deterministic production build;
-- desktop and mobile Chromium smoke;
-- representative whole-Bible genre coverage;
-- verified offline reload;
-- performance budget;
-- contextual-panel keyboard/history behavior;
-- AI Worker + F1 battery syntax;
-- secret-like file rejection.
+- re-verifies the release;
+- publishes the protected Cloudflare Worker;
+- runs health/auth probes and the live AI battery;
+- removes the temporary CI-validation credential;
+- builds the PWA with the public Worker endpoint and Turnstile site key;
+- deploys only the NestLume Firebase Hosting target;
+- smokes the Firebase default URL and official custom domain;
+- uploads release evidence.
 
-The GitHub Actions run associated with the promoted SHA is the release evidence; this file deliberately avoids a hard-coded run number that becomes stale after documentation-only commits.
-
-## External blockers that code cannot fabricate
-
-### Live AI
-No Cloudflare account/binding/token is exposed to this session. Therefore the real 20-case F1 model battery cannot be executed yet. The UI remains fail-closed and does not substitute static content for AI.
-
-### Firebase + domain
-Firebase publication is automated through the repository's existing Workload Identity Federation path. On the RC2 production release, the custom-domain resource reconciled successfully even though no Cloudflare token is present in the workflow: Firebase reported active hosting, active ownership and an active certificate with no remaining DNS update. Public smoke for the official domain succeeded.
-
-Production domain: `https://nestlume.millionsnest.com`.
+If the live AI battery fails, Firebase publication of that candidate is blocked.
 
 ## Publication truth
 
-- `main` is the integration/homologation line.
-- `production` is synchronized only to a full-CI-passing approved SHA by fast-forward.
-- Branch equality proves **code synchronization**, not hosting publication.
-- F11 becomes fully `PUBLICADO` only after Firebase deployment, DNS, HTTPS and public smoke are evidenced for the same release SHA. A Firebase-default-URL publication may be live while the custom-domain gate is still pending.
+- `main` is integration/homologation.
+- `production` contains only promoted, CI-passing release code.
+- The official production domain is `https://nestlume.millionsnest.com`.
+- Live AI uses the `nestlume-ai` Cloudflare Worker; provider secrets remain server-side.
+- Bible reading, downloaded content and local notebook remain usable when AI is unavailable.
 
-## Human gates
+## Human-only gates
 
-Some requirements cannot be manufactured by automation:
-- human doctrinal/editorial review must identify the actual reviewer;
-- a human-reader pilot must involve real readers;
-- real-device testing must use real devices, not browser emulation.
+Two roadmap items cannot be manufactured by automation:
 
-Until those happen, the app reports the relevant layer honestly instead of inventing approval.
+1. **Editorial publication seal:** a named real reviewer must actually review and approve the ten draft encounters before they become `published`.
+2. **Human/physical-device pilot:** real readers and real iOS/Android/desktop devices must be used to claim that acceptance criterion.
 
-
-## Latest full automated gate
-RC2 release SHA `dfdde79c17c01f6dfd09a678695af0090b65b562` passed the full NestLume CI gate on `main` and again on `production`. Firebase production deploy run `36812710730` completed successfully and recorded successful smoke for both the default Firebase URL and the official custom domain.
+These do not justify inventing completion. The technical production system remains usable while those human acceptance activities are pending.
