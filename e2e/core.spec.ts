@@ -257,7 +257,7 @@ test('reading lens derives observations locally without presenting them as AI', 
 
 test('whole-Bible browser opens any selected book and chapter', async ({ page }) => {
   await page.goto('/explorar');
-  await page.getByLabel('Livro').selectOption({ label: /Romanos/ });
+  await page.getByLabel('Livro').selectOption('ROM');
   await page.getByLabel('Capítulo').selectOption('8');
   await page.getByRole('button', { name: 'Abrir capítulo' }).click();
   await expect(page).toHaveURL(/\/ler\/rom\/8$/);
