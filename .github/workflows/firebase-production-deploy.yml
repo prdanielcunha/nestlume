@@ -16,6 +16,8 @@ env:
   PROJECT_ID: millionsnest
   SITE_ID: nestlume-555464791734
   CUSTOM_DOMAIN: nestlume.millionsnest.com
+  AI_ENDPOINT: https://nestlume-ai.pastordanielpcunha.workers.dev
+  WRANGLER_VERSION: 4.144.0
 
 jobs:
   verify:
@@ -76,6 +78,10 @@ jobs:
     timeout-minutes: 15
     env:
       RELEASE_SHA: ${{ github.sha }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NESTLUME_TURNSTILE_SECRET: ${{ secrets.NESTLUME_TURNSTILE_SECRET }}
+      VITE_NESTLUME_TURNSTILE_SITE_KEY: ${{ secrets.NESTLUME_TURNSTILE_SITE_KEY }}
     steps:
       - name: Checkout exact verified production SHA
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -111,13 +117,119 @@ jobs:
           path: .cache/openbible-geo
           key: openbible-geo-${{ runner.os }}-b127b4446c6f4ba36ec62dde290c752afeb51bf3
 
-      - name: Install exact app dependencies and Firebase CLI
+      - name: Install exact app dependencies and deployment CLIs
         run: |
           npm ci --no-audit --no-fund
           npm install --global firebase-tools@15.26.0
+          npm install --global "wrangler@$WRANGLER_VERSION"
+          wrangler --version
 
-      - name: Build exact release
+      - name: Require Cloudflare and Turnstile configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID NESTLUME_TURNSTILE_SECRET VITE_NESTLUME_TURNSTILE_SITE_KEY; do
+            value="$(printenv "$name" || true)"
+            if [ -z "$value" ]; then
+              echo "::error::$name is not configured in GitHub Actions secrets."
+              exit 1
+            fi
+          done
+
+      - name: Publish protected NestLume AI Worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
+          wrangler deploy --config workers/ai/wrangler.jsonc
+
+      - name: Smoke protected AI Worker health
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          curl --fail --silent --show-error --retry 6 --retry-delay 2 "$AI_ENDPOINT/health" > artifacts/ai-health.json
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const health = JSON.parse(fs.readFileSync('artifacts/ai-health.json', 'utf8'));
+          if (!health.ok || health.provider !== 'cloudflare-workers-ai' || health.model !== '@cf/google/gemma-4-26b-a4b-it') process.exit(1);
+          NODE
+
+      - name: Deploy isolated live-inference validation Worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          export VALIDATION_WORKER="nestlume-ai-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "VALIDATION_WORKER=$VALIDATION_WORKER" >> "$GITHUB_ENV"
+          suffix="${AI_ENDPOINT#https://nestlume-ai.}"
+          echo "VALIDATION_AI_ENDPOINT=https://${VALIDATION_WORKER}.${suffix}" >> "$GITHUB_ENV"
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const config = JSON.parse(fs.readFileSync('workers/ai/wrangler.jsonc', 'utf8'));
+          config.name = process.env.VALIDATION_WORKER;
+          config.vars.REQUIRE_TURNSTILE = 'false';
+          config.vars.TURNSTILE_EXPECTED_HOSTNAME = '';
+          fs.writeFileSync('workers/ai/wrangler.validation.jsonc', JSON.stringify(config, null, 2) + '\n');
+          NODE
+          wrangler deploy --config workers/ai/wrangler.validation.jsonc
+
+      - name: Prepare corpus for live AI battery
+        run: npm run corpus:build
+
+      - name: Run real Workers AI Portuguese battery
+        id: live_ai_battery
+        continue-on-error: true
+        env:
+          NESTLUME_AI_ENDPOINT: ${{ env.VALIDATION_AI_ENDPOINT }}
+          NESTLUME_AI_BATTERY_OUTPUT: artifacts/ai-battery-result.json
+        run: npm run ai:battery
+
+      - name: Remove isolated validation Worker
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${VALIDATION_WORKER:-}" ]; then exit 0; fi
+          mkdir -p artifacts
+          curl --fail-with-body --silent --show-error --request DELETE \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$VALIDATION_WORKER" \
+            > artifacts/ai-validation-worker-delete.json
+
+      - name: Upload live AI validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nestlume-live-ai-${{ env.RELEASE_SHA }}
+          path: |
+            artifacts/ai-health.json
+            artifacts/ai-battery-result.json
+            artifacts/ai-validation-worker-delete.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Enforce live AI battery gate
+        if: steps.live_ai_battery.outcome != 'success'
+        run: |
+          echo "Live Workers AI battery failed; Firebase frontend will not be enabled for AI." >&2
+          exit 1
+
+      - name: Build exact release with live AI configuration
+        env:
+          VITE_NESTLUME_AI_ENDPOINT: ${{ env.AI_ENDPOINT }}
+          VITE_NESTLUME_TURNSTILE_SITE_KEY: ${{ secrets.NESTLUME_TURNSTILE_SITE_KEY }}
         run: npm run build
+
+      - name: Verify live AI configuration is present in built frontend
+        shell: bash
+        env:
+          VITE_NESTLUME_TURNSTILE_SITE_KEY: ${{ secrets.NESTLUME_TURNSTILE_SITE_KEY }}
+        run: |
+          set -euo pipefail
+          grep -R -F "$AI_ENDPOINT" dist >/dev/null
+          grep -R -F "$VITE_NESTLUME_TURNSTILE_SITE_KEY" dist >/dev/null
+          echo "AI_FRONTEND_WIRING=verified"
 
       - name: Ensure isolated NestLume Hosting site exists
         shell: bash
