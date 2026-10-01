@@ -202,8 +202,10 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare corpus for live AI battery
-        run: npm run corpus:build
+      - name: Prepare corpus and original-language evidence for live AI battery
+        run: |
+          npm run corpus:build
+          npm run original:build
 
       - name: Run real Workers AI Portuguese battery
         id: live_ai_battery
