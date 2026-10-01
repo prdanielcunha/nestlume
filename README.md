@@ -4,9 +4,9 @@ NestLume is a premium, local-first Bible reading and study PWA designed to help 
 
 ## Release candidate
 
-Current source version: **1.0.0-rc.1**.
+Current source version: **1.0.0-rc.2**.
 
-The release candidate is Bible-wide in architecture and user flow. João 1 is an initial editorial fixture, not a product boundary.
+The release candidate is Bible-wide in architecture and user flow. The initial editorial library now contains 10 Scripture-grounded encounters across João and Provérbios; they remain explicitly marked as drafts until real human review is recorded.
 
 ### Implemented core
 - Complete 66-book Bíblia Livre corpus with deterministic integrity/count checks.
