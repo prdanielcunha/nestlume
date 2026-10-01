@@ -133,3 +133,64 @@ test('CI validation route can test real inference without weakening public Turns
   assert.equal(response.status, 200);
   assert.equal(called, true);
 });
+
+
+test('public route rate limit blocks inference before Workers AI is called', async () => {
+  let called = false;
+  const response = await worker.fetch(
+    request(validBody, 'https://nestlume.millionsnest.com', '/v1/study', { 'CF-Connecting-IP': '203.0.113.10' }),
+    {
+      APP_ORIGIN: 'https://nestlume.millionsnest.com',
+      REQUIRE_TURNSTILE: 'false',
+      REQUIRE_RATE_LIMIT: 'true',
+      AI_RATE_LIMITER: { limit: async () => ({ success: false }) },
+      AI: { run: async () => { called = true; return { response: '{"answer":"x","claims":[],"limitations":[]}' }; } },
+    },
+  );
+  assert.equal(response.status, 429);
+  assert.equal((await response.json()).error, 'rate_limited');
+  assert.equal(called, false);
+});
+
+test('provider quota errors fail closed as HTTP 429', async () => {
+  const response = await worker.fetch(request(), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'false',
+    REQUIRE_RATE_LIMIT: 'false',
+    AI: { run: async () => { throw new Error('429 quota'); } },
+  });
+  assert.equal(response.status, 429);
+  assert.equal((await response.json()).error, 'quota_exhausted');
+});
+
+test('model output without evidence-backed claims is rejected', async () => {
+  const response = await worker.fetch(request(), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'false',
+    REQUIRE_RATE_LIMIT: 'false',
+    AI: { run: async () => ({ response: '{"answer":"Resposta sem claims.","claims":[],"limitations":[]}' }) },
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).error, 'model_output_invalid');
+});
+
+test('grounding prompt forbids using the user question as evidence or adding original-language facts', async () => {
+  let capturedSystem = '';
+  const response = await worker.fetch(request(), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'false',
+    REQUIRE_RATE_LIMIT: 'false',
+    AI: {
+      run: async (_model, options) => {
+        capturedSystem = options.messages[0].content;
+        return {
+          response: '{"answer":"A evidência afirma que a Palavra era no princípio.","claims":[{"text":"A Palavra era no princípio.","evidenceIds":["scripture:JHN.1.1"],"certainty":"high"}],"limitations":[]}',
+        };
+      },
+    },
+  });
+  assert.equal(response.status, 200);
+  assert.match(capturedSystem, /pergunta do usuário é uma solicitação, não é evidência/i);
+  assert.match(capturedSystem, /Não introduza grego, hebraico, aramaico/i);
+  assert.match(capturedSystem, /não acrescente na answer fatos que não apareçam nas claims/i);
+});
