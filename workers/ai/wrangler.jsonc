@@ -3,13 +3,26 @@
   "name": "nestlume-ai",
   "main": "index.js",
   "compatibility_date": "2026-09-30",
-  "ai": { "binding": "AI" },
+  "ai": {
+    "binding": "AI"
+  },
   "vars": {
     "APP_ORIGIN": "https://nestlume.millionsnest.com",
     "MODEL": "@cf/google/gemma-4-26b-a4b-it",
     "ALLOW_LOCAL_DEV": "false",
     "REQUIRE_TURNSTILE": "true",
     "TURNSTILE_EXPECTED_ACTION": "nestlume_ai_study",
-    "TURNSTILE_EXPECTED_HOSTNAME": "nestlume.millionsnest.com"
-  }
+    "TURNSTILE_EXPECTED_HOSTNAME": "nestlume.millionsnest.com",
+    "REQUIRE_RATE_LIMIT": "true"
+  },
+  "ratelimits": [
+    {
+      "name": "AI_RATE_LIMITER",
+      "namespace_id": "91001",
+      "simple": {
+        "limit": 8,
+        "period": 60
+      }
+    }
+  ]
 }
