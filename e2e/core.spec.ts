@@ -253,3 +253,13 @@ test('reading lens derives observations locally without presenting them as AI', 
   await expect(page.getByText(/não são interpretação.*nem análise por IA/i)).toBeVisible();
   await expect(page.locator('.lens-word-list article').first()).toBeVisible();
 });
+
+
+test('whole-Bible browser opens any selected book and chapter', async ({ page }) => {
+  await page.goto('/explorar');
+  await page.getByLabel('Livro').selectOption({ label: /Romanos/ });
+  await page.getByLabel('Capítulo').selectOption('8');
+  await page.getByRole('button', { name: 'Abrir capítulo' }).click();
+  await expect(page).toHaveURL(/\/ler\/rom\/8$/);
+  await expect(page.getByRole('heading', { name: /^Romanos 8$/i })).toBeVisible();
+});
