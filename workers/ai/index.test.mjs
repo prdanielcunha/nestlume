@@ -17,10 +17,10 @@ const validBody = {
   },
 };
 
-function request(body = validBody, origin = 'https://nestlume.millionsnest.com') {
-  return new Request('https://nestlume-ai.example/v1/study', {
+function request(body = validBody, origin = 'https://nestlume.millionsnest.com', path = '/v1/study', extraHeaders = {}) {
+  return new Request(`https://nestlume-ai.example${path}`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', origin },
+    headers: { 'content-type': 'application/json', origin, ...extraHeaders },
     body: JSON.stringify(body),
   });
 }
@@ -95,4 +95,41 @@ test('accepts fenced JSON but still validates evidence references', async () => 
     },
   });
   assert.equal(response.status, 200);
+});
+
+
+test('CI validation route is hidden without the server-side token', async () => {
+  let called = false;
+  const response = await worker.fetch(request(validBody, 'https://nestlume.millionsnest.com', '/v1/ci-study'), {
+    APP_ORIGIN: 'https://nestlume.millionsnest.com',
+    REQUIRE_TURNSTILE: 'true',
+    TURNSTILE_SECRET: 'turnstile-secret',
+    CI_VALIDATION_TOKEN: '12345678901234567890123456789012',
+    AI: { run: async () => { called = true; return { response: '{"answer":"x","claims":[],"limitations":[]}' }; } },
+  });
+  assert.equal(response.status, 404);
+  assert.equal(called, false);
+});
+
+test('CI validation route can test real inference without weakening public Turnstile', async () => {
+  let called = false;
+  const ciToken = '12345678901234567890123456789012';
+  const response = await worker.fetch(
+    request(validBody, 'https://nestlume.millionsnest.com', '/v1/ci-study', { 'x-nestlume-ci-token': ciToken }),
+    {
+      APP_ORIGIN: 'https://nestlume.millionsnest.com',
+      REQUIRE_TURNSTILE: 'true',
+      TURNSTILE_SECRET: 'turnstile-secret',
+      CI_VALIDATION_TOKEN: ciToken,
+      MODEL: '@cf/google/gemma-4-26b-a4b-it',
+      AI: {
+        run: async () => {
+          called = true;
+          return { response: '{"answer":"Resposta validada.","claims":[],"limitations":[]}' };
+        },
+      },
+    },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(called, true);
 });
