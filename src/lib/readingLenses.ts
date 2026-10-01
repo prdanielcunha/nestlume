@@ -57,7 +57,7 @@ export function analyzeReadingLens(
     const tokens = row.text.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) ?? [];
     for (const token of tokens) {
       const normalized = normalizeToken(token);
-      if (normalized.length < 4 || STOP_WORDS.has(normalized)) continue;
+      if (normalized.length < 3 || STOP_WORDS.has(normalized)) continue;
       const current = index.get(normalized) ?? { count: 0, verses: new Set<number>(), display: token };
       current.count += 1;
       current.verses.add(row.verse);
