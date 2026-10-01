@@ -8,11 +8,37 @@ const disclosureVersion = '2026-09-30.1';
 const provider = 'cloudflare-workers-ai';
 const turnstileToken = process.env.NESTLUME_TURNSTILE_TOKEN || '';
 const requestPath = process.env.NESTLUME_AI_PATH || '/v1/study';
-const ciValidationToken = process.env.NESTLUME_AI_CI_TOKEN || '';
+const ciValidationToken = process.env.NESTLUME_AI_CI_TOKEN || process.env.NESTLUME_CI_VALIDATION_TOKEN || '';
 
 if (!endpoint) {
   console.error('NESTLUME_AI_ENDPOINT is required. No request was sent.');
   process.exit(2);
+}
+
+if (requestPath === '/v1/ci-study' && !ciValidationToken) {
+  console.error('CI validation route selected but no CI validation token is available.');
+  process.exit(2);
+}
+
+async function verifyCiRouteWithRunner() {
+  if (requestPath !== '/v1/ci-study') return;
+  const response = await fetch(`${endpoint}${requestPath}`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      origin: 'https://nestlume.millionsnest.com',
+      'x-nestlume-ci-token': ciValidationToken,
+    },
+    body: '{}',
+  });
+  const raw = await response.text();
+  let parsed = null;
+  try { parsed = JSON.parse(raw); } catch {}
+  if (response.status !== 400 || parsed?.error !== 'invalid_request') {
+    console.error(`AI battery runner CI authentication failed (HTTP ${response.status}).`);
+    process.exit(2);
+  }
+  console.log(`CI route authenticated by battery runner (tokenLength=${ciValidationToken.length}).`);
 }
 
 function cleanVerseBody(body) {
@@ -165,6 +191,8 @@ async function runCase(testCase) {
     humanCriteria: testCase.humanCriteria,
   };
 }
+
+await verifyCiRouteWithRunner();
 
 const results = [];
 for (const testCase of batteryCases) {
