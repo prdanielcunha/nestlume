@@ -144,13 +144,23 @@ jobs:
           echo "::add-mask::$token"
           echo "NESTLUME_CI_VALIDATION_TOKEN=$token" >> "$GITHUB_ENV"
 
+      - name: Build one-release Worker config with CI credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const source = JSON.parse(fs.readFileSync('workers/ai/wrangler.jsonc', 'utf8'));
+          source.vars = { ...(source.vars || {}), CI_VALIDATION_TOKEN: process.env.NESTLUME_CI_VALIDATION_TOKEN };
+          fs.writeFileSync('workers/ai/wrangler.release.jsonc', JSON.stringify(source, null, 2) + '\n');
+          NODE
+
       - name: Publish protected NestLume AI Worker
         shell: bash
         run: |
           set -euo pipefail
-          wrangler deploy --config workers/ai/wrangler.jsonc
           printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
-          printf '%s' "$NESTLUME_CI_VALIDATION_TOKEN" | wrangler secret put CI_VALIDATION_TOKEN --config workers/ai/wrangler.jsonc
+          wrangler deploy --config workers/ai/wrangler.release.jsonc
 
       - name: Smoke protected AI Worker health
         shell: bash
@@ -164,13 +174,13 @@ jobs:
           if (!health.ok || health.provider !== 'cloudflare-workers-ai' || health.model !== '@cf/google/gemma-4-26b-a4b-it') process.exit(1);
           NODE
 
-      - name: Verify protected CI validation route after secret propagation
+      - name: Verify protected CI validation route
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p artifacts
           ready=false
-          for attempt in $(seq 1 20); do
+          for attempt in $(seq 1 12); do
             status="$(curl --silent --show-error --output artifacts/ai-ci-auth-probe.json --write-out '%{http_code}' \
               --request POST \
               -H 'content-type: application/json' \
@@ -183,11 +193,11 @@ jobs:
               ready=true
               break
             fi
-            echo "CI validation credential not active yet (HTTP $status, attempt $attempt/20)."
-            sleep 3
+            echo "CI validation version not active yet (HTTP $status, attempt $attempt/12)."
+            sleep 2
           done
           if [ "$ready" != "true" ]; then
-            echo "Protected CI validation route did not authenticate after propagation window." >&2
+            echo "Protected CI validation route did not activate." >&2
             cat artifacts/ai-ci-auth-probe.json || true
             exit 1
           fi
@@ -206,14 +216,13 @@ jobs:
           export NESTLUME_AI_CI_TOKEN="$NESTLUME_CI_VALIDATION_TOKEN"
           npm run ai:battery
 
-      - name: Rotate CI validation credential after battery
+      - name: Remove CI validation credential from live Worker
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          replacement="$(openssl rand -hex 32)"
-          echo "::add-mask::$replacement"
-          printf '%s' "$replacement" | wrangler secret put CI_VALIDATION_TOKEN --config workers/ai/wrangler.jsonc
+          wrangler deploy --config workers/ai/wrangler.jsonc
+          printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
 
       - name: Upload live AI validation evidence
         if: always()
