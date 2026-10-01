@@ -390,6 +390,8 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   const [offlineState, setOfflineState] = useState<'idle' | 'loading' | 'ready' | 'partial' | 'error'>('idle');
   const [note, setNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
+  const [openQuestion, setOpenQuestion] = useState('');
+  const [questionSaved, setQuestionSaved] = useState(false);
   const panelOpenerRef = useRef<HTMLElement | null>(null);
 
   const selectPanel = (next: Panel) => {
@@ -511,6 +513,24 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
     window.setTimeout(() => setNoteSaved(false), 2200);
   }
 
+  async function saveOpenQuestion() {
+    if (!book || !openQuestion.trim()) return;
+    await saveEntry({
+      kind: 'question',
+      bookFile: book.file,
+      bookCode: book.ubsCode,
+      bookName: book.nameShort,
+      chapter: target.chapter,
+      startVerse: target.startVerse,
+      endVerse: target.endVerse,
+      note: openQuestion.trim(),
+      text: verses.map(verse => verse.text).join(' ').slice(0, 420),
+    });
+    setOpenQuestion('');
+    setQuestionSaved(true);
+    window.setTimeout(() => setQuestionSaved(false), 2200);
+  }
+
   async function downloadOffline() {
     if (!book) return;
     setOfflineState('loading');
@@ -623,9 +643,18 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
 
         <section className="reader-note-box">
           <label className="field"><span>{t.note} · {t.localOnly}</span>
-            <textarea value={note} onChange={event => setNote(event.target.value)} placeholder="O que você percebeu, quer lembrar ou investigar depois?" />
+            <textarea value={note} onChange={event => setNote(event.target.value)} placeholder={t.notePlaceholder} />
           </label>
           <button className="secondary compact" disabled={!note.trim()} onClick={() => void saveNote()}>{noteSaved ? t.saved : t.addNote}</button>
+
+          <details className="open-question-box">
+            <summary>{t.keepQuestion}</summary>
+            <p>{t.keepQuestionBody}</p>
+            <label className="field"><span>{t.question} · {t.localOnly}</span>
+              <textarea value={openQuestion} onChange={event => setOpenQuestion(event.target.value)} placeholder={t.questionPlaceholder} />
+            </label>
+            <button className="secondary compact" disabled={!openQuestion.trim()} onClick={() => void saveOpenQuestion()}>{questionSaved ? t.saved : t.saveQuestion}</button>
+          </details>
         </section>
       </article>
 
@@ -827,14 +856,14 @@ function Notebook({ t, onOpenReader }: { t: T; onOpenReader: (target: ReaderTarg
           <button className="entry-open" onClick={() => onOpenReader({
             code: entry.bookCode, chapter: entry.chapter, startVerse: entry.startVerse, endVerse: entry.endVerse,
           })}>
-            <span className="micro-label">{entry.kind.toUpperCase()}</span>
+            <span className="micro-label">{entry.kind === 'question' ? t.openQuestion : entry.kind === 'note' ? t.note : entry.kind === 'bookmark' ? t.bookmark : entry.kind.toUpperCase()}</span>
             <strong>{entry.bookName} {entry.chapter}{entry.startVerse ? `:${entry.startVerse}` : ''}</strong>
             {entry.note && <p>{entry.note}</p>}
             {!entry.note && entry.text && <p>{entry.text}</p>}
           </button>
           <button className="entry-delete" onClick={() => void remove(entry.id)}>{t.delete}</button>
         </article>)}
-        {!entries.length && <div className="empty-state"><h2>Ainda está quieto por aqui.</h2><p>Guarde uma leitura ou escreva uma anotação para começar.</p></div>}
+        {!entries.length && <div className="empty-state"><h2>{t.notebookEmptyTitle}</h2><p>{t.notebookEmptyBody}</p></div>}
       </div>
 
       <section className="backup-panel">
