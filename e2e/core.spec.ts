@@ -265,3 +265,17 @@ test('whole-Bible browser opens any selected book and chapter', async ({ page })
   await expect(page).toHaveURL(/\/ler\/rom\/8$/);
   await expect(page.getByRole('heading', { name: /^Romanos 8$/i })).toBeVisible();
 });
+
+
+test('text provenance distinguishes New Testament TR from Old Testament release provenance', async ({ page }) => {
+  await page.goto('/ler/pro/1?v=7');
+  await openExploreLayer(page, 'Fonte');
+  const oldTestamentPanel = page.locator('.context-panel.open');
+  await expect(oldTestamentPanel.getByText(/Antigo Testamento: texto idêntico nas saídas TR\/N4/i)).toBeVisible();
+  await expect(oldTestamentPanel.getByText(/^Textus Receptus$/i)).toHaveCount(0);
+
+  await page.goto('/ler/jhn/1?v=1');
+  await openExploreLayer(page, 'Fonte');
+  const newTestamentPanel = page.locator('.context-panel.open');
+  await expect(newTestamentPanel.getByText(/Novo Testamento: Textus Receptus/i)).toBeVisible();
+});
