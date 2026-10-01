@@ -212,9 +212,7 @@ jobs:
           NESTLUME_AI_ENDPOINT: ${{ env.AI_ENDPOINT }}
           NESTLUME_AI_PATH: /v1/ci-study
           NESTLUME_AI_BATTERY_OUTPUT: artifacts/ai-battery-result.json
-        run: |
-          export NESTLUME_AI_CI_TOKEN="$NESTLUME_CI_VALIDATION_TOKEN"
-          npm run ai:battery
+        run: npm run ai:battery
 
       - name: Remove CI validation credential from live Worker
         if: always()
