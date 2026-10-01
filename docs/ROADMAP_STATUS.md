@@ -7,7 +7,7 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 
 | Phase | Status | Evidence / remaining gate |
 |---|---|---|
-| F0 Product contract & rights | TESTADO | Current distributed corpus/datasets are pinned by source/version/hash and license inventory. Dependency-license allowlist runs in CI. New future datasets/media must pass the same gate before inclusion. |
+| F0 Product contract & rights | EM ANDAMENTO | Current distributed corpus/datasets are pinned by source/version/hash and license inventory, and dependency-license checks run in CI. The roadmap also asks for real editorial responsibility; no human reviewer is invented, so that human assignment remains open. |
 | F1 AI feasibility | TESTADO | Cloudflare Workers AI was exercised on the real authorized account through the production Worker. The Portuguese live battery, quota/error path, Turnstile boundary and zero-additional-cost deployment path are part of the release evidence. |
 | F2 Premium design/prototype | IMPLEMENTADO | Premium mobile-first UI exists for Today/Explore/Reader/Paste/AI/Notebook, with light/dark/system, reduced motion and responsive layouts. Automated desktop/mobile Chromium coverage exists; real-reader validation remains an F10 human gate. |
 | F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets in the client, isolated Firebase Hosting and CI gates are implemented. |
