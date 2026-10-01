@@ -244,3 +244,12 @@ test('open study questions stay local and reappear in the notebook', async ({ pa
   await expect(page.getByText('PERGUNTA ABERTA', { exact: true })).toBeVisible();
   await expect(page.getByText(question, { exact: true })).toBeVisible();
 });
+
+
+test('reading lens derives observations locally without presenting them as AI', async ({ page }) => {
+  await page.goto('/ler/jhn/1?v=1-5');
+  await openExploreLayer(page, 'Ajude-me a enxergar');
+  await expect(page.getByRole('heading', { name: 'Lentes de leitura' })).toBeVisible();
+  await expect(page.getByText(/não são interpretação.*nem análise por IA/i)).toBeVisible();
+  await expect(page.locator('.lens-word-list article').first()).toBeVisible();
+});
