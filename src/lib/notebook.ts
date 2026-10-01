@@ -53,13 +53,32 @@ async function withStore<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, mode);
     const request = fn(tx.objectStore(STORE));
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error('Falha no armazenamento local.'));
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => {
-      db.close();
-      reject(tx.error ?? new Error('Falha no armazenamento local.'));
+    let result!: T;
+    let requestError: DOMException | Error | null = null;
+    let settled = false;
+
+    request.onsuccess = () => {
+      result = request.result;
     };
+    request.onerror = () => {
+      requestError = request.error ?? new Error('Falha no armazenamento local.');
+    };
+
+    const fail = (error: DOMException | Error | null) => {
+      if (settled) return;
+      settled = true;
+      db.close();
+      reject(error ?? new Error('Falha no armazenamento local.'));
+    };
+
+    tx.oncomplete = () => {
+      if (settled) return;
+      settled = true;
+      db.close();
+      resolve(result);
+    };
+    tx.onerror = () => fail(requestError ?? tx.error);
+    tx.onabort = () => fail(requestError ?? tx.error);
   });
 }
 
