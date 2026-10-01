@@ -72,9 +72,51 @@ function loadVerses(source) {
     );
 }
 
+function loadOriginalEvidence(source) {
+  const book = String(source.book || '').toUpperCase();
+  const chapter = Number(source.chapter);
+  const verse = Number(source.verse);
+  const match = String(source.match || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const filePath = path.resolve(`public/original/step/chapters/${book}/${chapter}.json`);
+  const payload = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const row = payload.verses?.find(item => item.v === verse);
+  if (!row) throw new Error(`Original-language verse not found: ${book} ${chapter}:${verse}`);
+
+  const token = row.tokens?.find(item => {
+    const haystack = [item.s, item.tr, item.en, item.l, item.g]
+      .filter(Boolean)
+      .join(' ')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    return haystack.includes(match);
+  });
+  if (!token) throw new Error(`Original-language token matching "${source.match}" not found in ${book} ${chapter}:${verse}`);
+
+  return [
+    `Idioma: ${payload.language}.`,
+    `Forma no versículo: ${token.s}.`,
+    `Transliteração: ${token.tr || 'não fornecida'}.`,
+    `Lema: ${token.l || 'não fornecido'}.`,
+    `Gloss breve da fonte: ${token.g || 'não fornecido'}.`,
+    `Tradução curta da ocorrência: ${token.en || 'não fornecida'}.`,
+    `Morfologia: ${token.m || 'não fornecida'}.`,
+    `Alinhamento: ${payload.alignment}.`,
+    `Fonte: ${payload.attribution}; commit ${payload.sourceCommit}; licença ${payload.license}.`,
+  ].join(' ');
+}
+
 function hydrateEvidence(item) {
   if (item.text) return item;
-  if (!item.source) throw new Error(`Evidence ${item.id} has neither text nor corpus source.`);
+  if (item.original) {
+    return {
+      id: item.id,
+      kind: item.kind,
+      sourceLabel: item.sourceLabel,
+      text: loadOriginalEvidence(item.original),
+    };
+  }
+  if (!item.source) throw new Error(`Evidence ${item.id} has neither text nor corpus/original source.`);
   const verses = loadVerses(item.source);
   if (!verses.length) throw new Error(`No verses found for ${item.id}.`);
   return {
@@ -83,6 +125,22 @@ function hydrateEvidence(item) {
     sourceLabel: item.sourceLabel,
     text: verses.map(row => `${row.verse}. ${row.text}`).join('\n'),
   };
+}
+
+function semanticCheck(testCase, response) {
+  const errors = [];
+  const serialized = JSON.stringify(response);
+
+  for (const pattern of testCase.forbiddenPatterns || []) {
+    const regex = new RegExp(pattern, 'iu');
+    if (regex.test(serialized)) errors.push(`forbidden output pattern matched: ${pattern}`);
+  }
+  for (const pattern of testCase.requiredPatterns || []) {
+    const regex = new RegExp(pattern, 'iu');
+    if (!regex.test(serialized)) errors.push(`required output pattern missing: ${pattern}`);
+  }
+
+  return errors;
 }
 
 function structuralCheck(response, evidence) {
@@ -181,12 +239,14 @@ async function runCase(testCase) {
   }
 
   const structuralErrors = structuralCheck(parsed, evidence);
+  const semanticErrors = structuralErrors.length ? [] : semanticCheck(testCase, parsed);
   return {
     id: testCase.id,
     title: testCase.title,
-    status: structuralErrors.length ? 'structural-fail' : 'awaiting-human-review',
+    status: structuralErrors.length ? 'structural-fail' : semanticErrors.length ? 'semantic-fail' : 'awaiting-human-review',
     latencyMs: Date.now() - started,
     structuralErrors,
+    semanticErrors,
     response: parsed,
     humanCriteria: testCase.humanCriteria,
   };
@@ -209,6 +269,7 @@ const summary = {
   total: results.length,
   awaitingHumanReview: results.filter(result => result.status === 'awaiting-human-review').length,
   structuralFail: results.filter(result => result.status === 'structural-fail').length,
+  semanticFail: results.filter(result => result.status === 'semantic-fail').length,
   blocked: results.filter(result => result.status === 'blocked').length,
   localGate: results.filter(result => result.status === 'local-gate').length,
   transportOrHttpErrors: results.filter(result => result.status === 'transport-error' || result.status === 'http-error').length,
@@ -222,4 +283,4 @@ console.log(`Result written to ${outputPath}`);
 
 const failOnBlocked = process.env.NESTLUME_AI_BATTERY_FAIL_ON_BLOCKED === 'true';
 summary.failOnBlocked = failOnBlocked;
-if (summary.structuralFail || summary.transportOrHttpErrors || (failOnBlocked && summary.blocked)) process.exitCode = 1;
+if (summary.structuralFail || summary.semanticFail || summary.transportOrHttpErrors || (failOnBlocked && summary.blocked)) process.exitCode = 1;
