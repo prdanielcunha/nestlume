@@ -14,7 +14,7 @@ import {
 } from './lib/corpus';
 import { parseReferenceSyntax } from './lib/reference';
 import { AskPage } from './features/ai/AskPage';
-import { findEditorialStudy } from './editorial/registry';
+import { findEditorialStudy, listEditorialStudies } from './editorial/registry';
 import john1Greek from './editorial/lexical/generated/jhn-1-1.json';
 import john14Greek from './editorial/lexical/generated/jhn-1-14.json';
 import { LexicalPanel } from './features/reader/LexicalPanel';
@@ -299,6 +299,7 @@ function Explore({ t, onNavigate, onOpenReader }: {
   }, []);
 
   const browseBook = catalogBooks.find(book => book.ubsCode === browseBookCode) ?? null;
+  const editorialStudies = listEditorialStudies();
 
   async function runQuery(value = query) {
     const term = value.trim();
@@ -416,9 +417,21 @@ function Explore({ t, onNavigate, onOpenReader }: {
       {!loading && query.trim() && !error && hits.length === 0 && !parseReferenceSyntax(query) && <p className="empty-inline">{t.noResults}</p>}
 
       <div className="entry-list">
-        <button onClick={() => onOpenReader({ code: 'JHN', chapter: 1, startVerse: 1, endVerse: 18 })}>
-          <span><strong>João 1:1–18</strong><small>Primeiro encontro editorial — antes de Belém</small></span><span>Estudo inicial</span>
-        </button>
+        {editorialStudies.map(study => {
+          const bookName = study.reference.bookCode === 'JHN' ? 'João' : study.reference.bookCode === 'PRO' ? 'Provérbios' : study.reference.bookCode;
+          const reference = `${bookName} ${study.reference.chapter}:${study.reference.startVerse}–${study.reference.endVerse}`;
+          return (
+            <button key={study.id} onClick={() => onOpenReader({
+              code: study.reference.bookCode,
+              chapter: study.reference.chapter,
+              startVerse: study.reference.startVerse,
+              endVerse: study.reference.endVerse,
+            })}>
+              <span><strong>{reference}</strong><small>{study.title}</small></span>
+              <span>{study.review.status === 'published' ? 'Revisado' : 'Rascunho editorial'}</span>
+            </button>
+          );
+        })}
         <button onClick={() => onNavigate('paste')}>
           <span><strong>{t.paste}</strong><small>{t.pastePrivacy}</small></span><span>{t.localOnly}</span>
         </button>
