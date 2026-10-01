@@ -188,4 +188,6 @@ fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(summary, null, 2) + '\n');
 console.log(`Result written to ${outputPath}`);
 
-if (summary.structuralFail || summary.transportOrHttpErrors || summary.blocked) process.exitCode = 1;
+const failOnBlocked = process.env.NESTLUME_AI_BATTERY_FAIL_ON_BLOCKED === 'true';
+summary.failOnBlocked = failOnBlocked;
+if (summary.structuralFail || summary.transportOrHttpErrors || (failOnBlocked && summary.blocked)) process.exitCode = 1;
