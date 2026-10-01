@@ -136,11 +136,20 @@ jobs:
             fi
           done
 
+      - name: Generate ephemeral AI validation credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          token="$(openssl rand -hex 32)"
+          echo "::add-mask::$token"
+          echo "NESTLUME_CI_VALIDATION_TOKEN=$token" >> "$GITHUB_ENV"
+
       - name: Publish protected NestLume AI Worker
         shell: bash
         run: |
           set -euo pipefail
           printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
+          printf '%s' "$NESTLUME_CI_VALIDATION_TOKEN" | wrangler secret put CI_VALIDATION_TOKEN --config workers/ai/wrangler.jsonc
           wrangler deploy --config workers/ai/wrangler.jsonc
 
       - name: Smoke protected AI Worker health
@@ -155,54 +164,6 @@ jobs:
           if (!health.ok || health.provider !== 'cloudflare-workers-ai' || health.model !== '@cf/google/gemma-4-26b-a4b-it') process.exit(1);
           NODE
 
-      - name: Deploy isolated live-inference validation Worker
-        shell: bash
-        run: |
-          set -euo pipefail
-          export VALIDATION_WORKER="nestlume-ai-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          echo "VALIDATION_WORKER=$VALIDATION_WORKER" >> "$GITHUB_ENV"
-          suffix="${AI_ENDPOINT#https://nestlume-ai.}"
-          echo "VALIDATION_AI_ENDPOINT=https://${VALIDATION_WORKER}.${suffix}" >> "$GITHUB_ENV"
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          const config = JSON.parse(fs.readFileSync('workers/ai/wrangler.jsonc', 'utf8'));
-          config.name = process.env.VALIDATION_WORKER;
-          config.vars.REQUIRE_TURNSTILE = 'false';
-          config.vars.TURNSTILE_EXPECTED_HOSTNAME = '';
-          fs.writeFileSync('workers/ai/wrangler.validation.jsonc', JSON.stringify(config, null, 2) + '\n');
-          NODE
-          wrangler deploy --config workers/ai/wrangler.validation.jsonc
-
-      - name: Wait for validation Worker propagation
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts
-          ready=false
-          for attempt in $(seq 1 20); do
-            health_status="$(curl --silent --show-error --output artifacts/ai-validation-health.json --write-out '%{http_code}' "$VALIDATION_AI_ENDPOINT/health" || true)"
-            post_status="$(curl --silent --show-error --output artifacts/ai-validation-post-probe.json --write-out '%{http_code}' \
-              --request POST \
-              -H 'content-type: application/json' \
-              -H 'origin: https://nestlume.millionsnest.com' \
-              --data '{}' \
-              "$VALIDATION_AI_ENDPOINT/v1/study" || true)"
-            if [ "$health_status" = "200" ] && [ "$post_status" = "400" ]; then
-              node --input-type=module -e "import fs from 'node:fs'; const health=JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json','utf8')); const probe=JSON.parse(fs.readFileSync('artifacts/ai-validation-post-probe.json','utf8')); if(!health.ok||health.provider!=='cloudflare-workers-ai'||probe.error!=='invalid_request') process.exit(1);"
-              ready=true
-              break
-            fi
-            echo "Validation Worker not ready yet (health=$health_status post=$post_status, attempt $attempt/20)."
-            sleep 2
-          done
-          if [ "$ready" != "true" ]; then
-            echo "Validation Worker routes did not become reachable in time." >&2
-            cat artifacts/ai-validation-health.json || true
-            cat artifacts/ai-validation-post-probe.json || true
-            exit 1
-          fi
-          sleep 2
-
       - name: Prepare corpus for live AI battery
         run: npm run corpus:build
 
@@ -210,22 +171,20 @@ jobs:
         id: live_ai_battery
         continue-on-error: true
         env:
-          NESTLUME_AI_ENDPOINT: ${{ env.VALIDATION_AI_ENDPOINT }}
+          NESTLUME_AI_ENDPOINT: ${{ env.AI_ENDPOINT }}
+          NESTLUME_AI_PATH: /v1/ci-study
+          NESTLUME_AI_CI_TOKEN: ${{ env.NESTLUME_CI_VALIDATION_TOKEN }}
           NESTLUME_AI_BATTERY_OUTPUT: artifacts/ai-battery-result.json
         run: npm run ai:battery
 
-      - name: Remove isolated validation Worker
+      - name: Rotate CI validation credential after battery
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${VALIDATION_WORKER:-}" ]; then exit 0; fi
-          mkdir -p artifacts
-          curl --fail-with-body --silent --show-error --request DELETE \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$VALIDATION_WORKER" \
-            > artifacts/ai-validation-worker-delete.json
+          replacement="$(openssl rand -hex 32)"
+          echo "::add-mask::$replacement"
+          printf '%s' "$replacement" | wrangler secret put CI_VALIDATION_TOKEN --config workers/ai/wrangler.jsonc
 
       - name: Upload live AI validation evidence
         if: always()
@@ -234,10 +193,7 @@ jobs:
           name: nestlume-live-ai-${{ env.RELEASE_SHA }}
           path: |
             artifacts/ai-health.json
-            artifacts/ai-validation-health.json
-            artifacts/ai-validation-post-probe.json
             artifacts/ai-battery-result.json
-            artifacts/ai-validation-worker-delete.json
           if-no-files-found: ignore
           retention-days: 30
 
