@@ -18,7 +18,7 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 | F8 Grounded AI | BLOQUEADO | Provider-neutral request/evidence contract, claim→evidence validation, prompt-injection boundary, timeout/quota states, Turnstile-before-inference protection and Cloudflare Worker source are implemented. Live generation is disabled until F1 real-account tests pass. |
 | F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Writes resolve only after IndexedDB transaction commit, preventing navigation races. Desktop browser CI reloads downloaded Scripture and original-language data with the network disabled. |
 | F10 Premium quality/pilot | EM ANDAMENTO | CI includes desktop/mobile Chromium, whole-Bible representative genre matrix, accessible-name/overflow checks, performance budget, offline smoke and contextual-panel focus/Escape/Back behavior. Real iOS/Android/desktop device testing and human pilot cannot be truthfully claimed from CI. |
-| F11 Publication/operation | EM ANDAMENTO | The isolated Firebase Hosting target `nestlume-555464791734` has been deployed successfully through existing WIF and its default `web.app` URL passed public smoke. The Firebase custom-domain resource exists, but `nestlume.millionsnest.com` remains pending because authoritative DNS has not received the Firebase-requested record. |
+| F11 Publication/operation | PUBLICADO | RC2 (`dfdde79c17c01f6dfd09a678695af0090b65b562`) was deployed to the isolated Firebase Hosting target `nestlume-555464791734` through existing WIF. The default `web.app` URL passed smoke; Firebase reports `HOST_ACTIVE`, `OWNERSHIP_ACTIVE`, `CERT_ACTIVE`, no remaining DNS update, and the official `nestlume.millionsnest.com` smoke succeeded. |
 | F12 Expansion | NÃO INICIADO | Post-core expansion only: additional licensed translations, richer media, optional cloud sync/groups and further editorial journeys after current gates are validated. |
 
 ## Whole-Bible execution rule
@@ -50,9 +50,9 @@ The GitHub Actions run associated with the promoted SHA is the release evidence;
 No Cloudflare account/binding/token is exposed to this session. Therefore the real 20-case F1 model battery cannot be executed yet. The UI remains fail-closed and does not substitute static content for AI.
 
 ### Firebase + domain
-Firebase publication is automated and has already succeeded through the repository's existing Workload Identity Federation path. The remaining external gate is authoritative DNS for `millionsnest.com`: the Firebase resource currently requests the NestLume subdomain record, while the deployment evidence reports no available DNS credential. Until that record exists and Firebase finishes certificate validation, only the default Firebase URL is claimed live.
+Firebase publication is automated through the repository's existing Workload Identity Federation path. On the RC2 production release, the custom-domain resource reconciled successfully even though no Cloudflare token is present in the workflow: Firebase reported active hosting, active ownership and an active certificate with no remaining DNS update. Public smoke for the official domain succeeded.
 
-Target domain remains `nestlume.millionsnest.com`.
+Production domain: `https://nestlume.millionsnest.com`.
 
 ## Publication truth
 
@@ -72,4 +72,4 @@ Until those happen, the app reports the relevant layer honestly instead of inven
 
 
 ## Latest full automated gate
-RC2 must pass the full NestLume CI gate on its exact final SHA before branch promotion. The most recent prior functional SHA completed the gate successfully; no test status is inferred from branch naming, previous runs or documentation alone.
+RC2 release SHA `dfdde79c17c01f6dfd09a678695af0090b65b562` passed the full NestLume CI gate on `main` and again on `production`. Firebase production deploy run `36812710730` completed successfully and recorded successful smoke for both the default Firebase URL and the official custom domain.
