@@ -43,7 +43,7 @@ test('F10 automated 10-case reference/security matrix fails closed', () => {
     () => parseReference('João 99') === null,
     () => parseReference('Provérbios 32') === null,
     () => parseReference('1 João 6') === null,
-    () => parseReferenceSyntax('João -1:1') === null,
+    () => parseReferenceSyntax('João capítulo um') === null,
   ];
   assert.equal(checks.length, 10);
   for (const [index, check] of checks.entries()) {
