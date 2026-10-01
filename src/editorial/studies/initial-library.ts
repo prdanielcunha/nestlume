@@ -39,7 +39,7 @@ function scriptureDraft(seed: StudySeed): EditorialStudy {
       id: sourceId,
       kind: 'scripture',
       title: `Bíblia Livre — ${reference}`,
-      edition: 'release 2018.2.0 / Textus Receptus',
+      edition: seed.bookCode === 'JHN' ? 'release 2018.2.0 / Textus Receptus' : 'release 2018.2.0',
       locator: reference,
       license: 'CC BY 3.0 Brasil (corpus integrado)',
     }],
