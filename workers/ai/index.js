@@ -64,6 +64,12 @@ async function validateTurnstile(request, input, env) {
   return { ok: true };
 }
 
+function authorizedCiValidation(request, env) {
+  const expected = typeof env.CI_VALIDATION_TOKEN === 'string' ? env.CI_VALIDATION_TOKEN : '';
+  const supplied = request.headers.get('x-nestlume-ci-token') || '';
+  return expected.length >= 32 && supplied.length === expected.length && supplied === expected;
+}
+
 function validate(input) {
   if (!input || input.schemaVersion !== 1) return 'schema inválido';
   if (input.provider !== 'cloudflare-workers-ai') return 'provedor inválido';
@@ -128,8 +134,11 @@ export default {
     if (request.method === 'GET' && url.pathname === '/health') {
       return json({ ok: true, provider: 'cloudflare-workers-ai', model: env.MODEL || MODEL_DEFAULT, storage: 'none' }, 200, origin);
     }
-    if (request.method !== 'POST' || url.pathname !== '/v1/study') return json({ error: 'not_found' }, 404, origin);
+    const isPublicStudy = url.pathname === '/v1/study';
+    const isCiStudy = url.pathname === '/v1/ci-study';
+    if (request.method !== 'POST' || (!isPublicStudy && !isCiStudy)) return json({ error: 'not_found' }, 404, origin);
     if (!origin) return json({ error: 'origin_not_allowed' }, 403);
+    if (isCiStudy && !authorizedCiValidation(request, env)) return json({ error: 'not_found' }, 404, origin);
 
     const length = Number(request.headers.get('content-length') || 0);
     if (length > MAX_BODY_BYTES) return json({ error: 'request_too_large' }, 413, origin);
@@ -144,8 +153,10 @@ export default {
     const validationError = validate(input);
     if (validationError) return json({ error: 'invalid_request', detail: validationError }, 400, origin);
 
-    const antiAbuse = await validateTurnstile(request, input, env);
-    if (!antiAbuse.ok) return json({ error: antiAbuse.error }, antiAbuse.status, origin);
+    if (isPublicStudy) {
+      const antiAbuse = await validateTurnstile(request, input, env);
+      if (!antiAbuse.ok) return json({ error: antiAbuse.error }, antiAbuse.status, origin);
+    }
 
     const evidence = input.evidence.map(item => ({
       id: item.id,
