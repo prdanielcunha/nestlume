@@ -182,8 +182,9 @@ export default {
           { role: 'system', content: system },
           { role: 'user', content: JSON.stringify(userPayload) },
         ],
-        max_tokens: 1800,
+        max_completion_tokens: 1200,
         temperature: 0.2,
+        chat_template_kwargs: { enable_thinking: false },
       });
 
       const raw = result?.response ?? result?.choices?.[0]?.message?.content ?? '';
