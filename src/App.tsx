@@ -7,6 +7,7 @@ import {
   getBookByCode,
   identifyPastedText,
   loadChapter,
+  loadCatalog,
   requestOfflineBook,
   resolveBook,
   searchBible,
@@ -285,6 +286,19 @@ function Explore({ t, onNavigate, onOpenReader }: {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [hits, setHits] = useState<SearchHit[]>([]);
+  const [catalogBooks, setCatalogBooks] = useState<CorpusBook[]>([]);
+  const [browseBookCode, setBrowseBookCode] = useState('');
+  const [browseChapter, setBrowseChapter] = useState(1);
+
+  useEffect(() => {
+    let alive = true;
+    loadCatalog()
+      .then(catalog => { if (alive) setCatalogBooks(catalog.books); })
+      .catch(() => { if (alive) setCatalogBooks([]); });
+    return () => { alive = false; };
+  }, []);
+
+  const browseBook = catalogBooks.find(book => book.ubsCode === browseBookCode) ?? null;
 
   async function runQuery(value = query) {
     const term = value.trim();
@@ -338,6 +352,48 @@ function Explore({ t, onNavigate, onOpenReader }: {
         </div>
         {error && <p className="field-error" role="alert">{error}</p>}
       </form>
+
+      <section className="bible-browser" aria-labelledby="bible-browser-title">
+        <div>
+          <p className="micro-label">{t.wholeBibleScope.toUpperCase()}</p>
+          <h2 id="bible-browser-title">{t.browseBible}</h2>
+          <p>{t.browseBibleBody}</p>
+        </div>
+        <div className="bible-browser-controls">
+          <label className="field">
+            <span>{t.book}</span>
+            <select
+              value={browseBookCode}
+              onChange={event => {
+                setBrowseBookCode(event.target.value);
+                setBrowseChapter(1);
+              }}
+            >
+              <option value="">{t.chooseBook}</option>
+              {catalogBooks.map(book => <option key={book.ubsCode} value={book.ubsCode}>{book.nameLong}</option>)}
+            </select>
+          </label>
+          <label className="field">
+            <span>{t.chapter}</span>
+            <select
+              value={browseChapter}
+              disabled={!browseBook}
+              onChange={event => setBrowseChapter(Number(event.target.value))}
+            >
+              {Array.from({ length: browseBook?.chapters ?? 1 }, (_, index) => index + 1).map(chapter => (
+                <option key={chapter} value={chapter}>{chapter}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            className="primary simple"
+            disabled={!browseBook}
+            onClick={() => browseBook && onOpenReader({ code: browseBook.ubsCode, chapter: browseChapter })}
+          >
+            {t.openChapter}
+          </button>
+        </div>
+      </section>
 
       <div className="theme-strip" aria-label="Sugestões de busca textual">
         {['luz', 'graça', 'Espírito', 'aliança', 'sabedoria'].map(theme => (
