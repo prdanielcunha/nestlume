@@ -23,6 +23,7 @@ import { PlacesPanel } from './features/reader/PlacesPanel';
 import { PeoplePanel } from './features/reader/PeoplePanel';
 import { ContextPanel } from './features/reader/ContextPanel';
 import { ReadingLensesPanel } from './features/reader/ReadingLensesPanel';
+import { buildPassageSharePayload, sharePassage } from './lib/share';
 import {
   NotebookBackup,
   NotebookEntry,
@@ -393,6 +394,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
   const [noteSaved, setNoteSaved] = useState(false);
   const [openQuestion, setOpenQuestion] = useState('');
   const [questionSaved, setQuestionSaved] = useState(false);
+  const [shareState, setShareState] = useState<'idle' | 'shared' | 'copied' | 'error'>('idle');
   const panelOpenerRef = useRef<HTMLElement | null>(null);
 
   const selectPanel = (next: Panel) => {
@@ -514,6 +516,18 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
     window.setTimeout(() => setNoteSaved(false), 2200);
   }
 
+  async function shareCurrentPassage() {
+    if (!book) return;
+    setShareState('idle');
+    try {
+      const reference = `${book.nameShort} ${target.chapter}${target.startVerse ? `:${target.startVerse}${target.endVerse && target.endVerse !== target.startVerse ? `–${target.endVerse}` : ''}` : ''}`;
+      const payload = buildPassageSharePayload(reference, readerPath(target), window.location.origin);
+      setShareState(await sharePassage(payload));
+    } catch {
+      setShareState('error');
+    }
+  }
+
   async function saveOpenQuestion() {
     if (!book || !openQuestion.trim()) return;
     await saveEntry({
@@ -557,10 +571,12 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
             <button onClick={() => setFontScale(Math.max(.9, fontScale - .1))} aria-label="Diminuir texto">A−</button>
             <button onClick={() => setFontScale(Math.min(1.3, fontScale + .1))} aria-label="Aumentar texto">A+</button>
             <button onClick={() => selectPanel('explore')}>{t.explore}</button>
+            <button onClick={() => void shareCurrentPassage()}>{shareState === 'copied' ? t.linkCopied : shareState === 'shared' ? t.shared : t.share}</button>
             <button onClick={() => void bookmark()}>{saved ? t.saved : t.save}</button>
           </div>
         </div>
 
+        {shareState === 'error' && <p className="field-error compact-status" role="alert">{t.shareUnavailable}</p>}
         <nav className="chapter-nav" aria-label="Navegação entre capítulos">
           <button disabled={target.chapter <= 1} onClick={() => onOpenReader({ code: book.ubsCode, chapter: target.chapter - 1 })}>{t.previousChapter}</button>
           <span>{target.chapter} / {book.chapters}</span>
