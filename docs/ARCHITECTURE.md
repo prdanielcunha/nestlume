@@ -56,10 +56,10 @@ Bible text is visually separated from commentary. The initial João 1:1–18 lay
 PT/EN/ES message dictionaries cover navigation and the core reader/search/notebook controls. Editorial content is independently versioned content and must not be presented as translated merely because interface locale changes.
 
 ## AI boundary
-Live generation is fail-closed. No secret-bearing provider request exists in client code. Static content is never relabeled as AI.
+Live generation is enabled through the server-side Cloudflare Worker `nestlume-ai` and remains fail-closed. No provider credential exists in the client bundle. The browser supplies a public endpoint, explicit consent, the evidence bundle and a Turnstile token; the Worker validates origin, Turnstile, rate limits, request schema and generated claim→evidence references before returning a usable answer. Static content is never relabeled as AI.
 
 ## Hosting boundary
-`firebase.json` points to `dist` with SPA rewrites and immutable hashed assets. There is intentionally no `.firebaserc` binding until an isolated Spark project/site is actually inspected/provisioned, preventing accidental deployment to another MillionsNest Firebase project.
+`firebase.json` points to `dist` with SPA rewrites and immutable hashed assets. The inspected production target is the isolated site `nestlume-555464791734` in Firebase project `millionsnest`. GitHub Actions authenticates through the existing Workload Identity Federation path and deploys only the NestLume Hosting target.
 
 ## Security
 No frontend role check is authority. Hub integration, if later approved, must reuse canonical MillionsNest contracts. Private notes remain outside organization scope unless a later explicit synchronization design says otherwise.
@@ -68,9 +68,9 @@ No frontend role check is authority. Hub integration, if later approved, must re
 ## Provider-neutral AI contract
 The PWA uses `src/lib/ai.ts` and never receives provider credentials. Every outbound generation request is prepared with a versioned consent record, an explicit evidence bundle and hard size limits. The application does not silently truncate user text.
 
-A public `VITE_NESTLUME_AI_ENDPOINT` may point to an approved server-side adapter after F1 passes. This URL is not a secret. Provider credentials and bindings remain server-side.
+The public `VITE_NESTLUME_AI_ENDPOINT` points to the approved server-side adapter after F1 passed. This URL is not a secret. Provider credentials and bindings remain server-side.
 
-The first candidate adapter lives under `workers/ai/`. It is source-only until F1 approval and real Cloudflare deployment evidence exist. It uses a Workers AI binding, configures no prompt storage, restricts production CORS to the NestLume origin, requires evidence, treats pasted/evidence content as untrusted data and fails closed on quota/provider errors.
+The active adapter lives under `workers/ai/`. It uses a Workers AI binding, configures no prompt storage, restricts production CORS to the NestLume origin, requires evidence, validates Turnstile server-side, rate-limits public inference and fails closed on quota/provider/model-output errors. A production-only CI route is protected by an ephemeral credential and is removed from the active release configuration after the live battery.
 
 The product contract is provider-neutral:
 - Cloudflare Workers AI is the zero-additional-cost F1 candidate.
