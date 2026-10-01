@@ -1,5 +1,6 @@
 import { EditorialStudy } from './schema';
 import { john1PrologueStudy } from './studies/john-1-1-18';
+import { initialEditorialLibrary } from './studies/initial-library';
 
 export type EditorialLookup = {
   bookCode: string;
@@ -10,6 +11,7 @@ export type EditorialLookup = {
 
 const studies: EditorialStudy[] = [
   john1PrologueStudy,
+  ...initialEditorialLibrary,
 ];
 
 export function listEditorialStudies(): readonly EditorialStudy[] {
