@@ -18,13 +18,13 @@ export type ReadingLensResult = {
 const STOP_WORDS = new Set([
   'a','à','ao','aos','as','às','o','os','um','uma','uns','umas',
   'de','da','das','do','dos','em','na','nas','no','nos','por','para',
-  'com','sem','sob','sobre','entre','até','desde',
+  'com','sem','sob','sobre','entre','até','ate','desde',
   'e','ou','que','se','como','porque','quando','onde','quem','qual','quais',
   'é','era','foi','são','ser','sendo','está','estava','estão',
   'ele','ela','eles','elas','lhe','lhes','seu','sua','seus','suas',
   'eu','tu','nós','vós','me','te','nos','vos','meu','minha',
   'este','esta','estes','estas','esse','essa','isso','isto','aquele','aquela',
-  'não','sim','já','mais','menos','muito','muita','muitos','muitas',
+  'não','nao','sim','já','ja','mais','menos','muito','muita','muitos','muitas',
   'também','assim','então','pois','toda','todo','todos','todas',
 ]);
 
