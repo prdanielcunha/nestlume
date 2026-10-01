@@ -182,11 +182,7 @@ jobs:
           for attempt in $(seq 1 15); do
             status="$(curl --silent --show-error --output artifacts/ai-validation-health.json --write-out '%{http_code}' "$VALIDATION_AI_ENDPOINT/health" || true)"
             if [ "$status" = "200" ]; then
-              node --input-type=module - <<'NODE'
-              import fs from 'node:fs';
-              const health = JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json', 'utf8'));
-              if (!health.ok || health.provider !== 'cloudflare-workers-ai') process.exit(1);
-              NODE
+              node --input-type=module -e "import fs from 'node:fs'; const health = JSON.parse(fs.readFileSync('artifacts/ai-validation-health.json', 'utf8')); if (!health.ok || health.provider !== 'cloudflare-workers-ai') process.exit(1);"
               ready=true
               break
             fi
