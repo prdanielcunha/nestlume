@@ -238,7 +238,9 @@ test('open study questions stay local and reappear in the notebook', async ({ pa
   await page.goto('/ler/jhn/1?v=1-5');
   await page.getByText('Guardar uma pergunta para depois', { exact: true }).click();
   await page.getByLabel(/Pergunta · Somente neste dispositivo/i).fill(question);
-  await page.getByRole('button', { name: 'Guardar pergunta' }).click();
+  const saveQuestion = page.getByRole('button', { name: 'Guardar pergunta' });
+  await saveQuestion.click();
+  await expect(page.getByRole('button', { name: 'Salvo' })).toBeVisible();
 
   await page.goto('/caderno');
   await expect(page.getByText('PERGUNTA ABERTA', { exact: true })).toBeVisible();
