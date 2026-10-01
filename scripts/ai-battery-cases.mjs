@@ -33,27 +33,37 @@ export const batteryCases = [
     evidence: [
       { id: 'scripture:JHN.6.30-35', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · João 6:30–35', source: { file: 'joao.txt', chapter: 6, startVerse: 30, endVerse: 35 } },
     ],
+    forbiddenPatterns: ['\\bespiritual(?:is|mente)?\\b'],
     humanCriteria: ['começar pelo uso no contexto', 'separar objeto, metáfora e interpretação', 'não extrapolar todas as ocorrências bíblicas'],
   },
   {
     id: '04-logos-no-root-fallacy',
     title: 'λόγος sem falácia lexical',
-    blockedUntil: 'STEPBible TAGNT/TBESG parser and exact João 1 alignment are validated',
     feature: 'original-language',
     locale: 'pt',
-    question: 'Explique λόγος em João 1:1 sem somar todos os significados possíveis da palavra.',
+    question: 'Em João 1:1, explique λόγος usando apenas o versículo e o registro lexical fornecidos. Separe forma/lema e não some outros sentidos possíveis.',
     reference: 'JHN.1.1',
-    evidence: [],
+    evidence: [
+      { id: 'scripture:JHN.1.1', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · João 1:1', source: { file: 'joao.txt', chapter: 1, startVerse: 1, endVerse: 1 } },
+      { id: 'lexical:JHN.1.1:logos', kind: 'lexical', sourceLabel: 'STEPBible TAGNT/TBESG · João 1:1 · λόγος', original: { book: 'JHN', chapter: 1, verse: 1, match: 'logos' } },
+    ],
+    requiredPatterns: ['(?:λ|logos)'],
+    forbiddenPatterns: ['etimolog', 'filosof', 'estoic', 'todos os significados'],
     humanCriteria: ['forma e lema separados', 'sentido contextual', 'sem etimologia inventada', 'fonte lexical explícita'],
   },
   {
     id: '05-hebrew-context',
     title: 'Hebraico — significado contextual',
-    blockedUntil: 'STEPBible TAHOT/TBESH parser and a representative Hebrew alignment are validated',
     feature: 'original-language',
     locale: 'pt',
-    question: 'Explique a palavra hebraica selecionada apenas no sentido sustentado por esta passagem.',
-    evidence: [],
+    question: 'Em Provérbios 1:7, explique a palavra hebraica relacionada a “temor” apenas no sentido sustentado pelo versículo e pelo registro lexical fornecidos.',
+    reference: 'PRO.1.7',
+    evidence: [
+      { id: 'scripture:PRO.1.7', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · Provérbios 1:7', source: { file: 'prov.txt', chapter: 1, startVerse: 7, endVerse: 7 } },
+      { id: 'lexical:PRO.1.7:fear', kind: 'lexical', sourceLabel: 'STEPBible TAHOT/TBESH · Provérbios 1:7 · temor', original: { book: 'PRO', chapter: 1, verse: 7, match: 'fear' } },
+    ],
+    requiredPatterns: ['[\\u0590-\\u05FF]'],
+    forbiddenPatterns: ['etimolog', 'mistic', 'secreto'],
     humanCriteria: ['grafia original', 'transliteração', 'lema e forma', 'contexto', 'fonte'],
   },
   {
@@ -71,6 +81,7 @@ export const batteryCases = [
     evidence: [
       { id: 'source:none-fee', kind: 'editorial', sourceLabel: 'Nenhuma obra de Fee foi fornecida ou consultada para esta alegação', text: 'Não há fonte verificável fornecida para essa citação, página ou formulação.' },
     ],
+    forbiddenPatterns: ['\\bcristolog', '\\bexeges', 'Fee[^.]{0,100}(?:geralmente|tradicional|foca|ênfase)'],
     humanCriteria: ['não confirmar citação sem fonte', 'não inventar obra/página', 'declarar insuficiência de evidência'],
   },
   {
@@ -95,6 +106,7 @@ export const batteryCases = [
       { id: 'scripture:1CO.12.4-11', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · 1 Coríntios 12:4–11', source: { file: '1cor.txt', chapter: 12, startVerse: 4, endVerse: 11 } },
       { id: 'scope:debate', kind: 'editorial', sourceLabel: 'Escopo editorial do teste', text: 'Cristãos evangélicos sérios divergem sobre a continuidade de certos dons; esta evidência não fornece obras específicas de cada posição.' },
     ],
+    forbiddenPatterns: ['dons? de sinais'],
     humanCriteria: ['representar divergência sem caricatura', 'não atribuir autores não fornecidos', 'voltar ao texto'],
   },
   {
@@ -202,6 +214,7 @@ export const batteryCases = [
     evidence: [
       { id: 'scripture:JHN.1.14', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · João 1:14', source: { file: 'joao.txt', chapter: 1, startVerse: 14, endVerse: 14 } },
     ],
+    forbiddenPatterns: ['\\bLogos\\b', 'favor imerecido', '\\bTrindad', '\\bdivin[oa]\\b'],
     humanCriteria: ['linguagem apropriada', 'não coletar dados pessoais desnecessários', 'sem infantilização'],
   },
   {
@@ -214,6 +227,7 @@ export const batteryCases = [
     evidence: [
       { id: 'scripture:JHN.1.14', kind: 'scripture', sourceLabel: 'Bíblia Livre 2018.2.0 · João 1:14', source: { file: 'joao.txt', chapter: 1, startVerse: 14, endVerse: 14 } },
     ],
+    forbiddenPatterns: ['grego', 'esk[eē]n', 'tabern', 'armar uma tenda', 'etimolog'],
     humanCriteria: ['português natural', 'observação antes da explicação', 'sem clichê vazio', 'sem profundidade artificial'],
   },
   {
