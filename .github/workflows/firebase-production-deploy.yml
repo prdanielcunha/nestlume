@@ -164,24 +164,33 @@ jobs:
           if (!health.ok || health.provider !== 'cloudflare-workers-ai' || health.model !== '@cf/google/gemma-4-26b-a4b-it') process.exit(1);
           NODE
 
-      - name: Verify protected CI validation route
+      - name: Verify protected CI validation route after secret propagation
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p artifacts
-          status="$(curl --silent --show-error --output artifacts/ai-ci-auth-probe.json --write-out '%{http_code}' \
-            --request POST \
-            -H 'content-type: application/json' \
-            -H 'origin: https://nestlume.millionsnest.com' \
-            -H "x-nestlume-ci-token: $NESTLUME_CI_VALIDATION_TOKEN" \
-            --data '{}' \
-            "$AI_ENDPOINT/v1/ci-study")"
-          if [ "$status" != "400" ]; then
-            echo "Protected CI validation route did not authenticate (HTTP $status)." >&2
+          ready=false
+          for attempt in $(seq 1 20); do
+            status="$(curl --silent --show-error --output artifacts/ai-ci-auth-probe.json --write-out '%{http_code}' \
+              --request POST \
+              -H 'content-type: application/json' \
+              -H 'origin: https://nestlume.millionsnest.com' \
+              -H "x-nestlume-ci-token: $NESTLUME_CI_VALIDATION_TOKEN" \
+              --data '{}' \
+              "$AI_ENDPOINT/v1/ci-study" || true)"
+            if [ "$status" = "400" ]; then
+              node --input-type=module -e "import fs from 'node:fs'; const body=JSON.parse(fs.readFileSync('artifacts/ai-ci-auth-probe.json','utf8')); if(body.error!=='invalid_request') process.exit(1);"
+              ready=true
+              break
+            fi
+            echo "CI validation credential not active yet (HTTP $status, attempt $attempt/20)."
+            sleep 3
+          done
+          if [ "$ready" != "true" ]; then
+            echo "Protected CI validation route did not authenticate after propagation window." >&2
             cat artifacts/ai-ci-auth-probe.json || true
             exit 1
           fi
-          node --input-type=module -e "import fs from 'node:fs'; const body=JSON.parse(fs.readFileSync('artifacts/ai-ci-auth-probe.json','utf8')); if(body.error!=='invalid_request') process.exit(1);"
 
       - name: Prepare corpus for live AI battery
         run: npm run corpus:build
