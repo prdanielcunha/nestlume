@@ -428,7 +428,7 @@ function Explore({ t, onNavigate, onOpenReader }: {
               endVerse: study.reference.endVerse,
             })}>
               <span><strong>{reference}</strong><small>{study.title}</small></span>
-              <span>{study.review.status === 'published' ? 'Revisado' : 'Rascunho editorial'}</span>
+              <span>{study.review.status === 'published' ? t.editorialReviewedStatus : t.editorialDraftStatus}</span>
             </button>
           );
         })}
