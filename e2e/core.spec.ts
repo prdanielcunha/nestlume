@@ -231,3 +231,16 @@ test('contextual panel supports Escape Back and focus restoration without losing
   await expect(page).toHaveURL(/\/ler\/jhn\/1\?v=1$/);
   await expect(page.getByRole('heading', { name: /João 1:1/i })).toBeVisible();
 });
+
+
+test('open study questions stay local and reappear in the notebook', async ({ page }) => {
+  const question = 'Como esta passagem desenvolve o tema da luz?';
+  await page.goto('/ler/jhn/1?v=1-5');
+  await page.getByText('Guardar uma pergunta para depois', { exact: true }).click();
+  await page.getByLabel(/Pergunta · Somente neste dispositivo/i).fill(question);
+  await page.getByRole('button', { name: 'Guardar pergunta' }).click();
+
+  await page.goto('/caderno');
+  await expect(page.getByText('PERGUNTA ABERTA', { exact: true })).toBeVisible();
+  await expect(page.getByText(question, { exact: true })).toBeVisible();
+});
