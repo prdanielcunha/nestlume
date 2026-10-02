@@ -229,7 +229,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
         </section>
 
         <div className="ask-actions">
-          <button className="primary simple" type="submit" disabled={!question.trim() || sending}>
+          <button className="primary simple" type="submit" disabled={!question.trim() || sending || (!!turnstileSiteKey && !turnstileToken)}>
             {sending ? t.loading : t.askSubmit}
           </button>
           <button className="secondary" type="button" onClick={() => void openReference()}>{t.readPassage}</button>
