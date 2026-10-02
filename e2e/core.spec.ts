@@ -12,7 +12,7 @@ test('public reading works without login and any passage can enter grounded stud
   await expect(page.getByRole('heading', { name: /Gênesis 1:1/i })).toBeVisible();
 
   await page.getByRole('button', { name: /Perguntar sobre esta passagem/i }).click();
-  await expect(page).toHaveURL(/\/perguntar\?ref=/);
+  await expect(page).toHaveURL(/\/perguntar\?.*ref=/);
   await expect(page.getByLabel('Referência (opcional)')).toHaveValue(/Gênesis 1:1/i);
 });
 
@@ -278,4 +278,19 @@ test('text provenance distinguishes New Testament TR from Old Testament release 
   await openExploreLayer(page, 'Fonte');
   const newTestamentPanel = page.locator('.context-panel.open');
   await expect(newTestamentPanel.getByText(/Novo Testamento: Textus Receptus/i)).toBeVisible();
+});
+
+
+test('integrated study hub is available on an arbitrary Bible passage', async ({ page }) => {
+  await page.goto('/ler/rom/8?v=1-4');
+  await expect(page.getByRole('heading', { name: /Estudo integrado da passagem/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Contexto/i }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /Idioma original/i }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /Pessoas/i }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lugares/i }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /Fio da Bíblia/i }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: /Estudar esta passagem/i }).first().click();
+  await expect(page).toHaveURL(/\/perguntar\?.*mode=study.*ref=/);
+  await expect(page.getByRole('textbox', { name: /^Pergunta/ })).toHaveValue(/estudo profundo e integrado/i);
 });
