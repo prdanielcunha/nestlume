@@ -269,7 +269,7 @@ test('whole-Bible browser opens any selected book and chapter', async ({ page })
 
 test('text provenance distinguishes New Testament TR from Old Testament release provenance', async ({ page }) => {
   await page.goto('/ler/pro/1?v=7');
-  await openExploreLayer(page, 'Fonte');
+  await openExploreLayer(page, 'Ver fonte');
   const oldTestamentPanel = page.locator('.context-panel.open');
   await expect(oldTestamentPanel.getByText(/Antigo Testamento: texto idêntico nas saídas TR\/N4/i)).toBeVisible();
   await expect(oldTestamentPanel.getByText(/^Textus Receptus$/i)).toHaveCount(0);
