@@ -76,6 +76,7 @@ export function TurnstileGate({
   const widgetIdRef = useRef<string | null>(null);
   const apiRef = useRef<TurnstileApi | null>(null);
   const [ready, setReady] = useState(false);
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -89,10 +90,17 @@ export function TurnstileGate({
           action: 'nestlume_ai_study',
           theme: 'auto',
           language: locale === 'pt' ? 'pt-BR' : locale,
-          appearance: 'interaction-only',
-          callback: token => onToken(token),
-          'expired-callback': () => onToken(''),
+          appearance: 'always',
+          callback: token => {
+            setVerified(true);
+            onToken(token);
+          },
+          'expired-callback': () => {
+            setVerified(false);
+            onToken('');
+          },
           'error-callback': () => {
+            setVerified(false);
             onToken('');
             onError();
           },
@@ -113,14 +121,21 @@ export function TurnstileGate({
 
   useEffect(() => {
     if (!resetCounter || !apiRef.current || !widgetIdRef.current) return;
+    setVerified(false);
     onToken('');
     apiRef.current.reset(widgetIdRef.current);
   }, [resetCounter, onToken]);
 
+  const statusText = verified
+    ? (locale === 'pt' ? 'Verificação concluída. A IA está pronta para receber sua pergunta.' : locale === 'es' ? 'Verificación concluida. La IA está lista para recibir tu pregunta.' : 'Verification complete. AI is ready for your question.')
+    : (locale === 'pt' ? 'Conclua a verificação abaixo para liberar a IA.' : locale === 'es' ? 'Completa la verificación para habilitar la IA.' : 'Complete the verification below to enable AI.');
+
   return (
     <div className="turnstile-gate">
       <div ref={containerRef} />
-      {!ready && <span aria-live="polite">Proteção antiabuso carregando…</span>}
+      <span className={verified ? 'turnstile-status verified' : 'turnstile-status'} aria-live="polite">
+        {!ready ? (locale === 'pt' ? 'Proteção antiabuso carregando…' : locale === 'es' ? 'Cargando protección antiabuso…' : 'Loading anti-abuse protection…') : statusText}
+      </span>
     </div>
   );
 }
