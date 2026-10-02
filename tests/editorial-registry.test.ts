@@ -8,7 +8,7 @@ test('João 1 fixture is discovered through the generic reference registry', () 
 });
 
 test('absence of a hand-authored study is represented as no editorial layer, not a fake fallback', () => {
-  const study = findEditorialStudy({ bookCode: 'GEN', chapter: 1, startVerse: 1, endVerse: 5 });
+  const study = findEditorialStudy({ bookCode: 'EXO', chapter: 40, startVerse: 34, endVerse: 38 });
   assert.equal(study, null);
 });
 
