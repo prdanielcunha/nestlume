@@ -1,7 +1,7 @@
 # NestLume — roadmap execution status
 
 Evidence snapshot: 2026-10-01  
-Source version: **1.0.0-rc.3**
+Source version: **1.0.0-rc.4**
 
 Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTADO` · `PUBLICADO` · `BLOQUEADO`.
 
@@ -12,10 +12,10 @@ Status vocabulary: `NÃO INICIADO` · `EM ANDAMENTO` · `IMPLEMENTADO` · `TESTA
 | F2 Premium design/prototype | IMPLEMENTADO | Premium mobile-first UI exists for Today/Explore/Reader/Paste/AI/Notebook, with light/dark/system, reduced motion and responsive layouts. Automated desktop/mobile Chromium coverage exists; real-reader validation remains an F10 human gate. |
 | F3 App foundation | TESTADO | React/TypeScript/Vite PWA, strict typecheck, deterministic builds, PT/EN/ES interface foundation, no runtime secrets in the client, isolated Firebase Hosting and CI gates are implemented. |
 | F4 Bible/reference engine | TESTADO | Full 66-book Bíblia Livre corpus; 1,189 chapters / 31,102 verses; reference/range validation, search, resume, chapter navigation, font size, credits and verified book-offline packaging pass CI/browser gates. |
-| F5 Editorial layer | EM ANDAMENTO | Ten Scripture-grounded encounters across João and Provérbios exist with claims/sources/certainty. They remain explicitly `draft` until a named real human reviewer records review; no reviewer or seal is fabricated. |
-| F6 Context/entities/originals | TESTADO | Bible-wide contextual Explore flow exposes STEPBible-derived Greek/Hebrew packages, sourced people, sourced places, connections and provenance. Exact canonical-reference/versification limits fail closed. |
+| F5 Editorial layer | EM ANDAMENTO | Twenty Scripture-grounded starter encounters now span Gênesis, Salmos, Provérbios, Isaías, Evangelhos, Romanos, 1 Coríntios, Efésios, Tiago and Apocalipse. João 1 was deepened into an eight-part connected study. All remain explicitly `draft` until a named real human reviewer records review; no reviewer or seal is fabricated. |
+| F6 Context/entities/originals | TESTADO | Bible-wide contextual data is now surfaced inline through an integrated-study hub and remains inspectable in deeper Explore panels. STEPBible-derived Greek/Hebrew packages, sourced people, sourced places, connections and provenance keep exact canonical-reference/versification limits fail-closed. |
 | F7 Pasted text | TESTADO | Private paste preserves user text, supports optional version/reference, local identification and AI handoff only after separate explicit consent. Private text is not placed in the URL. |
-| F8 Grounded AI | PUBLICADO | Live Cloudflare Workers AI is connected through a server-side Worker with strict origin, Turnstile, request/evidence validation, claim→evidence validation, prompt-injection boundary, timeout/quota handling and public rate limiting. Production deploy reruns a live Portuguese battery before Firebase publication. Unsupported evidence-heavy features, such as textual-variant analysis without a pinned source, stay unavailable rather than being invented. |
+| F8 Grounded AI | PUBLICADO | Live Cloudflare Workers AI is connected through a server-side Worker with strict origin, visible Turnstile, request/evidence validation, claim→evidence validation, prompt-injection boundary, timeout/quota handling and public rate limiting. Passage study requests now carry the selected Scripture, surrounding context, pinned original-language data, sourced people, places, connections and matching editorial claims when available. Whole chapters are chunked explicitly rather than silently reduced to the first verses. Production deploy reruns a live Portuguese battery before Firebase publication. |
 | F9 Continuity/offline | TESTADO | IndexedDB position/bookmarks/notes, export/import, deletion, PWA shell, verified Bible-book caching and original-language offline packages are implemented. Writes resolve after transaction commit and offline reload is covered in browser CI. |
 | F10 Premium quality/pilot | EM ANDAMENTO | Automated desktop/mobile Chromium, accessibility-name/overflow checks, performance budget, offline smoke, contextual keyboard/history behavior and a 50-case Bible/reference security matrix exist. Real iOS/Android/desktop device testing and the proposed human-reader/reviewer pilot are inherently human gates and are not claimed by CI. |
 | F11 Publication/operation | PUBLICADO | Firebase Hosting publication, default URL smoke, official custom-domain smoke, Cloudflare Worker publication and release artifacts are automated on the exact production SHA. Rollback documentation and previous releases remain available. |
@@ -58,7 +58,7 @@ If the live AI battery fails, Firebase publication of that candidate is blocked.
 
 Two roadmap items cannot be manufactured by automation:
 
-1. **Editorial publication seal:** a named real reviewer must actually review and approve the ten draft encounters before they become `published`.
+1. **Editorial publication seal:** a named real reviewer must actually review and approve the twenty draft encounters before they become `published`.
 2. **Human/physical-device pilot:** real readers and real iOS/Android/desktop devices must be used to claim that acceptance criterion.
 
 These do not justify inventing completion. The technical production system remains usable while those human acceptance activities are pending.
