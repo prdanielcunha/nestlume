@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useState } from 'react';
 import { Locale, messages } from '../../i18n/messages';
 import { loadChapter, resolveBook } from '../../lib/corpus';
+import { buildIntegratedStudyEvidence } from '../../lib/studyEvidence';
 import { parseReferenceSyntax } from '../../lib/reference';
 import {
   AI_DISCLOSURE_VERSION,
@@ -30,7 +31,13 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
   const provider = 'cloudflare-workers-ai' as const;
   const [pastedText] = useState(() => initialPastedText?.trim() || '');
   const [declaredVersion] = useState(() => initialVersion?.trim() || '');
-  const [question, setQuestion] = useState(() => pastedText ? t.pastedAiDefaultQuestion : '');
+  const [question, setQuestion] = useState(() => {
+    if (pastedText) return t.pastedAiDefaultQuestion;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mode') === 'study'
+      ? 'Faça um estudo profundo e integrado desta passagem: comece pelo que o texto afirma, observe o contexto, conecte dados do idioma original, pessoas, lugares e referências relacionadas apenas quando estiverem nas evidências; diferencie observação, interpretação e aplicação e mostre os limites das fontes.'
+      : '';
+  });
   const [reference, setReference] = useState(() =>
     initialReference?.trim() ||
     new URLSearchParams(window.location.search).get('ref') ||
@@ -71,12 +78,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
       if (!selected.length) throw new Error(t.aiInvalidReference);
 
       target = { code: book.ubsCode, chapter: syntax.chapter, startVerse: start, endVerse: end };
-      evidence.push({
-        id: `blivre:${book.ubsCode}:${syntax.chapter}:${start}-${end}`,
-        kind: 'scripture',
-        sourceLabel: `Bíblia Livre 2018.2.0 · ${book.nameShort} ${syntax.chapter}:${start}–${end}`,
-        text: selected.map(verse => `${verse.verse}. ${verse.text}`).join('\n'),
-      });
+      evidence.push(...await buildIntegratedStudyEvidence(book, target, chapter));
     }
 
     if (pastedText) {
