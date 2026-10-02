@@ -661,7 +661,7 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
         </div>
 
         <div className="reader-meta">
-          <p className="attribution">Bíblia Livre (BLIVRE), © Diego Santos, Mario Sérgio e Marco Teles, fevereiro de 2018. Corpus integrado: release 2018.2.0 / Textus Receptus, CC BY 3.0 Brasil. <button onClick={() => selectPanel('source')}>{t.source}</button></p>
+          <p className="attribution">Bíblia Livre (BLIVRE), © Diego Santos, Mario Sérgio e Marco Teles, fevereiro de 2018. Corpus integrado: release 2018.2.0{['MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'].includes(book.ubsCode) ? ' / Novo Testamento: Textus Receptus' : ''}, CC BY 3.0 Brasil. <button onClick={() => selectPanel('source')}>{t.source}</button></p>
           <button className="offline-button" onClick={() => void downloadOffline()} disabled={offlineState === 'loading'}>
             {offlineState === 'loading' ? t.loading : offlineState === 'ready' ? t.offlineComplete : offlineState === 'partial' ? t.offlinePartial : t.downloadOffline}
           </button>
