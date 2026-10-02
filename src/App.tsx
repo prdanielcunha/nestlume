@@ -252,29 +252,50 @@ function Today({ t, onNavigate, onOpenReader }: {
   const [position, setPosition] = useState<ReadingPosition | null>(null);
   useEffect(() => { getReadingPosition().then(setPosition).catch(() => setPosition(null)); }, []);
 
+  const featuredIds = [
+    'genesis-1-1-5-creation-light',
+    'psalm-23-1-6-shepherd',
+    'john-1-1-18-before-bethlehem',
+    'romans-8-1-11-no-condemnation',
+    'james-1-19-27-hearing-doing',
+    'revelation-21-1-7-new-creation',
+  ];
+  const featured = listEditorialStudies().filter(study => featuredIds.includes(study.id));
+
   return (
     <div className="page page-home">
       <section className="hero editorial-width">
         <p className="kicker">BÍBLIA INTEIRA · LEIA, PERCEBA, APROFUNDE</p>
         <h1>Há mais luz no texto<br />do que pressa consegue ver.</h1>
-        <p className="hero-copy">Leia a Bíblia inteira com espaço para perceber contexto, palavras, conexões e fontes — sem transformar profundidade em espetáculo.</p>
+        <p className="hero-copy">Leia qualquer um dos 66 livros e transforme a passagem em um estudo integrado com contexto, idioma original, pessoas, lugares, conexões e IA fundamentada nas evidências disponíveis.</p>
         <div className="hero-actions">
-          <button className="primary" onClick={() => onOpenReader(position ? {
+          <button className="primary" onClick={() => position ? onOpenReader({
             code: position.bookCode, chapter: position.chapter, startVerse: position.verse,
-          } : { code: 'JHN', chapter: 1, startVerse: 1, endVerse: 18 })}>
-            {t.continue}<span>{position ? `${position.bookName} ${position.chapter}` : 'João 1:1–18'}</span>
+          }) : onNavigate('explore')}>
+            {position ? t.continue : t.begin}<span>{position ? `${position.bookName} ${position.chapter}` : '66 livros'}</span>
           </button>
-          <button className="secondary" onClick={() => onNavigate('explore')}>{t.begin}</button>
+          <button className="secondary" onClick={() => onNavigate('explore')}>{t.explore}</button>
         </div>
       </section>
       <section className="today-trail editorial-width">
         <div className="trail-rule" />
-        <p className="micro-label">BÍBLIA COMPLETA · BLIVRE 2018</p>
-        <button className="discovery-teaser" onClick={() => onOpenReader({ code: 'JHN', chapter: 1, startVerse: 1, endVerse: 18 })}>
-          <span className="teaser-number">01</span>
-          <span><strong>Encontro em destaque: “No princípio” não começa em Belém.</strong><small>João 1:1–18 é um dos exemplos editoriais; leitura, busca e estudo abrangem os 66 livros.</small></span>
-          <span aria-hidden="true">→</span>
-        </button>
+        <p className="micro-label">ESTUDOS EM DIFERENTES PARTES DA BÍBLIA</p>
+        {featured.map((study, index) => {
+          const names: Record<string, string> = { GEN: 'Gênesis', PSA: 'Salmos', JHN: 'João', ROM: 'Romanos', JAS: 'Tiago', REV: 'Apocalipse' };
+          const reference = `${names[study.reference.bookCode] ?? study.reference.bookCode} ${study.reference.chapter}:${study.reference.startVerse}–${study.reference.endVerse}`;
+          return (
+            <button className="discovery-teaser" key={study.id} onClick={() => onOpenReader({
+              code: study.reference.bookCode,
+              chapter: study.reference.chapter,
+              startVerse: study.reference.startVerse,
+              endVerse: study.reference.endVerse,
+            })}>
+              <span className="teaser-number">{String(index + 1).padStart(2, '0')}</span>
+              <span><strong>{study.title}</strong><small>{reference} · estudo editorial em rascunho + camadas integradas da passagem.</small></span>
+              <span aria-hidden="true">→</span>
+            </button>
+          );
+        })}
       </section>
     </div>
   );
