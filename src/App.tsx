@@ -24,6 +24,7 @@ import { PlacesPanel } from './features/reader/PlacesPanel';
 import { PeoplePanel } from './features/reader/PeoplePanel';
 import { ContextPanel } from './features/reader/ContextPanel';
 import { ReadingLensesPanel } from './features/reader/ReadingLensesPanel';
+import { IntegratedStudyHub } from './features/reader/IntegratedStudyHub';
 import { buildPassageSharePayload, sharePassage } from './lib/share';
 import {
   NotebookBackup,
@@ -669,24 +670,15 @@ function Reader({ t, target, fontScale, setFontScale, panel, setPanel, onOpenRea
           {offlineState === 'error' && <p className="field-error" role="alert">{t.offlineError}</p>}
         </div>
 
-        <section className="integrated-study-hub">
-          <div className="integrated-study-heading">
-            <div>
-              <p className="micro-label">{t.study.toUpperCase()} · {referenceLabel.toUpperCase()}</p>
-              <h2>Estudo integrado da passagem</h2>
-              <p>{t.explorePassageIntro} O NestLume reúne as camadas abaixo no mesmo caminho e envia as evidências disponíveis junto com a passagem quando você pede o estudo com IA.</p>
-            </div>
-            <button className="primary simple" onClick={() => onAskPassage(referenceLabel)}>{t.studyThisPassage}</button>
-          </div>
-          <div className="integrated-study-grid">
-            <button onClick={() => selectPanel('context')}><strong>{t.context}</strong><span>{t.contextActionBody}</span></button>
-            <button onClick={() => selectPanel('lenses')}><strong>{t.helpMeSee}</strong><span>{t.lensesActionBody}</span></button>
-            <button onClick={() => selectPanel('original')}><strong>{t.originalLanguage}</strong><span>{t.originalActionBody}</span></button>
-            <button onClick={() => selectPanel('people')}><strong>{t.people}</strong><span>{t.peopleActionBody}</span></button>
-            <button onClick={() => selectPanel('places')}><strong>{t.places}</strong><span>{t.placesActionBody}</span></button>
-            <button onClick={() => selectPanel('thread')}><strong>{t.thread}</strong><span>{t.connectionsActionBody}</span></button>
-          </div>
-        </section>
+        <IntegratedStudyHub
+          t={t}
+          book={book}
+          target={target}
+          verses={verses}
+          referenceLabel={referenceLabel}
+          onSelectPanel={next => selectPanel(next)}
+          onStudy={() => onAskPassage(referenceLabel)}
+        />
 
         {editorialStudy ? (
           <>
