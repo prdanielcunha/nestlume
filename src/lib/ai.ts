@@ -122,7 +122,7 @@ export function configuredAiEndpoint(): string | null {
 export async function requestAiStudy(request: AiStudyRequest, endpoint = configuredAiEndpoint(), turnstileToken?: string): Promise<AiStudyResponse> {
   if (!endpoint) throw new Error('A IA ao vivo ainda não foi conectada a um provedor aprovado.');
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  const timeout = setTimeout(() => controller.abort(), 60000);
   try {
     const response = await fetch(`${endpoint}/v1/study`, {
       method: 'POST',
@@ -132,10 +132,30 @@ export async function requestAiStudy(request: AiStudyRequest, endpoint = configu
       credentials: 'omit',
     });
     if (response.status === 429) throw new Error('A IA atingiu um limite temporário de proteção ou da cota gratuita. Aguarde um pouco e tente novamente; a Bíblia e os estudos salvos continuam funcionando.');
-    if (!response.ok) throw new Error(`A IA não conseguiu concluir esta solicitação (${response.status}).`);
+    if (!response.ok) {
+      let code = '';
+      try {
+        const body = await response.json() as { error?: string };
+        code = body.error || '';
+      } catch {
+        // Keep the public message useful even when an upstream proxy does not return JSON.
+      }
+      if (response.status === 403 && code.startsWith('anti_abuse')) {
+        throw new Error('A verificação de segurança não foi aceita. Refaça a verificação visível e envie novamente.');
+      }
+      if (response.status === 503 && code.includes('rate_limit')) {
+        throw new Error('A proteção de uso da IA está temporariamente indisponível. Tente novamente em instantes.');
+      }
+      throw new Error(`A IA não conseguiu concluir esta solicitação (${response.status}${code ? ` · ${code}` : ''}).`);
+    }
     const data = await response.json() as AiStudyResponse;
     if (!data.answer?.trim()) throw new Error('A resposta da IA chegou sem conteúdo utilizável.');
     return data;
+  } catch (cause) {
+    if (cause instanceof DOMException && cause.name === 'AbortError') {
+      throw new Error('A IA demorou mais de 60 segundos para responder. Tente novamente; sua leitura e seus dados locais não foram afetados.');
+    }
+    throw cause;
   } finally {
     clearTimeout(timeout);
   }
