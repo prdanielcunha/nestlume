@@ -21,13 +21,15 @@ test('public reading works without login and any passage can enter grounded stud
 test('Greek and Hebrew original-language packages load at exact canonical references', async ({ page }) => {
   await page.goto('/ler/jhn/1?v=1');
   await openExploreLayer(page, 'Idioma original');
-  await expect(page.getByText(/Grego koiné/i)).toBeVisible();
-  await expect(page.getByRole('button', { name: /logos/i }).first()).toBeVisible();
+  const greekPanel = page.locator('.context-panel.open');
+  await expect(greekPanel.getByText(/Grego koiné/i)).toBeVisible();
+  await expect(greekPanel.getByRole('button', { name: /logos/i }).first()).toBeVisible();
 
   await page.goto('/ler/gen/1?v=1');
   await openExploreLayer(page, 'Idioma original');
-  await expect(page.getByText(/Hebraico bíblico/i)).toBeVisible();
-  await expect(page.locator('.original-line button').first()).toBeVisible();
+  const hebrewPanel = page.locator('.context-panel.open');
+  await expect(hebrewPanel.getByText(/Hebraico bíblico/i)).toBeVisible();
+  await expect(hebrewPanel.locator('.original-line button').first()).toBeVisible();
 });
 
 test('versification mismatch is surfaced instead of silently shifting the verse', async ({ page }) => {
@@ -93,7 +95,7 @@ test('core reading remains available offline after a complete verified book down
   await expect(page.getByRole('heading', { name: /João 1:1/i })).toBeVisible();
 
   await openExploreLayer(page, 'Idioma original');
-  await expect(page.getByText(/Grego koiné/i)).toBeVisible();
+  await expect(page.locator('.context-panel.open').getByText(/Grego koiné/i)).toBeVisible();
 });
 
 test('local build meets the initial layout/performance budget', async ({ page }, testInfo) => {
