@@ -3,11 +3,12 @@ import test from 'node:test';
 import { listEditorialStudies } from '../src/editorial/registry';
 import { validateEditorialStudy } from '../src/editorial/schema';
 
-test('initial editorial library contains the planned 8-12 encounters', () => {
+test('editorial starter library now spans multiple biblical genres and testaments', () => {
   const studies = listEditorialStudies();
-  assert.ok(studies.length >= 8 && studies.length <= 12, `expected 8-12 studies, received ${studies.length}`);
-  assert.ok(studies.some(study => study.reference.bookCode === 'JHN'), 'John coverage is required');
-  assert.ok(studies.some(study => study.reference.bookCode === 'PRO'), 'Proverbs coverage is required');
+  assert.ok(studies.length >= 20, `expected at least 20 starter studies, received ${studies.length}`);
+  for (const bookCode of ['GEN','PSA','ISA','MAT','JHN','PRO','ROM','1CO','EPH','JAS','REV']) {
+    assert.ok(studies.some(study => study.reference.bookCode === bookCode), `${bookCode} starter coverage is required`);
+  }
 });
 
 test('every editorial encounter is structurally valid and never fakes human review', () => {
