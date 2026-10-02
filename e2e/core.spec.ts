@@ -4,7 +4,7 @@ async function openExploreLayer(page: Page, layer: string) {
   await page.locator('.floating-explore').click();
   const panel = page.locator('.context-panel.open');
   await expect(panel).toBeVisible();
-  await panel.locator('.explore-actions button').filter({ hasText: layer }).first().click();
+  await panel.getByText(layer, { exact: true }).click();
 }
 
 test('public reading works without login and any passage can enter grounded study', async ({ page }) => {
