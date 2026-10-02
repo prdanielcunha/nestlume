@@ -4,7 +4,9 @@ async function openExploreLayer(page: Page, layer: string) {
   await page.locator('.floating-explore').click();
   const panel = page.locator('.context-panel.open');
   await expect(panel).toBeVisible();
-  await panel.getByText(layer, { exact: true }).click();
+  const button = panel.locator('.explore-actions button').filter({ hasText: layer }).first();
+  await expect(button).toBeVisible();
+  await button.click();
 }
 
 test('public reading works without login and any passage can enter grounded study', async ({ page }) => {
@@ -275,7 +277,7 @@ test('text provenance distinguishes New Testament TR from Old Testament release 
   await expect(oldTestamentPanel.getByText(/^Textus Receptus$/i)).toHaveCount(0);
 
   await page.goto('/ler/jhn/1?v=1');
-  await openExploreLayer(page, 'Fonte');
+  await openExploreLayer(page, 'Ver fonte');
   const newTestamentPanel = page.locator('.context-panel.open');
   await expect(newTestamentPanel.getByText(/Novo Testamento: Textus Receptus/i)).toBeVisible();
 });
@@ -283,14 +285,16 @@ test('text provenance distinguishes New Testament TR from Old Testament release 
 
 test('integrated study hub is available on an arbitrary Bible passage', async ({ page }) => {
   await page.goto('/ler/rom/8?v=1-4');
-  await expect(page.getByRole('heading', { name: /Estudo integrado da passagem/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Contexto/i }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /Idioma original/i }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /Pessoas/i }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lugares/i }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /Fio da Bíblia/i }).first()).toBeVisible();
+  const hub = page.locator('.integrated-study-hub');
+  await expect(hub.getByRole('heading', { name: /Estudo integrado da passagem/i })).toBeVisible();
+  await expect(hub.locator('.integrated-study-grid button')).toHaveCount(6);
+  await expect(hub.locator('.integrated-study-grid button').filter({ hasText: /Contexto/i })).toBeVisible();
+  await expect(hub.locator('.integrated-study-grid button').filter({ hasText: /Idioma original|Grego koiné|Hebraico bíblico/i })).toBeVisible();
+  await expect(hub.locator('.integrated-study-grid button').filter({ hasText: /Pessoas/i })).toBeVisible();
+  await expect(hub.locator('.integrated-study-grid button').filter({ hasText: /Lugares/i })).toBeVisible();
+  await expect(hub.locator('.integrated-study-grid button').filter({ hasText: /Passagens relacionadas|Fio da Bíblia/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /Estudar esta passagem/i }).first().click();
+  await hub.getByRole('button', { name: /Estudar esta passagem/i }).click();
   await expect(page).toHaveURL(/\/perguntar\?.*mode=study.*ref=/);
   await expect(page.getByRole('textbox', { name: /^Pergunta/ })).toHaveValue(/estudo profundo e integrado/i);
 });
