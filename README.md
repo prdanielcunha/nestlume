@@ -4,9 +4,9 @@ NestLume is a premium, local-first Bible reading and study PWA designed to help 
 
 ## Release candidate
 
-Current source version: **1.0.0-rc.3**.
+Current source version: **1.0.0-rc.4**.
 
-The release candidate is Bible-wide in architecture and user flow. The initial editorial library now contains 10 Scripture-grounded encounters across João and Provérbios; they remain explicitly marked as drafts until real human review is recorded.
+The release candidate is Bible-wide in architecture and user flow. The editorial starter library now contains 20 Scripture-grounded encounters across multiple genres and both testaments; they remain explicitly marked as drafts until real human review is recorded.
 
 ### Implemented core
 - Complete 66-book Bíblia Livre corpus with deterministic integrity/count checks.
@@ -14,12 +14,12 @@ The release candidate is Bible-wide in architecture and user flow. The initial e
 - PT/EN/ES interface foundation, light/dark/system themes and reduced-motion support.
 - Local-first notebook with reading position, bookmarks, notes, JSON backup/restore and personal-data deletion.
 - Explicit verified offline-book packages, including source-hash validation and original-language packages.
-- Contextual **Explorar** panel for passage context, original languages, people, places, Bible-wide connections and source provenance.
+- An inline integrated-study hub on every passage, combining textual observations, original-language availability, people, places, Bible-wide connections and one-click grounded AI; the deeper **Explorar** panels remain available for inspection.
 - Bible-wide Greek/Hebrew/Aramaic source pipeline from pinned STEPBible datasets, with verse-level alignment boundaries surfaced honestly.
 - Sourced person/place/cross-reference packages with upstream AI prose excluded from editorial claims.
 - Private pasted-text flow with local identification; AI transmission requires separate explicit consent and never puts private text in the URL.
 - Provider-neutral grounded-AI contract with evidence IDs, output validation, timeout/quota handling and fail-closed behavior.
-- Cloudflare Workers AI candidate adapter protected by server-side Turnstile validation before inference quota is spent.
+- Live Cloudflare Workers AI protected by visible server-validated Turnstile, public rate limiting, strict evidence-only output validation and a 60-second mobile-friendly client timeout.
 - Responsive desktop/mobile Chromium smoke tests, performance budget checks, offline smoke and contextual-panel keyboard/history tests.
 
 ## AI status
