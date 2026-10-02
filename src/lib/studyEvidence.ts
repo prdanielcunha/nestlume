@@ -29,6 +29,25 @@ function scriptureText(rows: CorpusVerse[]) {
   return rows.map(row => `${row.verse}. ${row.text}`).join('\n');
 }
 
+function scriptureChunks(rows: CorpusVerse[], maxChars = 3600): CorpusVerse[][] {
+  const chunks: CorpusVerse[][] = [];
+  let current: CorpusVerse[] = [];
+  let length = 0;
+
+  for (const row of rows) {
+    const lineLength = `${row.verse}. ${row.text}\n`.length;
+    if (current.length && length + lineLength > maxChars) {
+      chunks.push(current);
+      current = [];
+      length = 0;
+    }
+    current.push(row);
+    length += lineLength;
+  }
+  if (current.length) chunks.push(current);
+  return chunks;
+}
+
 async function optionalEvidence<T>(factory: () => Promise<T>): Promise<T | null> {
   try {
     return await factory();
@@ -46,12 +65,12 @@ export async function buildIntegratedStudyEvidence(
   const { start, end, maxVerse } = selectedBounds(chapter, target);
   const selected = chapter.filter(row => row.verse >= start && row.verse <= end);
 
-  const evidence: AiEvidence[] = [{
-    id: `blivre:${book.ubsCode}:${target.chapter}:${start}-${end}`,
+  const evidence: AiEvidence[] = scriptureChunks(selected).map((rows, index, all) => ({
+    id: `blivre:${book.ubsCode}:${target.chapter}:${rows[0].verse}-${rows.at(-1)!.verse}:part-${index + 1}`,
     kind: 'scripture',
-    sourceLabel: `Bíblia Livre 2018.2.0 · ${book.nameShort} ${target.chapter}:${start}–${end}`,
-    text: compact(scriptureText(selected)),
-  }];
+    sourceLabel: `Bíblia Livre 2018.2.0 · ${book.nameShort} ${target.chapter}:${rows[0].verse}–${rows.at(-1)!.verse}${all.length > 1 ? ` · bloco ${index + 1}/${all.length}` : ''}`,
+    text: scriptureText(rows),
+  }));
 
   const contextStart = Math.max(1, start - 5);
   const contextEnd = Math.min(maxVerse, end + 5);
