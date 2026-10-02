@@ -72,52 +72,52 @@ export function IntegratedStudyHub({
       <div className="integrated-study-heading">
         <div>
           <p className="micro-label">{t.study.toUpperCase()} · {referenceLabel.toUpperCase()}</p>
-          <h2>Estudo integrado da passagem</h2>
-          <p>O texto continua no centro. As camadas abaixo são reunidas para você enxergar contexto, estrutura, idioma original, pessoas, lugares e conexões sem montar o estudo peça por peça.</p>
+          <h2>{t.integratedStudyTitle}</h2>
+          <p>{t.integratedStudyIntro}</p>
         </div>
         <button className="primary simple" onClick={onStudy}>{t.studyThisPassage}</button>
       </div>
 
       <div className="integrated-study-grid">
         <button onClick={() => onSelectPanel('lenses')}>
-          <small>OBSERVAÇÃO DO TEXTO</small>
+          <small>{t.helpMeSee.toUpperCase()}</small>
           <strong>{t.helpMeSee}</strong>
           <span>{repeatedPreview || (lens.contrasts.length ? `${lens.contrasts.length} contraste(s) textual(is) detectado(s)` : 'Abra para observar repetições e contrastes no trecho.')}</span>
         </button>
 
         <button onClick={() => onSelectPanel('original')}>
-          <small>IDIOMA ORIGINAL</small>
+          <small>{t.originalLanguage.toUpperCase()}</small>
           <strong>{snapshot.original?.language === 'grc' ? t.greekKoine : snapshot.original?.language === 'hbo' ? t.hebrewBiblical : t.originalLanguage}</strong>
           <span>{originalPreview || t.originalActionBody}</span>
         </button>
 
         <button onClick={() => onSelectPanel('people')}>
-          <small>PESSOAS</small>
-          <strong>{snapshot.people.length ? `${snapshot.people.length} vinculada(s) ao trecho` : t.people}</strong>
+          <small>{t.people.toUpperCase()}</small>
+          <strong>{snapshot.people.length ? `${snapshot.people.length} · ${t.people}` : t.people}</strong>
           <span>{snapshot.people.slice(0, 4).join(' · ') || t.peopleActionBody}</span>
         </button>
 
         <button onClick={() => onSelectPanel('places')}>
-          <small>LUGARES</small>
-          <strong>{snapshot.places.length ? `${snapshot.places.length} encontrado(s)` : t.places}</strong>
+          <small>{t.places.toUpperCase()}</small>
+          <strong>{snapshot.places.length ? `${snapshot.places.length} · ${t.places}` : t.places}</strong>
           <span>{snapshot.places.slice(0, 4).join(' · ') || t.placesActionBody}</span>
         </button>
 
         <button onClick={() => onSelectPanel('thread')}>
-          <small>CONEXÕES BÍBLICAS</small>
-          <strong>{snapshot.connections.length ? `${snapshot.connections.length} caminhos para investigar` : t.thread}</strong>
+          <small>{t.relatedPassages.toUpperCase()}</small>
+          <strong>{snapshot.connections.length ? `${snapshot.connections.length} · ${t.relatedPassages}` : t.thread}</strong>
           <span>{snapshot.connections.slice(0, 4).join(' · ') || t.connectionsActionBody}</span>
         </button>
 
         <button onClick={() => onSelectPanel('context')}>
-          <small>CONTEXTO</small>
+          <small>{t.context.toUpperCase()}</small>
           <strong>{book.nameShort} {target.chapter}</strong>
-          <span>Veja o trecho dentro do capítulo, com versos antes e depois sem perder sua seleção.</span>
+          <span>{t.contextActionBody}</span>
         </button>
       </div>
 
       <p className="integrated-study-boundary">
-        A IA recebe somente as evidências disponíveis para esta passagem. Ausência de dado não é preenchida com “curiosidade” inventada.
+        {t.integratedStudyBoundary}
       </p>
     </section>
   );
