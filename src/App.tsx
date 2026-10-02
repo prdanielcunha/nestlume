@@ -440,7 +440,7 @@ function Explore({ t, onNavigate, onOpenReader }: {
 
       <div className="entry-list">
         {editorialStudies.map(study => {
-          const bookName = study.reference.bookCode === 'JHN' ? 'João' : study.reference.bookCode === 'PRO' ? 'Provérbios' : study.reference.bookCode;
+          const bookName = catalogBooks.find(book => book.ubsCode === study.reference.bookCode)?.nameShort ?? study.reference.bookCode;
           const reference = `${bookName} ${study.reference.chapter}:${study.reference.startVerse}–${study.reference.endVerse}`;
           return (
             <button key={study.id} onClick={() => onOpenReader({
