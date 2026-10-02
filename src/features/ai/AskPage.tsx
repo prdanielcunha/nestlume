@@ -71,7 +71,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
       const start = syntax.startVerse ?? 1;
       if (start > maxVerse) throw new Error(t.aiInvalidReference);
 
-      const end = syntax.endVerse ?? Math.min(start + 9, maxVerse);
+      const end = syntax.endVerse ?? (syntax.startVerse ? Math.min(start + 9, maxVerse) : maxVerse);
       if (end > maxVerse) throw new Error(t.aiInvalidReference);
 
       const selected = chapter.filter(verse => verse.verse >= start && verse.verse <= end);
