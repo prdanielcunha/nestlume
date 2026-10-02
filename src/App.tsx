@@ -162,7 +162,7 @@ export default function App() {
   };
 
   const askPassage = (reference: string) => {
-    window.history.pushState({}, '', `/perguntar?ref=${encodeURIComponent(reference)}`);
+    window.history.pushState({}, '', `/perguntar?mode=study&ref=${encodeURIComponent(reference)}`);
     setPage('ask');
     resetPanel();
     setRouteVersion(version => version + 1);
