@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "appId": "nestlume",
+  "name": "NestLume",
+  "ai": {
+    "enabled": true,
+    "tasks": [
+      "nestlume.study.answer",
+      "nestlume.entity.explain",
+      "nestlume.embedding.generate"
+    ],
+    "defaultSensitivity": "P1_INTERNAL"
+  },
+  "locales": [
+    "pt-BR",
+    "en",
+    "es"
+  ],
+  "owner": {
+    "repository": "prdanielcunha/nestlume"
+  }
+}
