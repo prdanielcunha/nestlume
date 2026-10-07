@@ -5,20 +5,36 @@ async function mockNestAi(page: Page, onRun?: (body: any) => void) {
     (window as Window & { __NESTLUME_E2E__?: boolean }).__NESTLUME_E2E__ = true;
   });
 
+  const corsHeaders = {
+    'access-control-allow-origin': 'http://127.0.0.1:4173',
+    'access-control-allow-methods': 'POST, OPTIONS',
+    'access-control-allow-headers': 'authorization, content-type, x-firebase-appcheck, x-millionsnest-app, x-millionsnest-org, x-request-id',
+  };
+
   await page.route('https://www.millionsnest.com/api/v1/ai/guest-token', async route => {
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: corsHeaders,
       body: JSON.stringify({ token: 'e2e-nestai-token', expiresIn: 300 }),
     });
   });
 
   await page.route('https://ai.millionsnest.com/v1/run', async route => {
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
     const body = route.request().postDataJSON();
     onRun?.(body);
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: corsHeaders,
       body: JSON.stringify({
         requestId: 'e2e-request',
         task: 'nestlume.study.grounded',
