@@ -1,5 +1,44 @@
 import { expect, test, Page } from '@playwright/test';
 
+async function mockNestAi(page: Page, onRun?: (body: any) => void) {
+  await page.addInitScript(() => {
+    (window as Window & { __NESTLUME_E2E__?: boolean }).__NESTLUME_E2E__ = true;
+  });
+
+  await page.route('https://www.millionsnest.com/api/v1/ai/guest-token', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ token: 'e2e-nestai-token', expiresIn: 300 }),
+    });
+  });
+
+  await page.route('https://ai.millionsnest.com/v1/run', async route => {
+    const body = route.request().postDataJSON();
+    onRun?.(body);
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        requestId: 'e2e-request',
+        task: 'nestlume.study.grounded',
+        version: 1,
+        result: {
+          answer: 'Resposta fundamentada de teste.',
+          claims: [],
+          limitations: [],
+        },
+        meta: {
+          providerClass: 'free',
+          cached: false,
+          fallbackUsed: false,
+          retries: 0,
+        },
+      }),
+    });
+  });
+}
+
 async function openExploreLayer(page: Page, layer: string) {
   await page.locator('.floating-explore').click();
   const panel = page.locator('.context-panel.open');
@@ -39,12 +78,16 @@ test('versification mismatch is surfaced instead of silently shifting the verse'
   await expect(page.getByText(/não desloca a referência silenciosamente/i)).toBeVisible();
 });
 
-test('AI remains fail-closed without an approved live endpoint', async ({ page }) => {
+test('AI uses only the canonical NestAI endpoint for grounded study', async ({ page }) => {
+  let requestBody: any = null;
+  await mockNestAi(page, body => { requestBody = body; });
   await page.goto('/perguntar?ref=Jo%C3%A3o%201%3A1-5');
   await page.getByRole('textbox', { name: /^Pergunta/ }).fill('O que esta passagem afirma sobre a Palavra?');
   await page.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Estudar com IA' }).click();
-  await expect(page.getByText(/provedor de produção ainda não foi conectado/i)).toBeVisible();
+  await expect(page.getByText('Resposta fundamentada de teste.')).toBeVisible();
+  expect(requestBody?.task).toBe('nestlume.study.grounded');
+  expect(requestBody?.context?.organizationId).toBe('public:nestlume');
 });
 
 test('interface language and theme are user-selectable', async ({ page }) => {
@@ -192,6 +235,8 @@ test('representative whole-Bible reader matrix stays studyable across genres', a
 
 test('pasted text reaches AI flow only through explicit private consent and never leaks into URL', async ({ page }) => {
   const privateText = 'Trecho privado para estudo; não deve aparecer na URL.';
+  let requestBody: any = null;
+  await mockNestAi(page, body => { requestBody = body; });
   await page.goto('/colar');
   await page.getByLabel('Texto').fill(privateText);
   await page.getByLabel(/Versão informada por você/i).fill('NVI');
@@ -209,7 +254,11 @@ test('pasted text reaches AI flow only through explicit private consent and neve
   await checks.nth(1).check();
 
   await page.getByRole('button', { name: 'Estudar com IA' }).click();
-  await expect(page.getByText(/provedor de produção ainda não foi conectado/i)).toBeVisible();
+  await expect(page.getByText('Resposta fundamentada de teste.')).toBeVisible();
+  expect(page.url()).not.toContain(encodeURIComponent(privateText));
+  expect(requestBody?.task).toBe('nestlume.study.grounded');
+  expect(requestBody?.input?.pastedText).toBe(privateText);
+  expect(requestBody?.input?.consent?.allowPastedText).toBe(true);
 });
 
 
