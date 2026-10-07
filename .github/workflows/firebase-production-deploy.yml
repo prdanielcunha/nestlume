@@ -124,139 +124,23 @@ jobs:
           npm install --global "wrangler@$WRANGLER_VERSION"
           wrangler --version
 
-      - name: Require Cloudflare and Turnstile configuration
+      - name: Verify canonical NestAI integration contract
         shell: bash
         run: |
           set -euo pipefail
-          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID NESTLUME_TURNSTILE_SECRET VITE_NESTLUME_TURNSTILE_SITE_KEY; do
-            value="$(printenv "$name" || true)"
-            if [ -z "$value" ]; then
-              echo "::error::$name is not configured in GitHub Actions secrets."
-              exit 1
-            fi
-          done
+          test -s src/lib/nestai-client.ts
+          grep -Fq "createNestAiClient" src/lib/nestai-client.ts
+          grep -Fq "appId: 'nestlume'" src/lib/nestai-client.ts
+          grep -Fq "guest: true" src/lib/nestai-client.ts
+          grep -Fq "https://ai.millionsnest.com/v1/" src/lib/nestai-client.ts
+          grep -Fq "nestlume.study.grounded" src/lib/nestai-client.ts
+          grep -Fq "requestGroundedStudyViaNestAi" src/features/ai/AskPage.tsx
+          echo "NESTAI_CANONICAL_CONTRACT=verified"
 
-      - name: Generate ephemeral AI validation credential
-        shell: bash
-        run: |
-          set -euo pipefail
-          token="$(openssl rand -hex 32)"
-          echo "::add-mask::$token"
-          echo "NESTLUME_CI_VALIDATION_TOKEN=$token" >> "$GITHUB_ENV"
-
-      - name: Build one-release Worker config with CI credential
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          const source = JSON.parse(fs.readFileSync('workers/ai/wrangler.jsonc', 'utf8'));
-          source.vars = { ...(source.vars || {}), CI_VALIDATION_TOKEN: process.env.NESTLUME_CI_VALIDATION_TOKEN };
-          fs.writeFileSync('workers/ai/wrangler.release.jsonc', JSON.stringify(source, null, 2) + '\n');
-          NODE
-
-      - name: Publish protected NestLume AI Worker
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
-          wrangler deploy --config workers/ai/wrangler.release.jsonc
-
-      - name: Smoke protected AI Worker health
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts
-          curl --fail --silent --show-error --retry 6 --retry-delay 2 "$AI_ENDPOINT/health" > artifacts/ai-health.json
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          const health = JSON.parse(fs.readFileSync('artifacts/ai-health.json', 'utf8'));
-          if (!health.ok || health.provider !== 'cloudflare-workers-ai' || health.model !== '@cf/google/gemma-4-26b-a4b-it') process.exit(1);
-          NODE
-
-      - name: Verify protected CI validation route
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts
-          ready=false
-          for attempt in $(seq 1 12); do
-            status="$(curl --silent --show-error --output artifacts/ai-ci-auth-probe.json --write-out '%{http_code}' \
-              --request POST \
-              -H 'content-type: application/json' \
-              -H 'origin: https://nestlume.millionsnest.com' \
-              -H "x-nestlume-ci-token: $NESTLUME_CI_VALIDATION_TOKEN" \
-              --data '{}' \
-              "$AI_ENDPOINT/v1/ci-study" || true)"
-            if [ "$status" = "400" ]; then
-              node --input-type=module -e "import fs from 'node:fs'; const body=JSON.parse(fs.readFileSync('artifacts/ai-ci-auth-probe.json','utf8')); if(body.error!=='invalid_request') process.exit(1);"
-              ready=true
-              break
-            fi
-            echo "CI validation version not active yet (HTTP $status, attempt $attempt/12)."
-            sleep 2
-          done
-          if [ "$ready" != "true" ]; then
-            echo "Protected CI validation route did not activate." >&2
-            cat artifacts/ai-ci-auth-probe.json || true
-            exit 1
-          fi
-
-      - name: Prepare corpus and original-language evidence for live AI battery
-        run: |
-          npm run corpus:build
-          npm run original:build
-
-      - name: Run real Workers AI Portuguese battery
-        id: live_ai_battery
-        continue-on-error: true
+      - name: Build exact release with canonical NestAI configuration
         env:
-          NESTLUME_AI_ENDPOINT: ${{ env.AI_ENDPOINT }}
-          NESTLUME_AI_PATH: /v1/ci-study
-          NESTLUME_AI_BATTERY_OUTPUT: artifacts/ai-battery-result.json
-        run: npm run ai:battery
-
-      - name: Remove CI validation credential from live Worker
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          wrangler deploy --config workers/ai/wrangler.jsonc
-          printf '%s' "$NESTLUME_TURNSTILE_SECRET" | wrangler secret put TURNSTILE_SECRET --config workers/ai/wrangler.jsonc
-
-      - name: Upload live AI validation evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nestlume-live-ai-${{ env.RELEASE_SHA }}
-          path: |
-            artifacts/ai-health.json
-            artifacts/ai-ci-auth-probe.json
-            artifacts/ai-battery-result.json
-          if-no-files-found: ignore
-          retention-days: 30
-
-      - name: Enforce live AI battery gate
-        if: steps.live_ai_battery.outcome != 'success'
-        run: |
-          echo "Live Workers AI battery failed; Firebase frontend will not be enabled for AI." >&2
-          exit 1
-
-      - name: Build exact release with live AI configuration
-        env:
-          VITE_NESTLUME_AI_ENDPOINT: ${{ env.AI_ENDPOINT }}
-          VITE_NESTLUME_TURNSTILE_SITE_KEY: ${{ secrets.NESTLUME_TURNSTILE_SITE_KEY }}
+          VITE_NESTLUME_NESTAI_ENABLED: "true"
         run: npm run build
-
-      - name: Verify live AI configuration is present in built frontend
-        shell: bash
-        env:
-          VITE_NESTLUME_TURNSTILE_SITE_KEY: ${{ secrets.NESTLUME_TURNSTILE_SITE_KEY }}
-        run: |
-          set -euo pipefail
-          grep -R -F "$AI_ENDPOINT" dist >/dev/null
-          grep -R -F "$VITE_NESTLUME_TURNSTILE_SITE_KEY" dist >/dev/null
-          echo "AI_FRONTEND_WIRING=verified"
 
       - name: Ensure isolated NestLume Hosting site exists
         shell: bash
