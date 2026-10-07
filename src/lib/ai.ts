@@ -4,7 +4,7 @@ export const AI_MAX_PASTED_TEXT_CHARS = 12000;
 export const AI_MAX_EVIDENCE_ITEMS = 12;
 export const AI_MAX_EVIDENCE_CHARS = 4000;
 
-export type AiProviderId = 'cloudflare-workers-ai' | 'openai-api' | 'google-gemini-api';
+export type AiProviderId = 'nestai' | 'cloudflare-workers-ai' | 'openai-api' | 'google-gemini-api';
 export type AiFeature = 'question' | 'pasted-text' | 'deep-dive' | 'original-language';
 export type AiLocale = 'pt' | 'en' | 'es';
 
