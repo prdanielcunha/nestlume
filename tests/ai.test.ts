@@ -4,13 +4,13 @@ import { AI_DISCLOSURE_VERSION, prepareAiRequest, type AiConsent, type AiStudyIn
 
 const consent: AiConsent = {
   disclosureVersion: AI_DISCLOSURE_VERSION,
-  provider: 'cloudflare-workers-ai',
+  provider: 'nestai',
   acceptedAt: '2026-09-30T12:00:00.000Z',
   allowPastedText: false,
 };
 
 const base: AiStudyInput = {
-  provider: 'cloudflare-workers-ai',
+  provider: 'nestai',
   feature: 'question',
   locale: 'pt',
   question: 'O que João 1 afirma sobre a Palavra?',
@@ -25,7 +25,7 @@ test('IA falha fechada sem consentimento', () => {
 });
 
 test('troca de provedor exige novo consentimento', () => {
-  const result = prepareAiRequest({ ...base, provider: 'openai-api' }, consent);
+  const result = prepareAiRequest({ ...base, provider: 'cloudflare-workers-ai' }, consent);
   assert.equal(result.ok, false);
   if (!result.ok) assert.equal(result.code, 'provider_changed');
 });
