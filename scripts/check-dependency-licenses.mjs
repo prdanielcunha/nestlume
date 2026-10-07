@@ -6,6 +6,7 @@ const allowedLicenses = new Set([
   'Apache-2.0',
   'ISC',
   'BSD-3-Clause',
+  '0BSD',
   'CC-BY-4.0',
 ]);
 
@@ -25,8 +26,12 @@ for (const [packagePath, metadata] of Object.entries(lock.packages ?? {})) {
   };
   packages.push(record);
 
+  const canonicalInternalSdk = record.name === '@millionsnest/ai'
+    && record.license === 'UNLICENSED'
+    && typeof record.resolved === 'string'
+    && /^https:\/\/github\.com\/prdanielcunha\/NestAI\/releases\/download\/sdk-v0\.2\.0\/millionsnest-ai-0\.2\.0\.tgz$/.test(record.resolved);
   if (!record.license) missing.push(record);
-  else if (!allowedLicenses.has(record.license)) unexpected.push(record);
+  else if (!allowedLicenses.has(record.license) && !canonicalInternalSdk) unexpected.push(record);
 }
 
 packages.sort((a, b) => a.name.localeCompare(b.name));

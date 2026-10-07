@@ -129,15 +129,22 @@ function hydrateEvidence(item) {
 
 function semanticCheck(testCase, response) {
   const errors = [];
-  const serialized = JSON.stringify(response);
+  const assertionText = [
+    response?.answer || '',
+    ...(response?.claims || []).map(claim => claim?.text || ''),
+  ].join('\n');
+  const fullText = JSON.stringify(response);
 
+  // Forbidden patterns guard factual/assertive output. Limitations often name a
+  // prohibited technique precisely to say it was NOT used; treating that
+  // defensive disclosure as a violation creates false positives.
   for (const pattern of testCase.forbiddenPatterns || []) {
     const regex = new RegExp(pattern, 'iu');
-    if (regex.test(serialized)) errors.push(`forbidden output pattern matched: ${pattern}`);
+    if (regex.test(assertionText)) errors.push(`forbidden output pattern matched: ${pattern}`);
   }
   for (const pattern of testCase.requiredPatterns || []) {
     const regex = new RegExp(pattern, 'iu');
-    if (!regex.test(serialized)) errors.push(`required output pattern missing: ${pattern}`);
+    if (!regex.test(fullText)) errors.push(`required output pattern missing: ${pattern}`);
   }
 
   return errors;
