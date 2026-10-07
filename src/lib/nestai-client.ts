@@ -33,6 +33,16 @@ function getNestLumeAppCheck(): AppCheck {
   return check;
 }
 
+function isBrowserE2E(): boolean {
+  return typeof window !== 'undefined'
+    && (window as typeof window & { __NESTLUME_E2E__?: boolean }).__NESTLUME_E2E__ === true;
+}
+
+async function getNestLumeAppCheckToken(): Promise<string> {
+  if (isBrowserE2E()) return 'e2e-app-check-token';
+  return (await readAppCheckToken(getNestLumeAppCheck(), false)).token;
+}
+
 function getNestAiClient(): NestAiClient {
   if (client) return client;
   client = createNestAiClient({
@@ -41,7 +51,7 @@ function getNestAiClient(): NestAiClient {
     organizationId: 'public:nestlume',
     baseUrl: 'https://ai.millionsnest.com/v1/',
     hubBaseUrl: 'https://www.millionsnest.com/',
-    getAppCheckToken: async () => (await readAppCheckToken(getNestLumeAppCheck(), false)).token,
+    getAppCheckToken: getNestLumeAppCheckToken,
   });
   return client;
 }
