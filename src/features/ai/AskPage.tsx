@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Locale, messages } from '../../i18n/messages';
 import { loadChapter, resolveBook } from '../../lib/corpus';
 import { buildIntegratedStudyEvidence } from '../../lib/studyEvidence';
@@ -8,12 +8,9 @@ import {
   AiConsent,
   AiEvidence,
   AiStudyResponse,
-  configuredAiEndpoint,
-  configuredTurnstileSiteKey,
   prepareAiRequest,
-  requestAiStudy,
 } from '../../lib/ai';
-import { TurnstileGate } from './TurnstileGate';
+import { nestAiPilotEnabled, requestGroundedStudyViaNestAi } from '../../lib/nestai-client';
 
 type T = Record<keyof typeof messages.pt, string>;
 type ReaderTarget = { code: string; chapter: number; startVerse?: number; endVerse?: number };
@@ -28,7 +25,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
   initialReference?: string;
   onConsumePastedDraft?: () => void;
 }) {
-  const provider = 'cloudflare-workers-ai' as const;
+  const provider = 'nestai' as const;
   const [pastedText] = useState(() => initialPastedText?.trim() || '');
   const [declaredVersion] = useState(() => initialVersion?.trim() || '');
   const [question, setQuestion] = useState(() => {
@@ -49,11 +46,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
   const [result, setResult] = useState<AiStudyResponse | null>(null);
   const [lastEvidence, setLastEvidence] = useState<AiEvidence[]>([]);
   const [sending, setSending] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [turnstileReset, setTurnstileReset] = useState(0);
-  const endpoint = configuredAiEndpoint();
-  const turnstileSiteKey = configuredTurnstileSiteKey();
-  const handleTurnstileError = useCallback(() => setStatus(t.aiAntiAbuseError), [t.aiAntiAbuseError]);
+  const nestAiEnabled = nestAiPilotEnabled();
 
   async function buildEvidence(): Promise<{ evidence: AiEvidence[]; target?: ReaderTarget }> {
     const evidence: AiEvidence[] = [];
@@ -128,20 +121,12 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
         return;
       }
 
-      if (!endpoint) {
+      if (!nestAiEnabled) {
         setStatus(t.aiPreparedNotConnected);
         return;
       }
-      if (!turnstileSiteKey) {
-        setStatus(t.aiAntiAbuseMissing);
-        return;
-      }
-      if (!turnstileToken) {
-        setStatus(t.aiAntiAbuseRequired);
-        return;
-      }
 
-      const response = await requestAiStudy(prepared.request, endpoint, turnstileToken);
+      const response = await requestGroundedStudyViaNestAi(prepared.request);
       setResult(response);
       setStatus('');
       if (pastedText) onConsumePastedDraft?.();
@@ -149,7 +134,6 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
       setStatus(cause instanceof Error ? cause.message : t.error);
     } finally {
       setSending(false);
-      if (turnstileToken) setTurnstileReset(value => value + 1);
     }
   }
 
@@ -199,7 +183,7 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
           <h2 id="ai-disclosure-title">{t.aiDisclosureTitle}</h2>
           <p>{t.aiDisclosureBody}</p>
           <dl>
-            <div><dt>{t.provider}</dt><dd>Cloudflare Workers AI · {t.aiCandidate}</dd></div>
+            <div><dt>{t.provider}</dt><dd>NestAI · {t.aiCandidate}</dd></div>
             <div><dt>{t.sentData}</dt><dd>{pastedText ? t.sentDataPastedBody : t.sentDataBody}</dd></div>
             <div><dt>{t.storage}</dt><dd>{t.storageBody}</dd></div>
             <div><dt>{t.quota}</dt><dd>{t.quotaBody}</dd></div>
@@ -217,19 +201,10 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
             </label>
           )}
 
-          {turnstileSiteKey && (
-            <TurnstileGate
-              siteKey={turnstileSiteKey}
-              locale={locale}
-              resetCounter={turnstileReset}
-              onToken={setTurnstileToken}
-              onError={handleTurnstileError}
-            />
-          )}
         </section>
 
         <div className="ask-actions">
-          <button className="primary simple" type="submit" disabled={!question.trim() || sending || (!!turnstileSiteKey && !turnstileToken)}>
+          <button className="primary simple" type="submit" disabled={!question.trim() || sending}>
             {sending ? t.loading : t.askSubmit}
           </button>
           <button className="secondary" type="button" onClick={() => void openReference()}>{t.readPassage}</button>
@@ -238,8 +213,8 @@ export function AskPage({ t, locale, onOpenReader, onNotebook, initialPastedText
       </form>
 
       <div className="ai-status" role="status">
-        <strong>{endpoint ? t.aiEndpointConfigured : t.aiEndpointPending}</strong>
-        <p>{status || (endpoint ? t.aiEndpointConfiguredBody : t.aiEndpointPendingBody)}</p>
+        <strong>{nestAiEnabled ? t.aiEndpointConfigured : t.aiEndpointPending}</strong>
+        <p>{status || (nestAiEnabled ? t.aiEndpointConfiguredBody : t.aiEndpointPendingBody)}</p>
       </div>
 
       {result && (
