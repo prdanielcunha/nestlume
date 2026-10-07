@@ -26,6 +26,7 @@
     "people:build": "node scripts/build-people.mjs"
   },
   "dependencies": {
+    "@millionsnest/ai": "https://github.com/prdanielcunha/NestAI/releases/download/sdk-v0.2.0/millionsnest-ai-0.2.0.tgz",
     "@vitejs/plugin-react": "5.0.4",
     "react": "19.0.1",
     "react-dom": "19.0.1",
