@@ -6,6 +6,7 @@ const allowedLicenses = new Set([
   'Apache-2.0',
   'ISC',
   'BSD-3-Clause',
+  '0BSD',
   'CC-BY-4.0',
 ]);
 
