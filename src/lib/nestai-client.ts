@@ -17,7 +17,7 @@ let check: AppCheck | null = null;
 let client: NestAiClient | null = null;
 
 export function nestAiPilotEnabled(): boolean {
-  return import.meta.env.VITE_NESTLUME_NESTAI_ENABLED === 'true';
+  return import.meta.env.VITE_NESTLUME_NESTAI_ENABLED !== 'false';
 }
 
 function getNestLumeAppCheck(): AppCheck {
@@ -47,7 +47,7 @@ function getNestAiClient(): NestAiClient {
 }
 
 export async function requestGroundedStudyViaNestAi(request: AiStudyRequest): Promise<AiStudyResponse> {
-  if (!nestAiPilotEnabled()) throw new Error('NESTLUME_NESTAI_PILOT_DISABLED');
+  if (!nestAiPilotEnabled()) throw new Error('NESTLUME_NESTAI_DISABLED');
   const result = await getNestAiClient().run<AiStudyResponse>({
     task: 'nestlume.study.grounded',
     input: {
