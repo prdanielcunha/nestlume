@@ -965,7 +965,7 @@ function Notebook({ t, onOpenReader }: { t: T; onOpenReader: (target: ReaderTarg
     <div className="page narrow-page">
       <p className="kicker">{t.notebook.toUpperCase()}</p>
       <h1 className="page-title">Guarde o caminho, não uma pontuação.</h1>
-      <p className="page-intro">Posição, perguntas e anotações ficam no IndexedDB deste navegador. Não são enviadas ao MillionsNest nem a um provedor de IA.</p>
+      <a href="https://www.millionsnest.com" style={{display:"inline-flex",alignItems:"center",marginBottom:16,fontSize:13,color:"inherit",textDecoration:"none"}}><img src="/brand/millionsnest/v1/mark-192.png" alt="" aria-hidden="true" width={20} height={20} style={{display:"inline-block",width:20,height:20,objectFit:"contain",verticalAlign:"middle",marginRight:8,flexShrink:0}} />MillionsNest</a><p className="page-intro">Posição, perguntas e anotações ficam no IndexedDB deste navegador. Não são enviadas ao MillionsNest nem a um provedor de IA.</p>
 
       {position && <button className="notebook-item" onClick={() => onOpenReader({
         code: position.bookCode, chapter: position.chapter, startVerse: position.verse,
